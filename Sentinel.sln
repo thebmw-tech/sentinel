@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.Core", "Sentinel.Core\Sentinel.Core.csproj", "{45FF1508-8961-41F9-9BC7-BE42C3112047}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Core", "Sentinel.Core\Sentinel.Core.csproj", "{45FF1508-8961-41F9-9BC7-BE42C3112047}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.Shell", "Sentinel.Shell\Sentinel.Shell.csproj", "{A9B7B24B-3A1C-4585-B9F8-1475FA15A31E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Shell", "Sentinel.Shell\Sentinel.Shell.csproj", "{A9B7B24B-3A1C-4585-B9F8-1475FA15A31E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.CLI", "Sentinel.CLI\Sentinel.CLI.csproj", "{4B7DEF4D-3CDA-49EF-9A20-DF9A1F7A3D4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.CLI", "Sentinel.CLI\Sentinel.CLI.csproj", "{4B7DEF4D-3CDA-49EF-9A20-DF9A1F7A3D4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.Test", "Sentinel.Test\Sentinel.Test.csproj", "{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{4B7DEF4D-3CDA-49EF-9A20-DF9A1F7A3D4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B7DEF4D-3CDA-49EF-9A20-DF9A1F7A3D4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B7DEF4D-3CDA-49EF-9A20-DF9A1F7A3D4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
