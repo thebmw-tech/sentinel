@@ -44,17 +44,19 @@ namespace Sentinel.Core.Generators.Interface
 
         private Netplan GenerateNetplan()
         {
+            var interfaces = interfaceService.GetAllInterfacesCommitted();
+
             Netplan netplan = new Netplan()
             {
                 Network = new Network()
                 {
                     Version = 2,
                     Renderer = "networkd",
-                    Ethernets = new Dictionary<string, Ethernet>()
+                    Ethernets = interfaces.Any(i => i.InterfaceType == InterfaceType.Ethernet) ? new Dictionary<string, Ethernet>() : null,
+                    Vlans = interfaces.Any(i => i.InterfaceType == InterfaceType.Vlan) ? new Dictionary<string, Vlan>() : null
                 }
             };
 
-            var interfaces = interfaceService.GetAllInterfacesCommitted();
 
             foreach (var iface in interfaces.Where(i => i.InterfaceType == InterfaceType.Ethernet))
             {
@@ -70,7 +72,39 @@ namespace Sentinel.Core.Generators.Interface
                     eth.Addresses.Add($"{iface.IPv4Address}/{iface.IPv4SubnetMask}");
                 }
 
+                if (iface.IPv6ConfigurationType == IpConfigurationTypeV6.Static)
+                {
+                    eth.Addresses.Add($"{iface.IPv6Address}/{iface.IPv6SubnetMask}");
+                }
+                
                 netplan.Network.Ethernets.Add(iface.Name, eth);
+            }
+
+            foreach (var iface in interfaces.Where(i => i.InterfaceType == InterfaceType.Vlan))
+            {
+                string[] ifaceParts = iface.Name.Split('.');
+                string name = ifaceParts[0];
+                int vlanId = int.Parse(ifaceParts[1]);
+
+                var vlan = new Vlan()
+                {
+                    Link = name,
+                    Id = vlanId,
+                    Dhcp4 = iface.IPv4ConfigurationType == IpConfigurationTypeV4.DHCP,
+                    Addresses = new List<string>()
+                };
+
+                if (iface.IPv4ConfigurationType == IpConfigurationTypeV4.Static)
+                {
+                    vlan.Addresses.Add($"{iface.IPv4Address}/{iface.IPv4SubnetMask}");
+                }
+
+                if (iface.IPv6ConfigurationType == IpConfigurationTypeV6.Static)
+                {
+                    vlan.Addresses.Add($"{iface.IPv6Address}/{iface.IPv6SubnetMask}");
+                }
+
+                netplan.Network.Vlans.Add(iface.Name.Replace('.', '_'), vlan);
             }
 
             return netplan;

@@ -11,9 +11,14 @@ namespace Sentinel.Core
         {
             modelBuilder.ApplyConfiguration(new InterfaceMap());
             
+            
         }
 
-        public DbSet<Revision> Revisions { get; set; }
+        public DbSet<User> Users { get; set; }
 
+        public DbSet<Revision> Revisions { get; set; }
+        public DbSet<Interface> Interfaces { get; set; }
+        public DbSet<Gateway> Gateways { get; set; }
+        public DbSet<Route> Routes { get; set; }
     }
 }

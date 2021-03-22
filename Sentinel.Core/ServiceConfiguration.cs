@@ -6,6 +6,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog.Extensions.Logging;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Generators;
 using Sentinel.Core.Generators.Interface;
@@ -17,14 +18,19 @@ using Sentinel.Core.Services.Interfaces;
 
 namespace Sentinel.Core
 {
-    public class ServiceConfiguration
+    public static class ServiceConfiguration
     {
-        public static void Configure(ServiceCollection services)
+        public static ServiceCollection UseSentinelDi(this ServiceCollection services)
         {
             services.AddDbContext<SentinelDatabaseContext>();
 
             // Setup Logging
-            // TODO setup logging
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
+                loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                loggingBuilder.AddNLog();
+            });
 
             // Setup Abstractions & Helpers
             services.AddTransient<IFileSystem, FileSystem>(); // TODO verify this should be transient
@@ -38,6 +44,9 @@ namespace Sentinel.Core
 
             // Setup Generators -- This will eventualy be based on some configuration file options.
             services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
+
+
+            return services;
         }
     }
 }

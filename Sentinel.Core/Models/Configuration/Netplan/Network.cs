@@ -8,5 +8,6 @@ namespace Sentinel.Core.Models.Configuration.Netplan
         public string Renderer { get; set; }
         
         public Dictionary<string, Ethernet> Ethernets { get; set; }
+        public Dictionary<string, Vlan> Vlans { get; set; }
     }
 }
