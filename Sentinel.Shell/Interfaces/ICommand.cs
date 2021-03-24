@@ -1,8 +1,10 @@
-﻿namespace Sentinel.Shell
+﻿using Sentinel.Shell.Enums;
+
+namespace Sentinel.Shell.Interfaces
 {
     public interface ICommand
     {
-        void Execute(string command);
+        CommandReturn Execute(string command);
         void Help(string command);
         string Suggest(string command);
     }

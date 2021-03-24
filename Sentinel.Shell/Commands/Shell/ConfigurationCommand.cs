@@ -1,21 +1,35 @@
-﻿using Sentinel.Core.Services;
+﻿using System;
+using Sentinel.Core.Services;
 using Sentinel.Core.Services.Interfaces;
+using Sentinel.Shell.Attributes;
+using Sentinel.Shell.Enums;
+using Sentinel.Shell.Interfaces;
 
 namespace Sentinel.Shell.Commands.Shell
 {
-    [Command(CommandMode.Shell, "configure")]
+    [Command(CommandMode.Shell, "configure", "Enters into configuration mode.")]
     public class ConfigurationCommand : ICommand
     {
-        private readonly IInterfaceService interfaceService;
+        private readonly Services.Shell shell;
 
-        public ConfigurationCommand(IInterfaceService interfaceService)
+        public ConfigurationCommand(Services.Shell shell)
         {
-            this.interfaceService = interfaceService;
+            this.shell = shell;
         }
 
-        public void Execute(string command)
+        public CommandReturn Execute(string command)
         {
-            throw new System.NotImplementedException();
+            SetupConfigRevision();
+
+            var getPrompt = new Func<string>(() =>
+            {
+                var prompt = "hostname(config)# ";
+                return prompt;
+            });
+
+            shell.ShellLoop(CommandMode.Configuration, getPrompt);
+
+            return CommandReturn.Normal;
         }
 
         public void Help(string command)
@@ -25,7 +39,12 @@ namespace Sentinel.Shell.Commands.Shell
 
         public string Suggest(string command)
         {
-            throw new System.NotImplementedException();
+            return "configure";
+        }
+
+        private void SetupConfigRevision()
+        {
+            // TODO actualy do something here
         }
     }
 }

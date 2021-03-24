@@ -6,6 +6,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Generators;
@@ -20,7 +21,7 @@ namespace Sentinel.Core
 {
     public static class ServiceConfiguration
     {
-        public static ServiceCollection UseSentinelDi(this ServiceCollection services)
+        public static IServiceCollection UseSentinelDi(this IServiceCollection services)
         {
             services.AddDbContext<SentinelDatabaseContext>();
 
@@ -28,7 +29,7 @@ namespace Sentinel.Core
             services.AddLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
-                loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                 loggingBuilder.AddNLog();
             });
 
@@ -38,6 +39,7 @@ namespace Sentinel.Core
             // Setup Repositories
             services.AddTransient<IRevisionRepository, RevisionRepository>();
             services.AddTransient<IInterfaceRepository, InterfaceRepository>();
+            services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
 
             // Setup Services
             services.AddTransient<IInterfaceService, InterfaceService>();

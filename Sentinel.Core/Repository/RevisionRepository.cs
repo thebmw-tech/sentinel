@@ -1,17 +1,36 @@
-﻿using Sentinel.Core.Repository.Interfaces;
+﻿using System.Linq;
+using Sentinel.Core.Repository.Interfaces;
 
 namespace Sentinel.Core.Repository
 {
     public class RevisionRepository : IRevisionRepository
     {
-        public int GetLatestCommittedRevisionId()
+        private readonly SentinelDatabaseContext databaseContext;
+
+        public RevisionRepository(SentinelDatabaseContext databaseContext)
         {
-            throw new System.NotImplementedException();
+            this.databaseContext = databaseContext;
         }
 
-        public int GetRevisionIdForEditing()
+        public int GetSafeCurrentRevision()
         {
-            throw new System.NotImplementedException();
+            var revision = databaseContext.Revisions.Where(r => r.CommitDate.HasValue && r.ConfirmDate.HasValue)
+                .OrderBy(r => r.Id).Reverse().First();
+            return revision.Id;
+        }
+
+        public int GetCurrentRevision()
+        {
+            var revision = databaseContext.Revisions.Where(r => r.CommitDate.HasValue)
+                .OrderBy(r => r.Id).Reverse().First();
+            return revision.Id;
+        }
+
+        public int? GetInProgressRevision()
+        {
+            var revision = databaseContext.Revisions.Where(r => !r.CommitDate.HasValue)
+                .OrderBy(r => r.Id).Reverse().FirstOrDefault();
+            return revision?.Id;
         }
     }
 }

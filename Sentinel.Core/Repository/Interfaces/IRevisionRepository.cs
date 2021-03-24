@@ -2,7 +2,8 @@
 {
     public interface IRevisionRepository
     {
-        int GetRevisionIdForEditing();
-        int GetLatestCommittedRevisionId();
+        int GetSafeCurrentRevision();
+        int GetCurrentRevision();
+        int? GetInProgressRevision();
     }
 }

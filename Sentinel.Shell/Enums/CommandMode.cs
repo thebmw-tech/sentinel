@@ -1,4 +1,4 @@
-﻿namespace Sentinel.Shell
+﻿namespace Sentinel.Shell.Enums
 {
     public enum CommandMode
     {

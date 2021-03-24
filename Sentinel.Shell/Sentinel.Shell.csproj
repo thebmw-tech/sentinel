@@ -9,4 +9,9 @@
     <ProjectReference Include="..\Sentinel.Core\Sentinel.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\Configure\" />
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
 </Project>
