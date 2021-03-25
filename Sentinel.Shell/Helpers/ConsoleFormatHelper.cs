@@ -8,6 +8,8 @@ namespace Sentinel.Shell.Helpers
     {
         public static void WriteSpacedTuples(List<Tuple<string, string>> tuples)
         {
+            tuples = tuples.OrderBy(t => t.Item1).ToList();
+
             var firstColumnSpacing = tuples.Max(t => t.Item1.Length) + 3;
 
             foreach (var tuple in tuples)

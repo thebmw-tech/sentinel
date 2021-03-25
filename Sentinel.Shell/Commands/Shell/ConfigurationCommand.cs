@@ -4,6 +4,7 @@ using Sentinel.Core.Services.Interfaces;
 using Sentinel.Shell.Attributes;
 using Sentinel.Shell.Enums;
 using Sentinel.Shell.Interfaces;
+using Sentinel.Shell.Models;
 
 namespace Sentinel.Shell.Commands.Shell
 {
@@ -17,9 +18,12 @@ namespace Sentinel.Shell.Commands.Shell
             this.shell = shell;
         }
 
-        public CommandReturn Execute(string command)
+        public CommandReturn Execute(ShellContext context, string command)
         {
-            SetupConfigRevision();
+            var revisionId = SetupConfigRevision();
+
+            var configContext = new ShellContext();
+            configContext.Add("revisionId", revisionId);
 
             var getPrompt = new Func<string>(() =>
             {
@@ -27,7 +31,7 @@ namespace Sentinel.Shell.Commands.Shell
                 return prompt;
             });
 
-            shell.ShellLoop(CommandMode.Configuration, getPrompt);
+            shell.ShellLoop(CommandMode.Configuration, configContext, getPrompt);
 
             return CommandReturn.Normal;
         }
@@ -42,9 +46,10 @@ namespace Sentinel.Shell.Commands.Shell
             return "configure";
         }
 
-        private void SetupConfigRevision()
+        private int SetupConfigRevision()
         {
             // TODO actualy do something here
+            return 0;
         }
     }
 }

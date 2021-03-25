@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Sentinel.Shell.Attributes;
 using Sentinel.Shell.Enums;
 using Sentinel.Shell.Helpers;
 using Sentinel.Shell.Interfaces;
+using Sentinel.Shell.Models;
 
 namespace Sentinel.Shell.Services
 {
@@ -14,10 +16,12 @@ namespace Sentinel.Shell.Services
         private Dictionary<CommandMode, Dictionary<string, Type>> commandCache;
 
         private readonly IServiceProvider serviceProvider;
+        private readonly ILogger<CommandInterpreter> logger;
 
-        public CommandInterpreter(IServiceProvider serviceProvider)
+        public CommandInterpreter(IServiceProvider serviceProvider, ILogger<CommandInterpreter> logger)
         {
             this.serviceProvider = serviceProvider;
+            this.logger = logger;
 
             commandCache = new Dictionary<CommandMode, Dictionary<string, Type>>();
 
@@ -34,7 +38,7 @@ namespace Sentinel.Shell.Services
             }
         }
 
-        public CommandReturn Execute(CommandMode mode, string command)
+        public CommandReturn Execute(CommandMode mode, ShellContext context, string command)
         {
             var commands = GetCommands(mode, command);
 
@@ -44,7 +48,7 @@ namespace Sentinel.Shell.Services
                     Console.WriteLine($"Command Not Found: \"{command}\"");
                     break;
                 case 1:
-                    return ExecuteCommand(commands.First(), command);
+                    return ExecuteCommand(commands.First(), context, command);
                 case > 1:
                     Console.WriteLine($"Ambiguous Command: \"{command}\"");
                     break;
@@ -55,11 +59,37 @@ namespace Sentinel.Shell.Services
 
         public void Help(CommandMode mode, string command)
         {
-            var commandAttributes = GetAttributesForCommands(commandCache[mode].Values.ToList())
-                .Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText))
-                .ToList();
+            if (String.IsNullOrWhiteSpace(command))
+            {
+                var commandAttributes = GetAttributesForCommands(commandCache[mode].Values.ToList())
+                    .Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText))
+                    .ToList();
 
-            ConsoleFormatHelper.WriteSpacedTuples(commandAttributes);
+                ConsoleFormatHelper.WriteSpacedTuples(commandAttributes);
+            }
+            else
+            {
+                var commands = GetCommands(mode, command);
+
+                switch (commands.Count)
+                {
+                    case 1:
+                        var commandInstance = GetCommandInstance(commands[0]);
+                        commandInstance.Help(command);
+                        break;
+                    case > 1:
+                        Console.WriteLine();
+
+                        var commandStrings = commands.Select(c => c.GetCustomAttribute<CommandAttribute>())
+                            .Where(s => s != null).Select(s => s.BaseCommand).ToList();
+
+                        break;
+                        //return HelperFunctions.LCDString(commandStrings);
+                    case 0:
+                        Console.Write('\a');
+                        break;
+                }
+            }
         }
 
         public string Suggest(CommandMode mode, string command)
@@ -72,20 +102,11 @@ namespace Sentinel.Shell.Services
                     return commandInstance.Suggest(command);
                 case > 1:
                     Console.WriteLine();
-                    var commandAttributes = GetAttributesForCommands(commands)
-                        .Select(a => a.BaseCommand)
-                        .ToList();
 
-                    //string newCommand = commandAttributes.DefaultIfEmpty(command).FirstOrDefault();
-
-                    //for (int i = 1; i < commandAttributes.Count; i++)
-                    //{
-                    //    var o = newCommand.;
-                    //    var s = commandAttributes[i];
-                    //    for (int c = 0; c < newCommand.Length && c < s.Length)
-                    //}
-
-                    break;
+                    var commandStrings = commands.Select(c => c.GetCustomAttribute<CommandAttribute>())
+                        .Where(s => s != null).Select(s => s.BaseCommand).ToList();
+                    
+                    return HelperFunctions.LCDString(commandStrings);
                 case 0:
                     Console.Write('\a');
                     break;
@@ -115,11 +136,23 @@ namespace Sentinel.Shell.Services
             return commandInstance;
         }
 
-        private CommandReturn ExecuteCommand(Type commandType, string command)
+        private CommandReturn ExecuteCommand(Type commandType, ShellContext context, string command)
         {
-            var commandInstance = GetCommandInstance(commandType);
+            try
+            {
+                var commandStr = HelperFunctions.GetSubCommand(command);
+                var commandInstance = GetCommandInstance(commandType);
 
-            return commandInstance.Execute(command);
+                return commandInstance.Execute(context, commandStr);
+            }
+            catch (Exception e)
+            {
+                //logger.LogError(e, $"An Error Occurred Running \"{command}\"");
+                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
+                Console.Error.Flush();
+                return CommandReturn.Error;
+            }
         }
 
         private List<CommandAttribute> GetAttributesForCommands(List<Type> commandTypes)

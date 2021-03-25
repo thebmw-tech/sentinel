@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Sentinel.Core;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Shell.Enums;
+using Sentinel.Shell.Models;
 using Sentinel.Shell.Services;
 
 namespace Sentinel.Shell
@@ -20,6 +21,7 @@ namespace Sentinel.Shell
             var services = new ServiceCollection()
                 .UseSentinelDi()
                 .AddTransient<CommandInterpreter>()
+                .AddTransient(typeof(SubCommandInterpreter<>))
                 .AddTransient<Services.Shell>()
                 .BuildServiceProvider();
 
@@ -36,7 +38,7 @@ namespace Sentinel.Shell
 
             Console.WriteLine(" Done!");
 
-            shell.ShellLoop(CommandMode.Shell, getPrompt);
+            shell.ShellLoop(CommandMode.Shell, new ShellContext(), getPrompt);
         }
     }
 }

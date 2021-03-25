@@ -1,5 +1,6 @@
 ﻿using System;
 using Sentinel.Shell.Enums;
+using Sentinel.Shell.Models;
 
 namespace Sentinel.Shell.Services
 {
@@ -12,14 +13,14 @@ namespace Sentinel.Shell.Services
             this.interpreter = interpreter;
         }
 
-        public void ShellLoop(CommandMode mode, Func<string> getPrompt)
+        public void ShellLoop(CommandMode mode, ShellContext context, Func<string> getPrompt)
         {
             while (true)
             {
                 var prompt = getPrompt();
                 var command = GetCommandFromConsole(mode, prompt);
 
-                var commandResult = interpreter.Execute(mode, command);
+                var commandResult = interpreter.Execute(mode, context, command);
 
                 if (commandResult == CommandReturn.Exit)
                 {

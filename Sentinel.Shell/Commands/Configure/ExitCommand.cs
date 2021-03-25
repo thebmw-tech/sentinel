@@ -3,9 +3,9 @@ using Sentinel.Shell.Enums;
 using Sentinel.Shell.Interfaces;
 using Sentinel.Shell.Models;
 
-namespace Sentinel.Shell.Commands.Shell
+namespace Sentinel.Shell.Commands.Configure
 {
-    [Command(CommandMode.Shell, "exit", "Exits the shell.")]
+    [Command(CommandMode.Configuration, "exit", "Exits configuration mode.")]
     public class ExitCommand : ICommand
     {
         public CommandReturn Execute(ShellContext context, string command)
