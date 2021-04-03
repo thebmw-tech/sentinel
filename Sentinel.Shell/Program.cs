@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sentinel.Core;
+using Sentinel.Core.Command.Enums;
+using Sentinel.Core.Command.Interfaces;
+using Sentinel.Core.Command.Models;
+using Sentinel.Core.Command.Services;
 using Sentinel.Core.Repository.Interfaces;
-using Sentinel.Shell.Enums;
-using Sentinel.Shell.Models;
-using Sentinel.Shell.Services;
 
 namespace Sentinel.Shell
 {
@@ -13,32 +14,38 @@ namespace Sentinel.Shell
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Sentinel Shell v0.1");
+            Console.WriteLine("Sentinel ConsoleShell v0.1");
             Console.WriteLine("by thebmw");
             Console.WriteLine();
+            
 
             Console.Write("Loading...");
             var services = new ServiceCollection()
                 .UseSentinelDi()
-                .AddTransient<CommandInterpreter>()
-                .AddTransient(typeof(SubCommandInterpreter<>))
-                .AddTransient<Services.Shell>()
+                .UseSentinelShellDi()
+                .AddTransient<ConsoleShell>()
                 .BuildServiceProvider();
 
 
-            var shell = services.GetService<Services.Shell>();
+            var shell = services.GetService<ConsoleShell>();
 
-            var getPrompt = new Func<string>(() =>
+            var getPrompt = new Func<CommandMode, string>((mode) =>
             {
                 //var systemConfigurationRepository = services.GetService<ISystemConfigurationRepository>();
-                var prompt = "hostname> ";
-
-                return prompt;
+                switch (mode)
+                {
+                    case CommandMode.Shell:
+                        return "hostname> ";
+                    case CommandMode.Configuration:
+                        return "hostname(config)# ";
+                    default:
+                        return "";
+                }
             });
 
             Console.WriteLine(" Done!");
 
-            shell.ShellLoop(CommandMode.Shell, new ShellContext(), getPrompt);
+            shell.ShellLoop(getPrompt);
         }
     }
 }

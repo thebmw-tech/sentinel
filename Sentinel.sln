@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Shell", "Sentinel.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.CLI", "Sentinel.CLI\Sentinel.CLI.csproj", "{4B7DEF4D-3CDA-49EF-9A20-DF9A1F7A3D4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.Test", "Sentinel.Test\Sentinel.Test.csproj", "{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Test", "Sentinel.Test\Sentinel.Test.csproj", "{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.Core.Command", "Sentinel.Core.Command\Sentinel.Core.Command.csproj", "{0C93D479-DED9-4ED6-A46E-B34060203DAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.Web", "Sentinel.Web\Sentinel.Web.csproj", "{6E33BCF1-6C38-4FA0-B898-6A2D78749265}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EAD10F8-3603-4EC1-BE35-BFCD4B7C71DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C93D479-DED9-4ED6-A46E-B34060203DAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C93D479-DED9-4ED6-A46E-B34060203DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C93D479-DED9-4ED6-A46E-B34060203DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C93D479-DED9-4ED6-A46E-B34060203DAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
