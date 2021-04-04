@@ -2,7 +2,7 @@
 
 namespace Sentinel.Core.Entities.Maps
 {
-    public class RouteMap : BaseEntityMap<Route>
+    public class RouteMap : BaseVersionedEntityMap<Route>
     {
         public override void Configure(EntityTypeBuilder<Route> builder)
         {
@@ -10,7 +10,18 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.HasKey(r => new {r.RevisionId, r.Address, r.SubnetMask});
 
-            builder.HasOne(r => r.Gateway).WithOne().HasForeignKey<Route>(r => r.GatewayId);
+            builder.Property(r => r.Address)
+                .HasMaxLength(45)
+                .IsRequired();
+
+            builder.Property(r => r.SubnetMask)
+                .IsRequired();
+
+            builder.Property(r => r.Version)
+                .IsRequired();
+
+            builder.Property(r => r.Description)
+                .HasMaxLength(255);
         }
     }
 }

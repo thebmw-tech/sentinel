@@ -6,6 +6,7 @@ namespace Sentinel.Core.Entities
     public abstract class BaseVersionedEntity<T> : BaseEntity<T>, IEquatable<T> where T : BaseVersionedEntity<T>
     {
         public int RevisionId { get; set; }
+        public bool Enabled { get; set; }
 
         public virtual bool Equals(T? other)
         {

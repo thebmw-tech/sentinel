@@ -2,11 +2,24 @@
 using Microsoft.EntityFrameworkCore;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Entities.Maps;
+using Sentinel.Core.Helpers;
 
 namespace Sentinel.Core
 {
     public class SentinelDatabaseContext : DbContext
     {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var databaseFile = HelperFunctions.FindExistingFile(new[]
+            {
+                "/etc/sentinel/conf.db",
+                "~/.config/sentinel/conf.db",
+                "C:\\projects\\sentinel\\conf.db",
+            }, "/etc/sentinel/conf.db");
+
+            optionsBuilder.UseSqlite($"Data Source={databaseFile}");
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new InterfaceMap());

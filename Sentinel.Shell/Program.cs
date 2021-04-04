@@ -6,6 +6,7 @@ using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Command.Models;
 using Sentinel.Core.Command.Services;
+using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
 
 namespace Sentinel.Shell
@@ -26,18 +27,21 @@ namespace Sentinel.Shell
                 .AddTransient<ConsoleShell>()
                 .BuildServiceProvider();
 
+            HelperFunctions.VerifyFirstRun(services);
 
             var shell = services.GetService<ConsoleShell>();
 
             var getPrompt = new Func<CommandMode, string>((mode) =>
             {
-                //var systemConfigurationRepository = services.GetService<ISystemConfigurationRepository>();
+                var systemConfigurationRepository = services.GetService<ISystemConfigurationRepository>();
+                var configuration = systemConfigurationRepository.GetCurrentConfiguration();
+
                 switch (mode)
                 {
                     case CommandMode.Shell:
-                        return "hostname> ";
+                        return $"{configuration.Hostname}> ";
                     case CommandMode.Configuration:
-                        return "hostname(config)# ";
+                        return $"{configuration.Hostname}(config)# ";
                     default:
                         return "";
                 }

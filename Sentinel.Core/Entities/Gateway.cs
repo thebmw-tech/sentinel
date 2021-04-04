@@ -13,10 +13,9 @@ namespace Sentinel.Core.Entities
         public GatewayType GatewayType { get; set; }
 
         public string InterfaceName { get; set; }
-        public virtual Interface Interface { get; set; }
 
         public string IPAddress { get; set; }
-        public IPVersion Version { get; set; }
+        public IPVersion IPVersion { get; set; }
 
         
     }

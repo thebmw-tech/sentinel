@@ -12,6 +12,7 @@ using Sentinel.Core.Entities;
 using Sentinel.Core.Generators;
 using Sentinel.Core.Generators.Interface;
 using Sentinel.Core.Generators.Interfaces;
+using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services;
@@ -38,6 +39,7 @@ namespace Sentinel.Core
 
             // Setup Repositories
             services.AddTransient<IRevisionRepository, RevisionRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IInterfaceRepository, InterfaceRepository>();
             services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
 

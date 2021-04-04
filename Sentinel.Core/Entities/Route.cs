@@ -10,7 +10,6 @@ namespace Sentinel.Core.Entities
         public IPVersion Version { get; set; }
         
         public Guid GatewayId { get; set; }
-        public virtual Gateway Gateway { get; set; }
 
         public string Description { get; set; }
     }

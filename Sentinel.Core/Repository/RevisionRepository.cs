@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Sentinel.Core.Entities;
 using Sentinel.Core.Repository.Interfaces;
 
 namespace Sentinel.Core.Repository
@@ -31,6 +32,14 @@ namespace Sentinel.Core.Repository
             var revision = databaseContext.Revisions.Where(r => !r.CommitDate.HasValue)
                 .OrderBy(r => r.Id).Reverse().FirstOrDefault();
             return revision?.Id;
+        }
+
+        public Entities.Revision CreateNewRevision()
+        {
+            var revision = new Revision();
+            databaseContext.Revisions.Add(revision);
+            databaseContext.SaveChanges();
+            return revision;
         }
     }
 }

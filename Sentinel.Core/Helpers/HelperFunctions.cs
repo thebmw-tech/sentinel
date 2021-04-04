@@ -1,11 +1,59 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sentinel.Core.Helpers
 {
     public static class HelperFunctions
     {
+
+        public static string FindExistingFile(string[] files, string defaultString)
+        {
+            foreach (var file in files)
+            {
+                if (System.IO.File.Exists(file))
+                {
+                    return file;
+                }
+            }
+
+            return defaultString;
+        }
+
+        public static void MigrateDatabase(TextWriter output = null)
+        {
+            output ??= Console.Out;
+
+            output.WriteLine("Checking For Available Database Migrations");
+
+            using var ctx = new SentinelDatabaseContext();
+            var migrations = ctx.Database.GetPendingMigrations();
+            output.WriteLine("Found the following migrations to execute");
+            foreach (var migration in migrations)
+            {
+                output.WriteLine($"\t{migration}");
+            }
+
+            output.Write("Executing Migrations...");
+            var start = DateTime.Now;
+            ctx.Database.Migrate();
+            output.WriteLine($"\tDone[{DateTime.Now - start}]");
+        }
+
+        public static void VerifyFirstRun(ServiceProvider services)
+        {
+            var ctx = services.GetService<SentinelDatabaseContext>();
+            if (!ctx.Database.GetAppliedMigrations().Any())
+            {
+                MigrateDatabase();
+                DefaultConfigurationSeed.Seed(services);
+            }
+        }
 
         public static IEnumerable<string> ParseArguments(this string commandLine)
         {
@@ -64,6 +112,8 @@ namespace Sentinel.Core.Helpers
                 return "";
             return command.Substring(firstSpaceIndex + 1);
         }
+
+
 
     }
 }
