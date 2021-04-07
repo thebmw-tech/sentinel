@@ -55,7 +55,7 @@ namespace Sentinel.Core.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "DATETIME('now')"),
                     CommitDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     ConfirmDate = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
@@ -99,8 +99,8 @@ namespace Sentinel.Core.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Username = table.Column<string>(type: "TEXT", nullable: true),
-                    Password = table.Column<string>(type: "TEXT", nullable: true)
+                    Username = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Password = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,6 +111,16 @@ namespace Sentinel.Core.Migrations
                 name: "IX_Gateways_InterfaceName",
                 table: "Gateways",
                 column: "InterfaceName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Revisions_CommitDate",
+                table: "Revisions",
+                column: "CommitDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Revisions_ConfirmDate",
+                table: "Revisions",
+                column: "ConfirmDate");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

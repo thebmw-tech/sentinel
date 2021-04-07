@@ -9,7 +9,7 @@ using Sentinel.Core;
 namespace Sentinel.Core.Migrations
 {
     [DbContext(typeof(SentinelDatabaseContext))]
-    [Migration("20210404034357_Initial_Interface_Migrations")]
+    [Migration("20210405213043_Initial_Interface_Migrations")]
     partial class Initial_Interface_Migrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,9 +127,15 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("DATETIME('now')");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommitDate");
+
+                    b.HasIndex("ConfirmDate");
 
                     b.ToTable("Revisions");
                 });
@@ -191,9 +197,13 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

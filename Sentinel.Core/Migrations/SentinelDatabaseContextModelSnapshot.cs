@@ -125,9 +125,15 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("DATETIME('now')");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommitDate");
+
+                    b.HasIndex("ConfirmDate");
 
                     b.ToTable("Revisions");
                 });
@@ -189,9 +195,13 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

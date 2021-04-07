@@ -22,19 +22,20 @@ namespace Sentinel.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new InterfaceMap());
             modelBuilder.ApplyConfiguration(new GatewayMap());
+            modelBuilder.ApplyConfiguration(new InterfaceMap());
+            modelBuilder.ApplyConfiguration(new RevisionMap());
             modelBuilder.ApplyConfiguration(new RouteMap());
             modelBuilder.ApplyConfiguration(new SystemConfigurationMap());
+            modelBuilder.ApplyConfiguration(new UserMap());
 
         }
 
-        public DbSet<User> Users { get; set; }
-
-        public DbSet<Revision> Revisions { get; set; }
-        public DbSet<SystemConfiguration> SystemConfigurations { get; set; }
-        public DbSet<Interface> Interfaces { get; set; }
         public DbSet<Gateway> Gateways { get; set; }
+        public DbSet<Interface> Interfaces { get; set; }
+        public DbSet<Revision> Revisions { get; set; }
         public DbSet<Route> Routes { get; set; }
+        public DbSet<SystemConfiguration> SystemConfigurations { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
