@@ -1,26 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Generators.Interfaces;
 using Sentinel.Core.Models.Configuration.Netplan;
+using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services.Interfaces;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using Route = Sentinel.Core.Models.Configuration.Netplan.Route;
 
 namespace Sentinel.Core.Generators.Interface
 {
     public class NetplanInterfaceConfigurationGenerator : IConfigurationGenerator<Entities.Interface>
     {
         private readonly IInterfaceService interfaceService;
+        private readonly ISystemConfigurationRepository systemConfigurationRepository;
+        private readonly IRouteRepository routeRepository;
+        private readonly IGatewayRepository gatewayRepository;
 
         private readonly IFileSystem fileSystem;
 
-        public NetplanInterfaceConfigurationGenerator(IInterfaceService interfaceService, IFileSystem fileSystem)
+        private readonly ILogger<NetplanInterfaceConfigurationGenerator> logger;
+
+        public NetplanInterfaceConfigurationGenerator(IInterfaceService interfaceService, ISystemConfigurationRepository systemConfigurationRepository, 
+            IRouteRepository routeRepository, IGatewayRepository gatewayRepository, IFileSystem fileSystem, ILogger<NetplanInterfaceConfigurationGenerator> logger)
         {
             this.interfaceService = interfaceService;
+            this.systemConfigurationRepository = systemConfigurationRepository;
+            this.routeRepository = routeRepository;
+            this.gatewayRepository = gatewayRepository;
             this.fileSystem = fileSystem;
+
+            this.logger = logger;
         }
 
         public bool Apply()
@@ -46,6 +61,16 @@ namespace Sentinel.Core.Generators.Interface
         {
             var interfaces = interfaceService.GetAllInterfacesCommitted();
 
+            var currentSystemConfiguration = systemConfigurationRepository.GetCurrentConfiguration();
+
+            var gatewayV4 = currentSystemConfiguration.IPv4DefaultGateway != null
+                ? gatewayRepository.GetCurrentGatewayById(currentSystemConfiguration.IPv4DefaultGateway.Value) : null;
+            var gatewayV6 = currentSystemConfiguration.IPv6DefaultGateway != null
+                ? gatewayRepository.GetCurrentGatewayById(currentSystemConfiguration.IPv6DefaultGateway.Value) : null;
+
+            var currentRoutes = routeRepository.GetCurrentRoutes().Select(r =>
+                new Tuple<Entities.Route, Entities.Gateway>(r, gatewayRepository.GetCurrentGatewayById(r.GatewayId))).ToList();
+
             Netplan netplan = new Netplan()
             {
                 Network = new Network()
@@ -58,12 +83,13 @@ namespace Sentinel.Core.Generators.Interface
             };
 
 
-            foreach (var iface in interfaces.Where(i => i.InterfaceType == InterfaceType.Ethernet))
+            foreach (var iface in interfaces.Where(i => i.InterfaceType == InterfaceType.Ethernet && i.Enabled))
             {
                 var eth = new Ethernet()
                 {
                     Renderer = "networkd",
                     Dhcp4 = iface.IPv4ConfigurationType == IpConfigurationTypeV4.DHCP,
+                    Dhcp6 = iface.IPv6ConfigurationType == IpConfigurationTypeV6.DHCP6,
                     Addresses = new List<string>()
                 };
 
@@ -76,11 +102,23 @@ namespace Sentinel.Core.Generators.Interface
                 {
                     eth.Addresses.Add($"{iface.IPv6Address}/{iface.IPv6SubnetMask}");
                 }
-                
+
+                if (gatewayV4?.InterfaceName == iface.Name)
+                {
+                    eth.Gateway4 = gatewayV4.IPAddress;
+                }
+
+                if (gatewayV6?.InterfaceName == iface.Name)
+                {
+                    eth.Gateway6 = gatewayV6.IPAddress;
+                }
+
+                AddRoutesToInterface(eth, iface.Name, currentRoutes);
+
                 netplan.Network.Ethernets.Add(iface.Name, eth);
             }
 
-            foreach (var iface in interfaces.Where(i => i.InterfaceType == InterfaceType.Vlan))
+            foreach (var iface in interfaces.Where(i => i.InterfaceType == InterfaceType.Vlan && i.Enabled))
             {
                 string[] ifaceParts = iface.Name.Split('.');
                 string name = ifaceParts[0];
@@ -91,6 +129,7 @@ namespace Sentinel.Core.Generators.Interface
                     Link = name,
                     Id = vlanId,
                     Dhcp4 = iface.IPv4ConfigurationType == IpConfigurationTypeV4.DHCP,
+                    Dhcp6 = iface.IPv6ConfigurationType == IpConfigurationTypeV6.DHCP6,
                     Addresses = new List<string>()
                 };
 
@@ -104,11 +143,23 @@ namespace Sentinel.Core.Generators.Interface
                     vlan.Addresses.Add($"{iface.IPv6Address}/{iface.IPv6SubnetMask}");
                 }
 
+                AddRoutesToInterface(vlan, iface.Name, currentRoutes);
+
                 netplan.Network.Vlans.Add(iface.Name.Replace('.', '_'), vlan);
             }
 
             return netplan;
         }
 
+        private void AddRoutesToInterface(Models.Configuration.Netplan.Interface iface, string interfaceName,
+            List<Tuple<Entities.Route, Entities.Gateway>> routes)
+        {
+            var routesForInterface = routes.Where(r => r.Item2.InterfaceName == interfaceName).ToList();
+            if (routesForInterface.Any())
+            {
+                iface.Routes = routesForInterface.Select(t => new Route()
+                    {To = $"{t.Item1.Address}/{t.Item1.SubnetMask}", Via = t.Item2.IPAddress}).ToList();
+            }
+        }
     }
 }
