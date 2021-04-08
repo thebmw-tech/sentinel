@@ -17,6 +17,8 @@ using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services;
 using Sentinel.Core.Services.Interfaces;
+using Sentinel.Core.Validation;
+using Sentinel.Core.Validation.Entities;
 
 namespace Sentinel.Core
 {
@@ -36,6 +38,7 @@ namespace Sentinel.Core
 
             // Setup Abstractions & Helpers
             services.AddTransient<IFileSystem, FileSystem>(); // TODO verify this should be transient
+            services.AddTransient<Validator>();
 
             // Setup Repositories
             services.AddTransient<IRevisionRepository, RevisionRepository>();
@@ -48,6 +51,9 @@ namespace Sentinel.Core
 
             // Setup Generators -- This will eventualy be based on some configuration file options.
             services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
+
+            // Setup Validators
+            services.AddTransient<BaseValidator<Interface>, InterfaceValidator>();
 
 
             return services;
