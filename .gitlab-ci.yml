@@ -49,11 +49,8 @@ build-debian-package:
     - linux
     - docker
   script:
-    - mkdir -p package/debian/sentinel/usr/share/Sentinel
-    - cp -rv Publish/* package/debian/sentinel/usr/share/Sentinel/
-    - cd ./package/debian
-    - chmod -R 755 sentinel/DEBIAN
-    - dpkg-deb --build sentinel
+    - bash package/script/build_debian_package.sh
+    - dpkg-deb --build ./package/debian/sentinel
   needs:
     - job: build-release
       artifacts: true
