@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - package
   - deploy
 
 
@@ -23,9 +24,9 @@ unit-tests:
       junit:
         - ./**/*test-result.xml
 
-build-release-app:
+build-release:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:5.0-buster
+  image: mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
   tags:
     - linux
     - docker
@@ -34,3 +35,6 @@ build-release-app:
   artifacts:
     paths:
       - ./package/Publish
+
+# build-debian-package:
+#   stage: package
