@@ -48,17 +48,10 @@ build-debian-package:
   tags:
     - linux
     - docker
-  before_script:
-    - apt-get update
-    - apt-get install -y tree
   script:
-    - tree ./package
     - mkdir -p package/debian/sentinel/usr/share/Sentinel
-    - tree ./package
     - cp -rv Publish/* package/debian/sentinel/usr/share/Sentinel/
-    - tree ./package
     - cd ./package/debian
-    - tree
     - dpkg-deb --build sentinel
   needs:
     - job: build-release
