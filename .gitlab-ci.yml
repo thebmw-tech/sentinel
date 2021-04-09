@@ -51,7 +51,8 @@ build-debian-package:
   script:
     - mkdir -p package/debian/sentinel/usr/share/Sentinel
     - cp -rv package/Publish/* package/debian/sentinel/usr/share/Sentinel/
-    - dpkg-deb --build ./package/debian/sentinel
+    - cd ./package/debian
+    - dpkg-deb --build sentinel
   needs:
     - job: build-release
       artifacts: true
