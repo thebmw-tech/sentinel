@@ -24,7 +24,7 @@ namespace Sentinel.Core
 {
     public static class ServiceConfiguration
     {
-        public static IServiceCollection UseSentinelDi(this IServiceCollection services)
+        public static IServiceCollection RegisterSentinelCore(this IServiceCollection services)
         {
             services.AddDbContext<SentinelDatabaseContext>();
 
@@ -38,6 +38,7 @@ namespace Sentinel.Core
 
             // Setup Abstractions & Helpers
             services.AddTransient<IFileSystem, FileSystem>(); // TODO verify this should be transient
+            services.AddTransient<ICommandExecutionHelper, CommandExecutionHelper>();
             services.AddTransient<Validator>();
 
             // Setup Repositories
@@ -48,6 +49,13 @@ namespace Sentinel.Core
 
             // Setup Services
             services.AddTransient<IInterfaceService, InterfaceService>();
+
+            // Add Platform Dependent Services
+#if DEBUG
+            services.AddTransient<IPhysicalInterfaceService, PhysicalInterfaceServiceMock>();
+#else
+             services.AddTransient<IPhysicalInterfaceService, PhysicalInterfaceService>();
+#endif
 
             // Setup Generators -- This will eventualy be based on some configuration file options.
             services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();

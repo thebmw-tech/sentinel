@@ -22,7 +22,7 @@ namespace Sentinel.Core
 {
     public static class ServiceConfiguration
     {
-        public static IServiceCollection UseSentinelShellDi(this IServiceCollection services)
+        public static IServiceCollection RegisterSentinelCoreCommand(this IServiceCollection services)
         {
             services.AddTransient<CommandInterpreter>();
             services.AddTransient(typeof(SubCommandInterpreter<>));

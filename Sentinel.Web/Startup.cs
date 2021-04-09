@@ -31,8 +31,8 @@ namespace Sentinel.Web
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.UseSentinelDi();
-            services.UseSentinelShellDi();
+            services.RegisterSentinelCore();
+            services.RegisterSentinelCoreCommand();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
