@@ -7,6 +7,6 @@ Essential: no
 Installed-Size: __PRODUCT_SIZE__
 Date: __DATE__
 Maintainer: Brandon Warner <thebmw@thebmw.tech>
-Depends: netplan.io iptables vlan bridge-utils
+Depends: netplan.io iptables vlan bridge-utils aspnetcore-runtime-5.0
 Suggests: frr openvpn wireguard
 Description: Sentinel Firewall Admin Tools
