@@ -34,7 +34,7 @@ build-release:
     - curl -sL https://deb.nodesource.com/setup_14.x | bash -
     - apt-get install -y nodejs
   script:
-    - bash scritps/dotnet_build.sh
+    - bash scripts/dotnet_build.sh
   needs:
     - job: unit-tests
       artifacts: false
