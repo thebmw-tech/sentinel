@@ -4,6 +4,6 @@ Section: custom
 Priority: optional
 Architecture: all
 Essential: no
-Installed-Size: 1024
+Installed-Size: __PRODUCT_SIZE__
 Maintainer: thebmw@thebmw.tech
-Description: Print linuxconfig.org on the screen
+Description: Sentinel Firewall Admin Tools

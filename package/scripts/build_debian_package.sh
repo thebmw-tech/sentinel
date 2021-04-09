@@ -1,14 +1,9 @@
 #!/bin/bash
 set -xe
 
-BASE_VERSION=`cat ./package/VERSION`
+source ./scripts/version.sh
 
-if [ -z $CI ]; then
-  echo "We currently don't support building outside of CI Pipeline"
-  exit 1
-fi
-
-VERSION=${BASE_VERSION}.${CI_PIPELINE_IID}-${CI_COMMIT_SHORT_SHA}
+VERSION=${VERSION}-${CI_COMMIT_SHORT_SHA}
 
 # Copy Sentinel to package location
 cp -rv Publish/* package/debian/sentinel/usr/lib/Sentinel/
