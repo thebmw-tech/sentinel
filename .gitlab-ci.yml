@@ -1,0 +1,17 @@
+stages:
+  - build
+  - test
+  - deploy
+
+
+unit-tests:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
+  only:
+    - merge_requests
+    - branches
+  script:
+    - dotnet test
+  tags:
+    - linux
+    - docker
