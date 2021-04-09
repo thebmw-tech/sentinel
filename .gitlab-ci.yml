@@ -52,6 +52,7 @@ build-debian-package:
     - mkdir -p package/debian/sentinel/usr/share/Sentinel
     - cp -rv Publish/* package/debian/sentinel/usr/share/Sentinel/
     - cd ./package/debian
+    - chmod -R 755 sentinel/DEBIAN
     - dpkg-deb --build sentinel
   needs:
     - job: build-release
