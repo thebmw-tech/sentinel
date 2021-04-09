@@ -49,6 +49,7 @@ build-debian-package:
     - linux
     - docker
   before_script:
+    - apt-get update
     - apt-get install -y tree
   script:
     - tree ./package
