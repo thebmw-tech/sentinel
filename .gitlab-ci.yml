@@ -35,9 +35,26 @@ build-release:
     - apt-get install -y nodejs
   script:
     - dotnet publish -o package/Publish
+  needs:
+    - job: unit-tests
+      artifacts: false
   artifacts:
     paths:
       - ./package/Publish
 
-# build-debian-package:
-#   stage: package
+build-debian-package:
+  stage: package
+  image: debian:buster
+  tags:
+    - linux
+    - docker
+  script:
+    - mkdir -p package/debian/sentinel/usr/share/Sentinel
+    - cp -rv package/Publish/* package/debian/sentinel/usr/share/Sentinel/
+    - dpkg-deb --build package/debian/sentinel
+  needs:
+    - job: build-release
+      artifacts: true
+  artifacts:
+    paths:
+      - ./package/debain/*.deb
