@@ -1,4 +1,6 @@
-﻿namespace Sentinel.Core.Validation
+﻿using Sentinel.Core.Validation.Exceptions;
+
+namespace Sentinel.Core.Validation
 {
     public abstract class BaseValidator<T>
     {

@@ -22,8 +22,8 @@ namespace Sentinel.Shell
 
             Console.Write("Loading...");
             var services = new ServiceCollection()
-                .UseSentinelDi()
-                .UseSentinelShellDi()
+                .RegisterSentinelCore()
+                .RegisterSentinelCoreCommand()
                 .AddTransient<ConsoleShell>()
                 .BuildServiceProvider();
 
