@@ -22,3 +22,15 @@ unit-tests:
     reports:
       junit:
         - ./**/*test-result.xml
+
+build-release-app:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:5.0-buster
+  tags:
+    - linux
+    - docker
+  script:
+    - dotnet publish -o package/Publish
+  artifacts:
+    paths:
+      - ./package/Publish
