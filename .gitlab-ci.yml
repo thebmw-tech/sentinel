@@ -49,7 +49,7 @@ build-debian-package:
     - linux
     - docker
   script:
-    - bash package/script/build_debian_package.sh
+    - bash package/scripts/build_debian_package.sh
     - dpkg-deb --build ./package/debian/sentinel
   needs:
     - job: build-release
