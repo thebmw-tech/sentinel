@@ -5,5 +5,8 @@ Priority: optional
 Architecture: all
 Essential: no
 Installed-Size: __PRODUCT_SIZE__
-Maintainer: thebmw@thebmw.tech
+Date: __DATE__
+Maintainer: Brandon Warner <thebmw@thebmw.tech>
+Depends: netplan.io iptables vlan bridge-utils
+Suggests: frr openvpn wireguard
 Description: Sentinel Firewall Admin Tools
