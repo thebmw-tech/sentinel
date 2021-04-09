@@ -59,4 +59,4 @@ build-debian-package:
       artifacts: true
   artifacts:
     paths:
-      - ./package/debain/*.deb
+      - ./package/debian/*.deb
