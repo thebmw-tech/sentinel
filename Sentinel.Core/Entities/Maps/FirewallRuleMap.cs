@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Sentinel.Core.Entities.Maps
 {
@@ -27,13 +28,15 @@ namespace Sentinel.Core.Entities.Maps
                 .IsRequired();
 
             builder.Property(r => r.InvertSourceMatch)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(false);
 
             builder.Property(r => r.SourceAddress)
                 .HasMaxLength(45);
 
             builder.Property(r => r.InvertDestinationMatch)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(false);
 
             builder.Property(r => r.DestinationAddress)
                 .HasMaxLength(45);
@@ -43,6 +46,10 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.Property(r => r.Description)
                 .HasMaxLength(255);
+
+
+            builder.HasIndex(r => r.InterfaceName)
+                .IsUnique(false);
         }
     }
 }

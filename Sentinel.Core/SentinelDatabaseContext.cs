@@ -25,23 +25,23 @@ namespace Sentinel.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var mapTypes = Assembly.GetAssembly(GetType()).GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(BaseEntityMap<>))).ToList();
+            //var mapTypes = Assembly.GetAssembly(GetType()).GetTypes()
+            //    .Where(t => t.IsSubclassOf(typeof(BaseEntityMap<>))).ToList();
 
-            foreach (var mapType in mapTypes)
-            {
-                var entityType = (Type)mapType.GetMethod("GetEntityType").Invoke(null, new object[]{});
+            //foreach (var mapType in mapTypes)
+            //{
+            //    var entityType = (Type)mapType.GetMethod("GetEntityType").Invoke(null, new object[]{});
 
-                var applyMethod = typeof(ModelBuilder).GetMethod("ApplyConfiguration");
-                applyMethod = applyMethod.MakeGenericMethod(entityType);
+            //    var applyMethod = typeof(ModelBuilder).GetMethod("ApplyConfiguration");
+            //    applyMethod = applyMethod.MakeGenericMethod(entityType);
 
-                var mapInstance = Activator.CreateInstance(mapType);
-                applyMethod.Invoke(modelBuilder, new object?[] { mapInstance });
-            }
+            //    var mapInstance = Activator.CreateInstance(mapType);
+            //    applyMethod.Invoke(modelBuilder, new object?[] { mapInstance });
+            //}
 
 
 
-            /*
+            
             modelBuilder.ApplyConfiguration(new FirewallRuleMap());
             modelBuilder.ApplyConfiguration(new GatewayMap());
             modelBuilder.ApplyConfiguration(new InterfaceMap());
@@ -49,7 +49,6 @@ namespace Sentinel.Core
             modelBuilder.ApplyConfiguration(new RouteMap());
             modelBuilder.ApplyConfiguration(new SystemConfigurationMap());
             modelBuilder.ApplyConfiguration(new UserMap());
-            */
 
         }
 
