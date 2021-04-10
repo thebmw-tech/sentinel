@@ -11,11 +11,19 @@ unit-tests:
   only:
     - merge_requests
     - branches
+  before_script:
+    - 'dotnet restore --packages .nuget'
   script:
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
+    - 'dotnet test --no-restore --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
   tags:
     - linux
     - docker
+  cache:
+    key: '$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG'
+    paths:
+      - '*/obj/project.assets.json'
+      - '*/obj/*.csproj.nuget.*'
+      - '.nuget'
   artifacts:
     when: always
     paths:
@@ -30,11 +38,20 @@ build-release:
   tags:
     - linux
     - docker
+  before_script:
+    - 'dotnet restore --packages .nuget'
   script:
     - scripts/dotnet_build.sh
   needs:
     - job: unit-tests
       artifacts: false
+  cache:
+    key: '$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG'
+    paths:
+      - 'Sentinel.Web/ClientApp/node_modules/*'
+      - '*/obj/project.assets.json'
+      - '*/obj/*.csproj.nuget.*'
+      - '.nuget'
   artifacts:
     paths:
       - ./Publish

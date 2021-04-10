@@ -3,4 +3,4 @@ set -xe
 
 source ./scripts/version.sh
 
-dotnet publish -p:Version=${VERSION} -o Publish
+dotnet publish --no-restore -p:Version=${VERSION} -o Publish
