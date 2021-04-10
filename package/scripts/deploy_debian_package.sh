@@ -16,6 +16,9 @@ else
   COMPONENT="develop"
 fi
 
+BASE_SSH_ARGS="-i ${REPO_SERVER_KEY} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+SSH_CONNECTION="${REPO_SERVER_USER}@${REPO_SERVER_HOST}"
 
-scp -i "${REPO_SERVER_KEY}" ${NEW_DEB_PACKAGE} ${REPO_SERVER_USER}@${REPO_SERVER_HOST}:/tmp/${BASE_PACKAGE}
-ssh -i "${REPO_SERVER_KEY}" ${REPO_SERVER_USER}@${REPO_SERVER_HOST} reprepro -b /var/www/html/repos/debian -C ${COMPONENT} includedeb misty /tmp/${BASE_PACKAGE}
+scp ${BASE_SSH_ARGS} ${NEW_DEB_PACKAGE} ${SSH_CONNECTION}:/tmp/${BASE_PACKAGE}
+ssh ${BASE_SSH_ARGS} ${SSH_CONNECTION} reprepro -b /var/www/html/repos/debian -C ${COMPONENT} includedeb misty /tmp/${BASE_PACKAGE}
+ssh ${BASE_SSH_ARGS} ${SSH_CONNECTION} rm /tmp/${BASE_PACKAGE}
