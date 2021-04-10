@@ -7,7 +7,7 @@ stages:
 
 unit-tests:
   stage: test
-  image: mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
+  image: registry.corp.soullessgingers.net/dotnet-sdk:5.0-buster-slim
   only:
     - merge_requests
     - branches
@@ -26,13 +26,10 @@ unit-tests:
 
 build-release:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
+  image: registry.corp.soullessgingers.net/dotnet-sdk:5.0-buster-slim
   tags:
     - linux
     - docker
-  before_script:
-    - curl -sL https://deb.nodesource.com/setup_14.x | bash -
-    - apt-get install -y nodejs
   script:
     - scripts/dotnet_build.sh
   needs:
