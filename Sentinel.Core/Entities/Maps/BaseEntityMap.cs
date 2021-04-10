@@ -14,5 +14,10 @@ namespace Sentinel.Core.Entities.Maps
         {
             
         }
+
+        public static Type GetEntityType()
+        {
+            return typeof(T);
+        }
     }
 }

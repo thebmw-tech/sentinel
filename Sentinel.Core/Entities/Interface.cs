@@ -12,7 +12,7 @@ namespace Sentinel.Core.Entities
         public string Description { get; set; }
 
         public long? SpoofedMAC { get; set; }
-        
+
 
         public IpConfigurationTypeV4 IPv4ConfigurationType { get; set; }
         public string IPv4Address { get; set; }

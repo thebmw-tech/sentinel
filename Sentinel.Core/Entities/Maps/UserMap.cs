@@ -20,6 +20,10 @@ namespace Sentinel.Core.Entities.Maps
             builder.Property(u => u.Password)
                 .HasMaxLength(100)
                 .IsRequired();
+
+
+            builder.HasIndex(u => u.Username)
+                .IsUnique();
         }
     }
 }

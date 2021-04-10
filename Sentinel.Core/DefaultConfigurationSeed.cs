@@ -47,8 +47,27 @@ namespace Sentinel.Core
             var interfaceRepo = services.GetService<IInterfaceRepository>();
             lanInterface = interfaceRepo.Create(lanInterface);
 
-            
-            
+            var firewallRuleRepo = services.GetService<IFirewallRuleRepository>();
+
+            var defaultLanAllowRule = new FirewallRule()
+            {
+                RevisionId = revision.Id,
+                Id = Guid.NewGuid(),
+                Order = 0,
+                Enabled = true,
+                InterfaceName = lanInterface.Name,
+                Description = "Default Allow LAN to Any Rule",
+                Action = FirewallAction.Pass,
+                IpVersion = IPVersion.Both,
+                SourceAddress = lanInterface.IPv4Address,
+                SourceSubnetMask = lanInterface.IPv4SubnetMask,
+                
+            };
+
+            firewallRuleRepo.Create(defaultLanAllowRule);
+
+
+
             transaction.Commit();
         }
     }

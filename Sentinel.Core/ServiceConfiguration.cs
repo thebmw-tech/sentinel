@@ -46,6 +46,7 @@ namespace Sentinel.Core
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IInterfaceRepository, InterfaceRepository>();
             services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
+            services.AddTransient<IFirewallRuleRepository, FirewallRuleRepository>();
 
             // Setup Services
             services.AddTransient<IInterfaceService, InterfaceService>();

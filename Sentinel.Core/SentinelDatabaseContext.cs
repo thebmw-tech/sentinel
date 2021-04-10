@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Entities.Maps;
@@ -22,6 +25,24 @@ namespace Sentinel.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //var mapTypes = Assembly.GetAssembly(GetType()).GetTypes()
+            //    .Where(t => t.IsSubclassOf(typeof(BaseEntityMap<>))).ToList();
+
+            //foreach (var mapType in mapTypes)
+            //{
+            //    var entityType = (Type)mapType.GetMethod("GetEntityType").Invoke(null, new object[]{});
+
+            //    var applyMethod = typeof(ModelBuilder).GetMethod("ApplyConfiguration");
+            //    applyMethod = applyMethod.MakeGenericMethod(entityType);
+
+            //    var mapInstance = Activator.CreateInstance(mapType);
+            //    applyMethod.Invoke(modelBuilder, new object?[] { mapInstance });
+            //}
+
+
+
+            
+            modelBuilder.ApplyConfiguration(new FirewallRuleMap());
             modelBuilder.ApplyConfiguration(new GatewayMap());
             modelBuilder.ApplyConfiguration(new InterfaceMap());
             modelBuilder.ApplyConfiguration(new RevisionMap());
@@ -31,6 +52,7 @@ namespace Sentinel.Core
 
         }
 
+        public DbSet<FirewallRule> FirewallRules { get; set; }
         public DbSet<Gateway> Gateways { get; set; }
         public DbSet<Interface> Interfaces { get; set; }
         public DbSet<Revision> Revisions { get; set; }
