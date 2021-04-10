@@ -2,7 +2,7 @@
 
 namespace Sentinel.Core.Services.Interfaces
 {
-    public interface IPhysicalInterfaceService
+    public interface IKernelInterfaceService
     {
         List<string> GetPhysicalInterfaceNames();
     }

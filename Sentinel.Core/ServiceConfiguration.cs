@@ -52,9 +52,9 @@ namespace Sentinel.Core
 
             // Add Platform Dependent Services
 #if DEBUG
-            services.AddTransient<IPhysicalInterfaceService, PhysicalInterfaceServiceMock>();
+            services.AddTransient<IKernelInterfaceService, KernelInterfaceServiceMock>();
 #else
-             services.AddTransient<IPhysicalInterfaceService, PhysicalInterfaceService>();
+             services.AddTransient<IKernelInterfaceService, KernelInterfaceService>();
 #endif
 
             // Setup Generators -- This will eventualy be based on some configuration file options.
