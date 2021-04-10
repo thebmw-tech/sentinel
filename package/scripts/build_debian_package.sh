@@ -9,7 +9,6 @@ DATE=`date '+%a, %d %b %Y %H:%M:%S %z'`
 # Copy Sentinel to package location
 cp -rv Publish/* package/debian/sentinel/usr/lib/Sentinel/
 
-
 # Setup File Permissions
 chmod -R 755 ./package/debian/sentinel/DEBIAN
 
