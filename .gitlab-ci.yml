@@ -60,6 +60,10 @@ build-debian-package:
 deploy-debian-package:
   stage: deploy
   image: debian:buster
+  only:
+    - master
+    - develop
+    - /^release/.*$/
   tags:
     - linux
     - docker
