@@ -16,6 +16,9 @@ else
   COMPONENT="develop"
 fi
 
+# Fix private key permissions
+chmod 600 ${REPO_SERVER_KEY}
+
 BASE_SSH_ARGS="-i ${REPO_SERVER_KEY} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 SSH_CONNECTION="${REPO_SERVER_USER}@${REPO_SERVER_HOST}"
 
