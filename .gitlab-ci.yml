@@ -56,3 +56,15 @@ build-debian-package:
   artifacts:
     paths:
       - ./package/debian/*.deb
+
+deploy-debian-package:
+  stage: deploy
+  image: debian:buster
+  tags:
+    - linux
+    - docker
+  script:
+    - bash package/scripts/deploy_debian_package.sh
+  needs:
+    - job: build-debian-package
+      artifacts: true
