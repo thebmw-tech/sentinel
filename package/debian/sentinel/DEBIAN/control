@@ -1,0 +1,11 @@
+Package: sentinel
+Version: __VERSION__
+Section: custom
+Priority: optional
+Architecture: all
+Essential: no
+Installed-Size: __PRODUCT_SIZE__
+Maintainer: Brandon Warner <thebmw@thebmw.tech>
+Depends: netplan.io, iptables, vlan, bridge-utils, aspnetcore-runtime-5.0
+Suggests: dnsmasq, frr, openvpn, wireguard
+Description: Sentinel Firewall Admin Tools

@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - package
   - deploy
 
 
@@ -22,3 +23,55 @@ unit-tests:
     reports:
       junit:
         - ./**/*test-result.xml
+
+build-release:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
+  tags:
+    - linux
+    - docker
+  before_script:
+    - curl -sL https://deb.nodesource.com/setup_14.x | bash -
+    - apt-get install -y nodejs
+  script:
+    - scripts/dotnet_build.sh
+  needs:
+    - job: unit-tests
+      artifacts: false
+  artifacts:
+    paths:
+      - ./Publish
+
+build-debian-package:
+  stage: package
+  image: debian:buster
+  tags:
+    - linux
+    - docker
+  script:
+    - package/scripts/build_debian_package.sh
+  needs:
+    - job: build-release
+      artifacts: true
+  artifacts:
+    paths:
+      - ./package/debian/*.deb
+
+deploy-debian-package:
+  stage: deploy
+  image: debian:buster
+  only:
+    - master
+    - develop
+    - /^release/.*$/
+  tags:
+    - linux
+    - docker
+  before_script:
+    - apt-get update
+    - apt-get install -y openssh-client
+  script:
+    - package/scripts/deploy_debian_package.sh
+  needs:
+    - job: build-debian-package
+      artifacts: true
