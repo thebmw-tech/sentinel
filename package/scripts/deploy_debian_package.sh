@@ -10,12 +10,12 @@ elif [[ "$CI_COMMIT_BRANCH" =~ ^hotfix\/ ]]; then
   COMPONENT="hotfix"
 elif [ "$CI_COMMIT_BRANCH" == "master" ]; then
   COMPONENT="main"
-elif [ -z "$NIGHTLY" ]; then
+elif [ ! -z "$NIGHTLY" ]; then
   COMPONENT="nightly"
 else
   COMPONENT="develop"
 fi
 
 
-scp -i ${REPO_SEVER_KEY} ${NEW_DEB_PACKAGE} ${REPO_SERVER_USER}@${REPO_SERVER_HOST}:/tmp/${BASE_PACKAGE}
-ssh -i ${REPO_SEVER_KEY} ${REPO_SERVER_USER}@${REPO_SERVER_HOST} reprepro -b /var/www/html/repos/debian -C ${COMPONENT} includedeb misty /tmp/${BASE_PACKAGE}
+scp -i "${REPO_SERVER_KEY}" ${NEW_DEB_PACKAGE} ${REPO_SERVER_USER}@${REPO_SERVER_HOST}:/tmp/${BASE_PACKAGE}
+ssh -i "${REPO_SERVER_KEY}" ${REPO_SERVER_USER}@${REPO_SERVER_HOST} reprepro -b /var/www/html/repos/debian -C ${COMPONENT} includedeb misty /tmp/${BASE_PACKAGE}
