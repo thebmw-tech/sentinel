@@ -2,7 +2,7 @@
 
 namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface IRevisionRepository
+    public interface IRevisionRepository : IRepository<Revision>
     {
         Revision CreateNewRevision();
         int GetSafeCurrentRevision();

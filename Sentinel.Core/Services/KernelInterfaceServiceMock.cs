@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Sentinel.Core.Services
 {
-    public class PhysicalInterfaceServiceMock : IPhysicalInterfaceService
+    public class KernelInterfaceServiceMock : IKernelInterfaceService
     {
         public List<string> GetPhysicalInterfaceNames()
         {

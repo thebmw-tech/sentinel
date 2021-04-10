@@ -6,7 +6,7 @@ using Sentinel.Core.Helpers;
 
 namespace Sentinel.Core.Services
 {
-    public class PhysicalInterfaceService : IPhysicalInterfaceService
+    public class KernelInterfaceService : IKernelInterfaceService
     {
         private readonly ICommandExecutionHelper commandExecutionHelper;
 
@@ -14,7 +14,7 @@ namespace Sentinel.Core.Services
 
         private readonly string[] VALID_IFACE_NAME_PREFIXES = new[] { "eth", "wlan" };
 
-        public PhysicalInterfaceService(ICommandExecutionHelper commandExecutionHelper)
+        public KernelInterfaceService(ICommandExecutionHelper commandExecutionHelper)
         {
             this.commandExecutionHelper = commandExecutionHelper;
         }

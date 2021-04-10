@@ -1,6 +1,8 @@
-﻿namespace Sentinel.Core.Repository.Interfaces
+﻿using Sentinel.Core.Entities;
+
+namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface IInterfaceRepository
+    public interface IInterfaceRepository : IRepository<Interface>
     {
         
     }
