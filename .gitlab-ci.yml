@@ -64,8 +64,8 @@ deploy-debian-package:
     - linux
     - docker
   before_script:
-    - apt update
-    - apt install openssh-client
+    - apt-get update
+    - apt-get install -y openssh-client
   script:
     - bash package/scripts/deploy_debian_package.sh
   needs:
