@@ -7,7 +7,7 @@ using Moq;
 using NLog;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
-using Sentinel.Core.Generators.Interface;
+using Sentinel.Core.Generators.Netplan;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services.Interfaces;
 using Sentinel.Test.Helpers;

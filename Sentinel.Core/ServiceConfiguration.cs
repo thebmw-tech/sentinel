@@ -10,8 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Generators;
-using Sentinel.Core.Generators.Interface;
 using Sentinel.Core.Generators.Interfaces;
+using Sentinel.Core.Generators.IPTables;
+using Sentinel.Core.Generators.Netplan;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
@@ -60,6 +61,7 @@ namespace Sentinel.Core
 
             // Setup Generators -- This will eventualy be based on some configuration file options.
             services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
+            services.AddTransient<IConfigurationGenerator<FirewallRule>, IPTablesConfigurationGenerator>();
 
             // Setup Validators
             services.AddTransient<BaseValidator<Interface>, InterfaceValidator>();

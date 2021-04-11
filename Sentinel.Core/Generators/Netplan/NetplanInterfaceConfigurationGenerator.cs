@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Generators.Interfaces;
 using Sentinel.Core.Models.Configuration.Netplan;
 using Sentinel.Core.Repository.Interfaces;
-using Sentinel.Core.Services.Interfaces;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using Route = Sentinel.Core.Models.Configuration.Netplan.Route;
 
-namespace Sentinel.Core.Generators.Interface
+namespace Sentinel.Core.Generators.Netplan
 {
     public class NetplanInterfaceConfigurationGenerator : IConfigurationGenerator<Entities.Interface>
     {
@@ -57,7 +55,7 @@ namespace Sentinel.Core.Generators.Interface
             fileSystem.File.WriteAllText("netplan", yaml);
         }
 
-        private Netplan GenerateNetplan()
+        private Models.Configuration.Netplan.Netplan GenerateNetplan()
         {
             var interfaces = interfaceRepository.GetCurrent();
 
@@ -71,7 +69,7 @@ namespace Sentinel.Core.Generators.Interface
             var currentRoutes = routeRepository.GetCurrent().Select(r =>
                 new Tuple<Entities.Route, Entities.Gateway>(r, gatewayRepository.GetCurrentGatewayById(r.GatewayId))).ToList();
 
-            Netplan netplan = new Netplan()
+            Models.Configuration.Netplan.Netplan netplan = new Models.Configuration.Netplan.Netplan()
             {
                 Network = new Network()
                 {

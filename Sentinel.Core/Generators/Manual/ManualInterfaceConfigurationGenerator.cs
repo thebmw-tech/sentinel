@@ -1,6 +1,6 @@
 ﻿using Sentinel.Core.Generators.Interfaces;
 
-namespace Sentinel.Core.Generators.Interface
+namespace Sentinel.Core.Generators.Manual
 {
     public class ManualInterfaceConfigurationGenerator : IConfigurationGenerator<Entities.Interface>
     {
