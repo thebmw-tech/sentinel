@@ -2,7 +2,7 @@
 
 namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepository<User>
     {
         User CreateUser(string userName, string password);
     }

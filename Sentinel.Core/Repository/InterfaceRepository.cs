@@ -3,9 +3,9 @@ using Sentinel.Core.Repository.Interfaces;
 
 namespace Sentinel.Core.Repository
 {
-    public class InterfaceRepository : BaseRepository<Interface>, IInterfaceRepository
+    public class InterfaceRepository : BaseVersionedRepository<Interface>, IInterfaceRepository
     {
-        public InterfaceRepository(SentinelDatabaseContext dbContext) : base(dbContext)
+        public InterfaceRepository(SentinelDatabaseContext dbContext, IRevisionRepository revisionRepository) : base(dbContext, revisionRepository)
         {
 
         }

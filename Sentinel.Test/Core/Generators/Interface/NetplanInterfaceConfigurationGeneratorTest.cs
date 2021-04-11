@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NLog;
@@ -60,9 +61,9 @@ namespace Sentinel.Test.Core.Generators.Interface
                 SubnetMask = 24
             };
 
-            diHelper.GetMock<IRouteRepository>().Setup(s => s.GetCurrentRoutes()).Returns(new List<Route>() { testRoute });
+            diHelper.GetMock<IRouteRepository>().Setup(s => s.GetCurrent()).Returns(new List<Route>() { testRoute }.AsQueryable());
 
-            diHelper.GetMock<IInterfaceService>().Setup(s => s.GetAllInterfacesCommitted())
+            diHelper.GetMock<IInterfaceRepository>().Setup(s => s.GetCurrent())
                 .Returns(
                     new List<Sentinel.Core.Entities.Interface>()
                     {
@@ -84,7 +85,7 @@ namespace Sentinel.Test.Core.Generators.Interface
                             IPv4ConfigurationType = IpConfigurationTypeV4.Static,
                             InterfaceType = InterfaceType.Vlan
                         }
-                    });
+                    }.AsQueryable());
 
             generator.Generate();
         }

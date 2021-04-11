@@ -3,10 +3,8 @@ using Sentinel.Core.Entities;
 
 namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface IRouteRepository
+    public interface IRouteRepository : IVersionedRepository<Route>
     {
-        List<Route> GetSafeRoutes();
-        List<Route> GetCurrentRoutes();
-        List<Route> GetInProgressRoutes();
+
     }
 }

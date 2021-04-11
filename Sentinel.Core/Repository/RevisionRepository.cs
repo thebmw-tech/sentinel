@@ -12,21 +12,21 @@ namespace Sentinel.Core.Repository
 
         }
 
-        public int GetSafeCurrentRevision()
+        public int GetSafeRevisionId()
         {
             var revision = DbSet.Where(r => r.CommitDate.HasValue && r.ConfirmDate.HasValue)
                 .OrderBy(r => r.Id).Reverse().First();
             return revision.Id;
         }
 
-        public int GetCurrentRevision()
+        public int GetCurrentRevisionId()
         {
             var revision = DbSet.Where(r => r.CommitDate.HasValue)
                 .OrderBy(r => r.Id).Reverse().First();
             return revision.Id;
         }
 
-        public int? GetInProgressRevision()
+        public int? GetInProgressRevisionId()
         {
             var revision = DbSet.Where(r => !r.CommitDate.HasValue)
                 .OrderBy(r => r.Id).Reverse().FirstOrDefault();

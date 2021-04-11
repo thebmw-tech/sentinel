@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using static Sentinel.Core.SentinelConstants;
+
 namespace Sentinel.Core.Entities.Maps
 {
     public class GatewayMap : BaseVersionedEntityMap<Gateway>
@@ -14,18 +16,18 @@ namespace Sentinel.Core.Entities.Maps
 
             // Setup Properties
             builder.Property(g => g.Description)
-                .HasMaxLength(50)
+                .HasMaxLength(DESCRIPTION_LENGTH)
                 .IsRequired();
 
             builder.Property(g => g.GatewayType)
                 .IsRequired();
 
             builder.Property(g => g.InterfaceName)
-                .HasMaxLength(50)
+                .HasMaxLength(INTERFACE_NAME_LENGTH)
                 .IsRequired();
 
             builder.Property(g => g.IPAddress)
-                .HasMaxLength(45)
+                .HasMaxLength(IP_ADDRESS_LENGTH)
                 .IsRequired();
 
             builder.Property(g => g.IPVersion)

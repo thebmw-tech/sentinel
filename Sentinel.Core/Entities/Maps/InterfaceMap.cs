@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Sentinel.Core.Enums;
 
+using static Sentinel.Core.SentinelConstants;
+
 namespace Sentinel.Core.Entities.Maps
 {
     public class InterfaceMap : BaseVersionedEntityMap<Interface>
@@ -16,28 +18,28 @@ namespace Sentinel.Core.Entities.Maps
 
             // Setup Properties
             builder.Property(i => i.Name)
-                .HasMaxLength(50)
+                .HasMaxLength(INTERFACE_NAME_LENGTH)
                 .IsRequired();
 
             builder.Property(i => i.InterfaceType)
                 .IsRequired();
 
             builder.Property(i => i.Description)
-                .HasMaxLength(255);
+                .HasMaxLength(DESCRIPTION_LENGTH);
 
             builder.Property(i => i.IPv4ConfigurationType)
                 .IsRequired()
                 .HasDefaultValue(IpConfigurationTypeV4.None);
 
             builder.Property(i => i.IPv4Address)
-                .HasMaxLength(15);
+                .HasMaxLength(IPv4_ADDRESS_LENGTH);
 
             builder.Property(i => i.IPv6ConfigurationType)
                 .IsRequired()
                 .HasDefaultValue(IpConfigurationTypeV6.None);
 
             builder.Property(i => i.IPv6Address)
-                .HasMaxLength(39);
+                .HasMaxLength(IPv6_ADDRESS_LENGTH);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Sentinel.Core.Generators.Interface
 {
     public class NetplanInterfaceConfigurationGenerator : IConfigurationGenerator<Entities.Interface>
     {
-        private readonly IInterfaceService interfaceService;
+        private readonly IInterfaceRepository interfaceRepository;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
         private readonly IRouteRepository routeRepository;
         private readonly IGatewayRepository gatewayRepository;
@@ -26,10 +26,10 @@ namespace Sentinel.Core.Generators.Interface
 
         private readonly ILogger<NetplanInterfaceConfigurationGenerator> logger;
 
-        public NetplanInterfaceConfigurationGenerator(IInterfaceService interfaceService, ISystemConfigurationRepository systemConfigurationRepository, 
+        public NetplanInterfaceConfigurationGenerator(IInterfaceRepository interfaceRepository, ISystemConfigurationRepository systemConfigurationRepository, 
             IRouteRepository routeRepository, IGatewayRepository gatewayRepository, IFileSystem fileSystem, ILogger<NetplanInterfaceConfigurationGenerator> logger)
         {
-            this.interfaceService = interfaceService;
+            this.interfaceRepository = interfaceRepository;
             this.systemConfigurationRepository = systemConfigurationRepository;
             this.routeRepository = routeRepository;
             this.gatewayRepository = gatewayRepository;
@@ -59,7 +59,7 @@ namespace Sentinel.Core.Generators.Interface
 
         private Netplan GenerateNetplan()
         {
-            var interfaces = interfaceService.GetAllInterfacesCommitted();
+            var interfaces = interfaceRepository.GetCurrent();
 
             var currentSystemConfiguration = systemConfigurationRepository.GetCurrentConfiguration();
 
@@ -68,7 +68,7 @@ namespace Sentinel.Core.Generators.Interface
             var gatewayV6 = currentSystemConfiguration.IPv6DefaultGateway != null
                 ? gatewayRepository.GetCurrentGatewayById(currentSystemConfiguration.IPv6DefaultGateway.Value) : null;
 
-            var currentRoutes = routeRepository.GetCurrentRoutes().Select(r =>
+            var currentRoutes = routeRepository.GetCurrent().Select(r =>
                 new Tuple<Entities.Route, Entities.Gateway>(r, gatewayRepository.GetCurrentGatewayById(r.GatewayId))).ToList();
 
             Netplan netplan = new Netplan()

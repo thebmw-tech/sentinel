@@ -2,7 +2,7 @@
 
 namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface IInterfaceRepository : IRepository<Interface>
+    public interface IInterfaceRepository : IVersionedRepository<Interface>
     {
         
     }

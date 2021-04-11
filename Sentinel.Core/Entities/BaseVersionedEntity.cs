@@ -8,7 +8,7 @@ namespace Sentinel.Core.Entities
         public int RevisionId { get; set; }
         public bool Enabled { get; set; }
 
-        public virtual bool Equals(T? other)
+        public virtual bool Equals(T other)
         {
             if (GetType() != typeof(T)) throw new NotSupportedException();
             if (other == null) return false;
