@@ -2,7 +2,7 @@
 
 namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface IFirewallRuleRepository : IVersionedRepository<FirewallRule>
+    public interface IDestinationNatRuleRepository : IVersionedRepository<DestinationNatRule>
     {
         
     }

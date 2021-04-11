@@ -17,14 +17,14 @@ namespace Sentinel.Core.Repository
 
         public SystemConfiguration GetCurrentConfiguration()
         {
-            var revisionId = revisionRepository.GetCurrentRevision();
+            var revisionId = revisionRepository.GetCurrentRevisionId();
             var configuration = GetConfigurationForRevision(revisionId);
             return configuration;
         }
 
         public SystemConfiguration GetInProgressConfiguration()
         {
-            var revisionId = revisionRepository.GetInProgressRevision();
+            var revisionId = revisionRepository.GetInProgressRevisionId();
             if (revisionId.HasValue)
             {
                 var configuration = GetConfigurationForRevision(revisionId.Value);
@@ -36,7 +36,7 @@ namespace Sentinel.Core.Repository
 
         public SystemConfiguration GetSafeConfiguration()
         {
-            var revisionId = revisionRepository.GetSafeCurrentRevision();
+            var revisionId = revisionRepository.GetSafeRevisionId();
             var configuration = GetConfigurationForRevision(revisionId);
             return configuration;
         }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using static Sentinel.Core.SentinelConstants;
+
 namespace Sentinel.Core.Entities.Maps
 {
     public class RouteMap : BaseVersionedEntityMap<Route>
@@ -11,7 +13,7 @@ namespace Sentinel.Core.Entities.Maps
             builder.HasKey(r => new {r.RevisionId, r.Address, r.SubnetMask});
 
             builder.Property(r => r.Address)
-                .HasMaxLength(45)
+                .HasMaxLength(IP_ADDRESS_LENGTH)
                 .IsRequired();
 
             builder.Property(r => r.SubnetMask)
@@ -21,7 +23,7 @@ namespace Sentinel.Core.Entities.Maps
                 .IsRequired();
 
             builder.Property(r => r.Description)
-                .HasMaxLength(255);
+                .HasMaxLength(DESCRIPTION_LENGTH);
         }
     }
 }

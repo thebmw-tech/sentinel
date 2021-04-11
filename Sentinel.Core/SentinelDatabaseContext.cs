@@ -41,7 +41,9 @@ namespace Sentinel.Core
 
 
 
-            
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(GetType()));
+
+            /*
             modelBuilder.ApplyConfiguration(new FirewallRuleMap());
             modelBuilder.ApplyConfiguration(new GatewayMap());
             modelBuilder.ApplyConfiguration(new InterfaceMap());
@@ -49,14 +51,17 @@ namespace Sentinel.Core
             modelBuilder.ApplyConfiguration(new RouteMap());
             modelBuilder.ApplyConfiguration(new SystemConfigurationMap());
             modelBuilder.ApplyConfiguration(new UserMap());
+            */
 
         }
 
+        public DbSet<DestinationNatRule> DestinationNatRules { get; set; }
         public DbSet<FirewallRule> FirewallRules { get; set; }
         public DbSet<Gateway> Gateways { get; set; }
         public DbSet<Interface> Interfaces { get; set; }
         public DbSet<Revision> Revisions { get; set; }
         public DbSet<Route> Routes { get; set; }
+        public DbSet<SourceNatRule> SourceNatRules { get; set; }
         public DbSet<SystemConfiguration> SystemConfigurations { get; set; }
         public DbSet<User> Users { get; set; }
     }

@@ -4,12 +4,8 @@ using Sentinel.Core.Entities;
 
 namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface IGatewayRepository
+    public interface IGatewayRepository : IVersionedRepository<Gateway>
     {
-        List<Gateway> GetSafeGateways();
-        List<Gateway> GetCurrentGateways();
-        List<Gateway> GetInProgressGateways();
-
         Gateway GetCurrentGatewayById(Guid gatewayId);
     }
 }

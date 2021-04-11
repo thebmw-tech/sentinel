@@ -17,6 +17,8 @@ namespace Sentinel.Core.Entities.Maps
             builder.Property(sc => sc.Hostname)
                 .HasMaxLength(63)
                 .IsRequired();
+
+
         }
     }
 }
