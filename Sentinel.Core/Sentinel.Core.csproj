@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Generators\IPTables\" />
     <Folder Include="Resources\" />
   </ItemGroup>
 

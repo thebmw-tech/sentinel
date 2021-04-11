@@ -8,7 +8,6 @@ namespace Sentinel.Core.Enums
         Any = 0,
         TCP = 1,
         UDP = 2,
-        TCPUDP = TCP | UDP,
         ICMP = 4
     }
 }

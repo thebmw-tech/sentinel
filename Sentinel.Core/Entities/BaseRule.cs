@@ -7,6 +7,7 @@ namespace Sentinel.Core.Entities
     {
         public Guid Id { get; set; }
         public int Order { get; set; }
+        public IPVersion IPVersion { get; set; }
         public IPProtocol Protocol { get; set; }
 
         public bool InvertSourceMatch { get; set; }

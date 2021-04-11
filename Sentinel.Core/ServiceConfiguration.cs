@@ -61,7 +61,7 @@ namespace Sentinel.Core
 
             // Setup Generators -- This will eventualy be based on some configuration file options.
             services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
-            services.AddTransient<IConfigurationGenerator<FirewallRule>, IPTablesConfigurationGenerator>();
+            services.AddTransient<IConfigurationGenerator<FirewallRule>, IPTablesPersistentConfigurationGenerator>();
 
             // Setup Validators
             services.AddTransient<BaseValidator<Interface>, InterfaceValidator>();
