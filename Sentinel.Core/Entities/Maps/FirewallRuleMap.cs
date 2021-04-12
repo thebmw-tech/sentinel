@@ -15,6 +15,8 @@ namespace Sentinel.Core.Entities.Maps
             builder.Property(r => r.FirewallTableId)
                 .IsRequired();
 
+            builder.Property(r => r.State)
+                .IsRequired();
 
             builder.HasIndex(r => new { r.FirewallTableId, r.Order })
                 .IsUnique();

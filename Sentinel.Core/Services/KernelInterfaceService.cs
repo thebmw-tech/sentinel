@@ -22,7 +22,7 @@ namespace Sentinel.Core.Services
         public List<string> GetPhysicalInterfaceNames()
         {
             var output = commandExecutionHelper.Execute("ip", "link"); // TODO use full path to command
-            var allInterfaces = GetInterfaceNamesFromCommandOutput(output.Item1);
+            var allInterfaces = GetInterfaceNamesFromCommandOutput(output.Output);
 
             var phyInterfaces = FilterInterfaceNamesForPhy(allInterfaces);
 

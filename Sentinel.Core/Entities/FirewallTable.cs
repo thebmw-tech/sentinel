@@ -8,6 +8,7 @@ namespace Sentinel.Core.Entities
         public Guid Id { get; set; }
         public FirewallAction DefaultAction { get; set; }
 
+        public string Name { get; set; }
         public string Description { get; set; }
         public bool DefaultLog { get; set; }
     }

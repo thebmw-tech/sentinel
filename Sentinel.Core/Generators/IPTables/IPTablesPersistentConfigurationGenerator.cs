@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
@@ -84,12 +86,13 @@ namespace Sentinel.Core.Generators.IPTables
             var tables = firewallTableRepository.GetCurrent();
             foreach (var table in tables)
             {
-                builder.Append($":{GuidToTableName(table.Id)} - [0:0]\n");
+                builder.Append($":{table.Name} - [0:0]\n");
             }
         }
 
         private void GenerateFirewallTableInterfaceMappings(StringBuilder builder)
         {
+            builder.Append("# Filter Table Interface Mappings\n");
             var interfaces = interfaceRepository.GetCurrent().Where(i =>
                 i.InboundFirewallTableId.HasValue || i.OutboundFirewallTableId.HasValue ||
                 i.LocalFirewallTableId.HasValue);
@@ -101,6 +104,7 @@ namespace Sentinel.Core.Generators.IPTables
 
         private void GenerateFirewallTableInterfaceMapping(StringBuilder builder, Interface iface)
         {
+            builder.Append($"# Mappings for '{iface.Name}'\n");
             if (iface.LocalFirewallTableId.HasValue)
             {
                 builder.Append($"-A INPUT -i {iface.Name} -j {GuidToTableName(iface.LocalFirewallTableId.Value)}\n");
@@ -123,26 +127,29 @@ namespace Sentinel.Core.Generators.IPTables
             foreach (var table in tables)
             {
                 GenerateFirewallTableRules(builder, table, version);
-                GenerateFirewallTableDefaultRule(builder, table);
             }
         }
 
         private void GenerateFirewallTableRules(StringBuilder builder, FirewallTable table, IPVersion version)
         {
+            builder.Append($"# Rules for table {table.Name} {table.Id:B}\n");
             var rules = firewallRuleRepository.GetCurrent().Where(r => r.FirewallTableId == table.Id && r.IPVersion == version)
                 .OrderBy(r => r.Order);
             foreach (var rule in rules)
             {
-                GenerateFirewallTableRule(builder, rule);
+                GenerateFirewallTableRule(builder, table, rule);
             }
+
+            GenerateFirewallTableDefaultRule(builder, table);
         }
 
-        private void GenerateFirewallTableRule(StringBuilder builder, FirewallRule rule)
+        private void GenerateFirewallTableRule(StringBuilder builder, FirewallTable table, FirewallRule rule)
         {
-            builder.Append($"-A {GuidToTableName(rule.FirewallTableId)} {ProtocolToString(rule.Protocol)}");
+            builder.Append($"-A {table.Name} {ProtocolToString(rule.Protocol)}");
 
             TryAppendSourceAddress(builder, rule);
             TryAppendDestinationAddress(builder, rule);
+            AppendState(builder, rule);
 
             // TODO handle logging
             builder.Append($"-j {FirewallActionToIptables(rule.Action)}\n");
@@ -152,7 +159,7 @@ namespace Sentinel.Core.Generators.IPTables
         {
             // TODO handle logging
             
-            builder.Append($"-A {GuidToTableName(table.Id)} -j {FirewallActionToIptables(table.DefaultAction)}\n");
+            builder.Append($"-A {table.Name} -j {FirewallActionToIptables(table.DefaultAction)}\n");
         }
 
         private void GenerateNatRules(StringBuilder builder, IPVersion version)
@@ -185,7 +192,7 @@ namespace Sentinel.Core.Generators.IPTables
 
         private void GenerateSourceNatRule(StringBuilder builder, SourceNatRule rule)
         {
-            builder.Append($"-t nat -A POSTROUTING -o {rule.OutboundInterfaceName} {ProtocolToString(rule.Protocol)}");
+            builder.Append($"-A POSTROUTING -o {rule.OutboundInterfaceName} {ProtocolToString(rule.Protocol)}");
 
             TryAppendSourceAddress(builder, rule);
             TryAppendDestinationAddress(builder, rule);
@@ -229,7 +236,7 @@ namespace Sentinel.Core.Generators.IPTables
 
         private void GenerateDestinationNatRule(StringBuilder builder, DestinationNatRule rule)
         {
-            builder.Append($"-t nat -A PREROUTING -i {rule.InboundInterfaceName} {ProtocolToString(rule.Protocol)}");
+            builder.Append($"-A PREROUTING -i {rule.InboundInterfaceName} {ProtocolToString(rule.Protocol)}");
 
             TryAppendSourceAddress(builder, rule);
             TryAppendDestinationAddress(builder, rule);
@@ -282,6 +289,35 @@ namespace Sentinel.Core.Generators.IPTables
             }
         }
 
+        private void AppendState(StringBuilder builder, FirewallRule rule)
+        {
+            if (rule.State != FirewallState.None)
+            {
+                List<string> flags = new List<string>();
+                if (rule.State.HasFlag(FirewallState.New))
+                {
+                    flags.Add("NEW");
+                }
+
+                if (rule.State.HasFlag(FirewallState.Invalid))
+                {
+                    flags.Add("INVALID");
+                }
+
+                if (rule.State.HasFlag(FirewallState.Established))
+                {
+                    flags.Add("ESTABLISHED");
+                }
+
+                if (rule.State.HasFlag(FirewallState.Related))
+                {
+                    flags.Add("RELATED");
+                }
+
+                builder.Append($"-m state --state {string.Join(',', flags.ToArray())} ");
+            }
+        }
+
         private string FirewallActionToIptables(FirewallAction action)
         {
             switch (action)
@@ -331,7 +367,8 @@ namespace Sentinel.Core.Generators.IPTables
 
         private string GuidToTableName(Guid guid)
         {
-            return guid.ToString("D").Substring(0, 23);
+            var table = firewallTableRepository.GetCurrent().First(t => t.Id == guid);
+            return table.Name;
         }
     }
 }

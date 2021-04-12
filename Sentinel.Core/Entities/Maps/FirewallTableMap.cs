@@ -15,6 +15,10 @@ namespace Sentinel.Core.Entities.Maps
             builder.Property(t => t.DefaultAction)
                 .IsRequired();
 
+            builder.Property(t => t.Name)
+                .HasMaxLength(28)
+                .IsRequired();
+
             builder.Property(t => t.Description)
                 .HasMaxLength(DESCRIPTION_LENGTH);
 

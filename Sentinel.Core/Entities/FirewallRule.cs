@@ -7,5 +7,6 @@ namespace Sentinel.Core.Entities
     {
         public Guid FirewallTableId { get; set; }
         public FirewallAction Action { get; set; }
+        public FirewallState State { get; set; }
     }
 }
