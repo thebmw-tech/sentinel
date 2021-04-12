@@ -40,6 +40,8 @@ namespace Sentinel.Test.Core.Services
             var interfaceNames = service.GetPhysicalInterfaceNames();
 
             Assert.Equal(2, interfaceNames.Count);
+            Assert.Contains("eth0", interfaceNames);
+            Assert.Contains("wlan0", interfaceNames);
         }
     }
 }
