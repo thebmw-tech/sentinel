@@ -1,9 +1,10 @@
 ﻿using System;
 using Sentinel.Core.Enums;
+using Sentinel.Core.Interfaces;
 
 namespace Sentinel.Core.Entities
 {
-    public class BaseRule<T> : BaseVersionedEntity<T> where T : BaseVersionedEntity<T>
+    public abstract class BaseRule<T> : BaseVersionedEntity<T> where T : BaseVersionedEntity<T>
     {
         public Guid Id { get; set; }
         public int Order { get; set; }

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Generators;
+using Sentinel.Core.Generators.Dummy;
 using Sentinel.Core.Generators.Interfaces;
 using Sentinel.Core.Generators.IPTables;
 using Sentinel.Core.Generators.Netplan;
@@ -50,6 +51,7 @@ namespace Sentinel.Core
             services.AddTransient<IFirewallRuleRepository, FirewallRuleRepository>();
 
             // Setup Services
+            services.AddTransient<IConfigurationGeneratorService, ConfigurationGeneratorService>();
             services.AddTransient<IInterfaceService, InterfaceService>();
 
             // Add Platform Dependent Services
@@ -60,8 +62,15 @@ namespace Sentinel.Core
 #endif
 
             // Setup Generators -- This will eventualy be based on some configuration file options.
-            services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
+            services.AddTransient<IConfigurationGenerator<DestinationNatRule>, DummyConfigurationGenerator<DestinationNatRule>>();
             services.AddTransient<IConfigurationGenerator<FirewallRule>, IPTablesPersistentConfigurationGenerator>();
+            services.AddTransient<IConfigurationGenerator<FirewallTable>, DummyConfigurationGenerator<FirewallTable>>();
+            services.AddTransient<IConfigurationGenerator<Gateway>, DummyConfigurationGenerator<Gateway>>();
+            services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
+            services.AddTransient<IConfigurationGenerator<Route>, DummyConfigurationGenerator<Route>>();
+            services.AddTransient<IConfigurationGenerator<SourceNatRule>, DummyConfigurationGenerator<SourceNatRule>>();
+
+
 
             // Setup Validators
             services.AddTransient<BaseValidator<Interface>, InterfaceValidator>();
