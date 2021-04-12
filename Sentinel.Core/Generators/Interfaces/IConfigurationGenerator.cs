@@ -3,6 +3,6 @@
     public interface IConfigurationGenerator<T>
     {
         public void Generate();
-        public bool Apply();
+        public void Apply();
     }
 }

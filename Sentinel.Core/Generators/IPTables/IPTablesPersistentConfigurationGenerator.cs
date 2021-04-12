@@ -34,7 +34,7 @@ namespace Sentinel.Core.Generators.IPTables
             this.fileSystem = fileSystem;
         }
 
-        public bool Apply()
+        public void Apply()
         {
             throw new System.NotImplementedException();
         }

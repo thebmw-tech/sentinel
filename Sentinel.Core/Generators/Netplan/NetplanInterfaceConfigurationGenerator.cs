@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Generators.Interfaces;
+using Sentinel.Core.Helpers;
 using Sentinel.Core.Models.Configuration.Netplan;
 using Sentinel.Core.Repository.Interfaces;
 using YamlDotNet.Serialization;
@@ -20,25 +21,37 @@ namespace Sentinel.Core.Generators.Netplan
         private readonly IRouteRepository routeRepository;
         private readonly IGatewayRepository gatewayRepository;
 
+        private readonly ICommandExecutionHelper commandExecutionHelper;
+
         private readonly IFileSystem fileSystem;
 
         private readonly ILogger<NetplanInterfaceConfigurationGenerator> logger;
 
         public NetplanInterfaceConfigurationGenerator(IInterfaceRepository interfaceRepository, ISystemConfigurationRepository systemConfigurationRepository, 
-            IRouteRepository routeRepository, IGatewayRepository gatewayRepository, IFileSystem fileSystem, ILogger<NetplanInterfaceConfigurationGenerator> logger)
+            IRouteRepository routeRepository, IGatewayRepository gatewayRepository, ICommandExecutionHelper commandExecutionHelper, IFileSystem fileSystem, 
+            ILogger<NetplanInterfaceConfigurationGenerator> logger)
         {
             this.interfaceRepository = interfaceRepository;
             this.systemConfigurationRepository = systemConfigurationRepository;
             this.routeRepository = routeRepository;
             this.gatewayRepository = gatewayRepository;
+            this.commandExecutionHelper = commandExecutionHelper;
             this.fileSystem = fileSystem;
 
             this.logger = logger;
         }
 
-        public bool Apply()
+        public void Apply()
         {
-            throw new System.NotImplementedException();
+            var result = commandExecutionHelper.Execute("netplan", "apply");
+            if (result.ExitCode != 0)
+            {
+                logger.LogError($"netplan apply failed with exit code: {result.ExitCode}");
+                logger.LogError(result.Output);
+                logger.LogError(result.Error);
+                throw new Exception($"netplan apply failed with exit code: {result.ExitCode}");
+            }
+            logger.LogInformation("netplan apply successful");
         }
 
         public void Generate()
@@ -52,7 +65,7 @@ namespace Sentinel.Core.Generators.Netplan
 
             var yaml = serializer.Serialize(netplan);
 
-            fileSystem.File.WriteAllText("netplan", yaml);
+            fileSystem.File.WriteAllText("/etc/netplan/01-sentinel.yaml", yaml);
         }
 
         private Models.Configuration.Netplan.Netplan GenerateNetplan()
@@ -69,7 +82,7 @@ namespace Sentinel.Core.Generators.Netplan
             var currentRoutes = routeRepository.GetCurrent().Select(r =>
                 new Tuple<Entities.Route, Entities.Gateway>(r, gatewayRepository.GetCurrentGatewayById(r.GatewayId))).ToList();
 
-            Models.Configuration.Netplan.Netplan netplan = new Models.Configuration.Netplan.Netplan()
+            var netplan = new Models.Configuration.Netplan.Netplan()
             {
                 Network = new Network()
                 {

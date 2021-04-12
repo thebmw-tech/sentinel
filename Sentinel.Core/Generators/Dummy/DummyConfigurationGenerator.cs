@@ -12,10 +12,9 @@ namespace Sentinel.Core.Generators.Dummy
             this.logger = logger;
         }
 
-        public bool Apply()
+        public void Apply()
         {
             logger.LogInformation($"Using dummy config apply for {nameof(T)}.");
-            return true;
         }
 
         public void Generate()

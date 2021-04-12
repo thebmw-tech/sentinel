@@ -6,6 +6,8 @@ using Moq;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Generators.Netplan;
+using Sentinel.Core.Helpers;
+using Sentinel.Core.Models;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Test.Helpers;
 using Xunit;
@@ -29,6 +31,32 @@ namespace Sentinel.Test.Core.Generators.Netplan
 
             generator = diHelper.GetInstance();
         }
+
+        [Fact]
+        public void TestApply()
+        {
+            diHelper.GetMock<ICommandExecutionHelper>().Setup(s => s.Execute("netplan", "apply"))
+                .Returns(new CommandExecutionResult() { ExitCode = 0 });
+
+            generator.Apply();
+
+            diHelper.GetMock<ICommandExecutionHelper>().Verify(v => v.Execute("netplan", "apply"), Times.Exactly(1));
+        }
+
+        [Fact]
+        public void TestApplyFailure()
+        {
+            diHelper.GetMock<ICommandExecutionHelper>().Setup(s => s.Execute("netplan", "apply"))
+                .Returns(new CommandExecutionResult() { ExitCode = 1, Output = "FailOut", Error = "FailError"});
+
+            Assert.ThrowsAny<Exception>(() =>
+            {
+                generator.Apply();
+            });
+
+            diHelper.GetMock<ICommandExecutionHelper>().Verify(v => v.Execute("netplan", "apply"), Times.Exactly(1));
+        }
+
 
         [Fact]
         public void TestGenerate()

@@ -4,7 +4,7 @@ namespace Sentinel.Core.Generators.Manual
 {
     public class ManualInterfaceConfigurationGenerator : IConfigurationGenerator<Entities.Interface>
     {
-        public bool Apply()
+        public void Apply()
         {
             throw new System.NotImplementedException();
         }
