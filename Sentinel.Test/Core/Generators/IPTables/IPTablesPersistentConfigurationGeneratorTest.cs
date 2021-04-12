@@ -38,6 +38,8 @@ namespace Sentinel.Test.Core.Generators.IPTables
                 {
                     outputHelper.WriteLine($"Writing contents of '{p}'");
                     outputHelper.WriteLine(c);
+
+
                 });
 
             var wanInTable = Builders.FirewallTableBuilder.Buid("WAN_IN");
@@ -94,7 +96,7 @@ namespace Sentinel.Test.Core.Generators.IPTables
                 Order = 0,
                 Enabled = true,
                 Action = FirewallAction.Pass,
-                IPVersion = IPVersion.v4,
+                IPVersion = IPVersion.Both,
                 FirewallTableId = wanInTable.Id,
                 State = FirewallState.Established | FirewallState.Related,
             });
@@ -104,7 +106,7 @@ namespace Sentinel.Test.Core.Generators.IPTables
                 Order = 1,
                 Enabled = true,
                 Action = FirewallAction.Block,
-                IPVersion = IPVersion.v4,
+                IPVersion = IPVersion.Both,
                 FirewallTableId = wanInTable.Id,
                 State = FirewallState.Invalid,
             });
@@ -122,6 +124,21 @@ namespace Sentinel.Test.Core.Generators.IPTables
                 DestinationPortRangeEnd = 80,
                 DestinationAddress = "192.168.1.80",
                 DestinationSubnetMask = 32
+            });
+
+            fwRules.Add(new FirewallRule()
+            {
+                Order = 3,
+                Enabled = true,
+                Action = FirewallAction.Pass,
+                IPVersion = IPVersion.v6,
+                Protocol = IPProtocol.TCP,
+                FirewallTableId = wanInTable.Id,
+                State = FirewallState.New,
+                DestinationPortRangeStart = 80,
+                DestinationPortRangeEnd = 80,
+                DestinationAddress = "af00:dead:beef:cafe::80",
+                DestinationSubnetMask = 128
             });
 
             diHelper.GetMock<IFirewallRuleRepository>().Setup(s => s.GetCurrent()).Returns(fwRules.AsQueryable());

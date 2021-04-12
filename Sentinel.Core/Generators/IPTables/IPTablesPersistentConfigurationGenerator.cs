@@ -133,7 +133,7 @@ namespace Sentinel.Core.Generators.IPTables
         private void GenerateFirewallTableRules(StringBuilder builder, FirewallTable table, IPVersion version)
         {
             builder.Append($"# Rules for table {table.Name} {table.Id:B}\n");
-            var rules = firewallRuleRepository.GetCurrent().Where(r => r.FirewallTableId == table.Id && r.IPVersion == version)
+            var rules = firewallRuleRepository.GetCurrent().Where(r => r.FirewallTableId == table.Id && (r.IPVersion == version || r.IPVersion == IPVersion.Both))
                 .OrderBy(r => r.Order);
             foreach (var rule in rules)
             {
