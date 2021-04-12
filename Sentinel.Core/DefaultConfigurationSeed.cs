@@ -18,8 +18,22 @@ namespace Sentinel.Core
 
             var revisionRepo = services.GetService<IRevisionRepository>();
             var revision = revisionRepo.CreateNewRevision();
+            revision.CommitDate = DateTime.UtcNow;
+            revision.ConfirmDate = DateTime.UtcNow;
+            revisionRepo.Update(revision);
+
             var userRepo = services.GetService<IUserRepository>();
             var adminUser = userRepo.CreateUser("admin", "admin");
+
+            var defaultSystemConfig = new SystemConfiguration()
+            {
+                RevisionId = revision.Id,
+                Hostname = "sentinel",
+                Domain = "local"
+            };
+
+            var systemConfigurationRepo = services.GetService<ISystemConfigurationRepository>();
+            systemConfigurationRepo.Create(defaultSystemConfig);
 
             var kernelInterfaceService = services.GetService<IKernelInterfaceService>();
             var kernelInterfaces = kernelInterfaceService.GetPhysicalInterfaceNames();
@@ -48,6 +62,7 @@ namespace Sentinel.Core
             lanInterface = interfaceRepo.Create(lanInterface);
 
 
+            revisionRepo.SaveChanges();
 
             transaction.Commit();
         }

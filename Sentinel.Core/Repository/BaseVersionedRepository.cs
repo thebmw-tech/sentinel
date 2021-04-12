@@ -36,7 +36,7 @@ namespace Sentinel.Core.Repository
             return GetForRevision(revisionId);
         }
 
-        private IQueryable<T> GetForRevision(int revisionId)
+        public IQueryable<T> GetForRevision(int revisionId)
         {
             return DbSet.Where(t => t.RevisionId == revisionId);
         }

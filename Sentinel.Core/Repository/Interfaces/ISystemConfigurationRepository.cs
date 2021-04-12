@@ -2,10 +2,10 @@
 
 namespace Sentinel.Core.Repository.Interfaces
 {
-    public interface ISystemConfigurationRepository
+    public interface ISystemConfigurationRepository : IRepository<SystemConfiguration>
     {
-        SystemConfiguration GetSafeConfiguration();
-        SystemConfiguration GetCurrentConfiguration();
-        SystemConfiguration GetInProgressConfiguration();
+        SystemConfiguration GetSafe();
+        SystemConfiguration GetCurrent();
+        SystemConfiguration GetInProgress();
     }
 }

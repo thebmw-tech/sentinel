@@ -34,7 +34,7 @@ namespace Sentinel.Shell
             var getPrompt = new Func<CommandMode, string>((mode) =>
             {
                 var systemConfigurationRepository = services.GetService<ISystemConfigurationRepository>();
-                var configuration = systemConfigurationRepository.GetCurrentConfiguration();
+                var configuration = systemConfigurationRepository.GetCurrent();
 
                 switch (mode)
                 {
