@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -19,6 +20,8 @@ namespace Sentinel.Core
                 "~/.config/sentinel/conf.db",
                 "C:\\projects\\sentinel\\conf.db",
             }, "/etc/sentinel/conf.db");
+
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(databaseFile));
 
             optionsBuilder.UseSqlite($"Data Source={databaseFile}");
         }
