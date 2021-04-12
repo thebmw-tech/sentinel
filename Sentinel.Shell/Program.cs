@@ -1,11 +1,7 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sentinel.Core;
 using Sentinel.Core.Command.Enums;
-using Sentinel.Core.Command.Interfaces;
-using Sentinel.Core.Command.Models;
-using Sentinel.Core.Command.Services;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
 

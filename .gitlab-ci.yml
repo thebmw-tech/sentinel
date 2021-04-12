@@ -9,7 +9,6 @@ unit-tests:
   stage: test
   image: registry.corp.soullessgingers.net/dotnet-sdk:5.0-buster-slim
   only:
-    - merge_requests
     - branches
   before_script:
     - 'dotnet restore --packages .nuget'
