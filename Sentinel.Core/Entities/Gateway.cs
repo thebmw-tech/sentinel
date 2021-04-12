@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Sentinel.Core.Enums;
 
 namespace Sentinel.Core.Entities

@@ -23,5 +23,9 @@ namespace Sentinel.Core.Entities
         public string IPv6Address { get; set; }
         public byte? IPv6SubnetMask { get; set; }
         public Guid? IPv6GatewayId { get; set; }
+
+        public Guid? InboundFirewallTableId { get; set; }
+        public Guid? OutboundFirewallTableId { get; set; }
+        public Guid? LocalFirewallTableId { get; set; }
     }
 }

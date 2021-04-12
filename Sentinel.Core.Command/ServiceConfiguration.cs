@@ -11,7 +11,6 @@ using NLog.Extensions.Logging;
 using Sentinel.Core.Command.Services;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Generators;
-using Sentinel.Core.Generators.Interface;
 using Sentinel.Core.Generators.Interfaces;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;

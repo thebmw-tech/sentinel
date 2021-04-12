@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
+using Sentinel.Core.Models;
 
 namespace Sentinel.Core.Helpers
 {
     public interface ICommandExecutionHelper
     {
-        Tuple<string, string> Execute(string executable, string args = "");
+        CommandExecutionResult Execute(string executable, string args = "");
     }
     public class CommandExecutionHelper : ICommandExecutionHelper
     {
-        public Tuple<string, string> Execute(string executable, string args = "")
+        public CommandExecutionResult Execute(string executable, string args = "")
         {
             var outStringBuilder = new StringBuilder();
             var errorStringBuilder = new StringBuilder();
@@ -37,7 +38,12 @@ namespace Sentinel.Core.Helpers
             process.BeginOutputReadLine();
             process.WaitForExit();
 
-            return new Tuple<string, string>(outStringBuilder.ToString(), errorStringBuilder.ToString());
+            return new CommandExecutionResult()
+            {
+                Output = outStringBuilder.ToString(),
+                Error = errorStringBuilder.ToString(),
+                ExitCode = process.ExitCode
+            };
         }
     }
 }

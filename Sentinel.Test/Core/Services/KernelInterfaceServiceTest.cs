@@ -1,5 +1,6 @@
 ﻿using System;
 using Sentinel.Core.Helpers;
+using Sentinel.Core.Models;
 using Sentinel.Core.Services;
 using Sentinel.Test.Helpers;
 using Xunit;
@@ -34,11 +35,13 @@ namespace Sentinel.Test.Core.Services
         [Fact]
         public void GetPhysicalInterfaceNamesTest()
         {
-            diHelper.GetMock<ICommandExecutionHelper>().Setup(s => s.Execute("ip", "link")).Returns(new Tuple<string, string>(IP_LINK_RESP, ""));
+            diHelper.GetMock<ICommandExecutionHelper>().Setup(s => s.Execute("ip", "link")).Returns(new CommandExecutionResult() { Output = IP_LINK_RESP });
 
             var interfaceNames = service.GetPhysicalInterfaceNames();
 
             Assert.Equal(2, interfaceNames.Count);
+            Assert.Contains("eth0", interfaceNames);
+            Assert.Contains("wlan0", interfaceNames);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Reflection;
+using Sentinel.Core.Interfaces;
 
 namespace Sentinel.Core.Entities
 {
-    public abstract class BaseVersionedEntity<T> : BaseEntity<T>, IEquatable<T> where T : BaseVersionedEntity<T>
+    public abstract class BaseVersionedEntity<T> : BaseEntity<T>, IEquatable<T>, IConfigurationEntity where T : BaseVersionedEntity<T>
     {
         public int RevisionId { get; set; }
         public bool Enabled { get; set; }

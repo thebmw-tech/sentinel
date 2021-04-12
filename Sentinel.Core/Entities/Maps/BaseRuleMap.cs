@@ -16,6 +16,9 @@ namespace Sentinel.Core.Entities.Maps
             builder.Property(r => r.Order)
                 .IsRequired();
 
+            builder.Property(r => r.IPVersion)
+                .IsRequired();
+
             builder.Property(r => r.Protocol)
                 .IsRequired();
 
