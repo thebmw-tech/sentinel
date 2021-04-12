@@ -36,7 +36,7 @@ namespace Sentinel.Test.Core.Generators.Netplan
             diHelper.GetMock<IFileSystem>().Setup(s => s.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((p, c) => { outputHelper.WriteLine(c); });
 
-            diHelper.GetMock<ISystemConfigurationRepository>().Setup(s => s.GetCurrentConfiguration())
+            diHelper.GetMock<ISystemConfigurationRepository>().Setup(s => s.GetCurrent())
                 .Returns(new SystemConfiguration());
 
             var testGateway = new Gateway()

@@ -59,7 +59,7 @@ namespace Sentinel.Core.Generators.Netplan
         {
             var interfaces = interfaceRepository.GetCurrent();
 
-            var currentSystemConfiguration = systemConfigurationRepository.GetCurrentConfiguration();
+            var currentSystemConfiguration = systemConfigurationRepository.GetCurrent();
 
             var gatewayV4 = currentSystemConfiguration.IPv4DefaultGateway != null
                 ? gatewayRepository.GetCurrentGatewayById(currentSystemConfiguration.IPv4DefaultGateway.Value) : null;
