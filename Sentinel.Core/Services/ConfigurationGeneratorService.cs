@@ -24,8 +24,12 @@ namespace Sentinel.Core.Services
 
             var configGenBase = typeof(IConfigurationGenerator<>);
 
-            configurationGenerators = configGenBase.Assembly.GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(IConfigurationEntity)) && !t.IsAbstract).Select(t => configGenBase.MakeGenericType(t))
+            var configEntityTypes = configGenBase.Assembly.GetTypes()
+                .Where(t => t.IsAssignableTo(typeof(IConfigurationEntity)) && !t.IsAbstract);
+
+            var configGenTypes = configEntityTypes.Select(t => configGenBase.MakeGenericType(t));
+
+            configurationGenerators = configGenTypes
                 .Select(t => (IConfigurationGenerator<IConfigurationEntity>)serviceProvider.GetService(t)).ToArray();
         }
 

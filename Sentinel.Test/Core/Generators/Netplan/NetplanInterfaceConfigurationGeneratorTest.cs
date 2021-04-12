@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using Moq;
-using NLog;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Generators.Netplan;
 using Sentinel.Core.Repository.Interfaces;
-using Sentinel.Core.Services.Interfaces;
 using Sentinel.Test.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Sentinel.Test.Core.Generators.Interface
+namespace Sentinel.Test.Core.Generators.Netplan
 {
     public class NetplanInterfaceConfigurationGeneratorTest
     {
