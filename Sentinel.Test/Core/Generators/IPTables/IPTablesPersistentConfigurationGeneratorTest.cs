@@ -33,8 +33,6 @@ namespace Sentinel.Test.Core.Generators.IPTables
         [Fact]
         public void TestGenerateSimple()
         {
-            var test = diHelper.GetObject<string>();
-
             diHelper.GetMock<IFileSystem>().Setup(s => s.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((p, c) =>
                 {
