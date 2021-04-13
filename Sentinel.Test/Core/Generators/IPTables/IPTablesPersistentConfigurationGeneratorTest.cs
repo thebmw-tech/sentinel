@@ -15,7 +15,7 @@ namespace Sentinel.Test.Core.Generators.IPTables
 {
     public class IPTablesPersistentConfigurationGeneratorTest
     {
-        private readonly TestMockDIHelper<IPTablesPersistentConfigurationGenerator> diHelper;
+        private readonly MockTestDIHelper<IPTablesPersistentConfigurationGenerator> diHelper;
 
         private readonly ITestOutputHelper outputHelper;
 
@@ -25,7 +25,7 @@ namespace Sentinel.Test.Core.Generators.IPTables
         {
             this.outputHelper = outputHelper;
 
-            diHelper = new TestMockDIHelper<IPTablesPersistentConfigurationGenerator>();
+            diHelper = new MockTestDIHelper<IPTablesPersistentConfigurationGenerator>();
 
             generator = diHelper.GetInstance();
         }
@@ -33,6 +33,8 @@ namespace Sentinel.Test.Core.Generators.IPTables
         [Fact]
         public void TestGenerateSimple()
         {
+            var test = diHelper.GetObject<string>();
+
             diHelper.GetMock<IFileSystem>().Setup(s => s.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((p, c) =>
                 {

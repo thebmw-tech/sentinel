@@ -12,7 +12,7 @@ namespace Sentinel.Test.Core.Services
 {
     public class ConfigurationGeneratorServiceTest
     {
-        private readonly TestMockDIHelper<ConfigurationGeneratorService> diHelper;
+        private readonly MockTestDIHelper<ConfigurationGeneratorService> diHelper;
 
         private readonly Mock<IServiceProvider> serviceProviderMock;
         private readonly Mock<IConfigurationGenerator<IConfigurationEntity>> configurationGeneratorMock;
@@ -26,7 +26,7 @@ namespace Sentinel.Test.Core.Services
 
             serviceProviderMock.Setup(s => s.GetService(It.IsAny<Type>())).Returns(configurationGeneratorMock.Object);
 
-            diHelper = new TestMockDIHelper<ConfigurationGeneratorService>(new Dictionary<Type, object>()
+            diHelper = new MockTestDIHelper<ConfigurationGeneratorService>(new Dictionary<Type, object>()
             {
                 { typeof(IServiceProvider), serviceProviderMock.Object }
             });

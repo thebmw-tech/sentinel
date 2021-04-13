@@ -9,7 +9,7 @@ namespace Sentinel.Test.Core.Services
 {
     public class KernelInterfaceServiceTest
     {
-        private readonly TestMockDIHelper<KernelInterfaceService> diHelper;
+        private readonly MockTestDIHelper<KernelInterfaceService> diHelper;
 
         private readonly KernelInterfaceService service;
 
@@ -27,7 +27,7 @@ namespace Sentinel.Test.Core.Services
 
         public KernelInterfaceServiceTest()
         {
-            diHelper = new TestMockDIHelper<KernelInterfaceService>();
+            diHelper = new MockTestDIHelper<KernelInterfaceService>();
 
             service = diHelper.GetInstance();
         }
