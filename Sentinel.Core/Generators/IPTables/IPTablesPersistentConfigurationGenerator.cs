@@ -4,39 +4,85 @@ using System.Data;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Generators.Interfaces;
+using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
 
 namespace Sentinel.Core.Generators.IPTables
 {
     public class IPTablesPersistentConfigurationGenerator : IConfigurationGenerator<Entities.FirewallRule>
     {
+        private const string IPv4_CONFIG = "/etc/iptables/rules.v4";
+        private const string IPv6_CONFIG = "/etc/iptables/rules.v6";
+
         private readonly IInterfaceRepository interfaceRepository;
         private readonly IFirewallTableRepository firewallTableRepository;
         private readonly IFirewallRuleRepository firewallRuleRepository;
         private readonly ISourceNatRuleRepository sourceNatRuleRepository;
         private readonly IDestinationNatRuleRepository destinationNatRuleRepository;
 
+        private readonly ICommandExecutionHelper commandExecutionHelper;
+
         private readonly IFileSystem fileSystem;
+
+        private readonly ILogger<IPTablesPersistentConfigurationGenerator> logger;
 
         public IPTablesPersistentConfigurationGenerator(IInterfaceRepository interfaceRepository,
             IFirewallTableRepository firewallTableRepository, IFirewallRuleRepository firewallRuleRepository,
             ISourceNatRuleRepository sourceNatRuleRepository,
-            IDestinationNatRuleRepository destinationNatRuleRepository, IFileSystem fileSystem)
+            IDestinationNatRuleRepository destinationNatRuleRepository,
+            ICommandExecutionHelper commandExecutionHelper, IFileSystem fileSystem,
+            ILogger<IPTablesPersistentConfigurationGenerator> logger)
         {
             this.interfaceRepository = interfaceRepository;
             this.firewallTableRepository = firewallTableRepository;
             this.firewallRuleRepository = firewallRuleRepository;
             this.sourceNatRuleRepository = sourceNatRuleRepository;
             this.destinationNatRuleRepository = destinationNatRuleRepository;
+            
+            this.commandExecutionHelper = commandExecutionHelper;
+            
             this.fileSystem = fileSystem;
+            
+            this.logger = logger;
         }
 
         public void Apply()
         {
-            throw new System.NotImplementedException();
+            ApplyFileToCommand("iptables-restore", IPv4_CONFIG);
+            ApplyFileToCommand("ip6tables-restore", IPv6_CONFIG);
+        }
+
+        private void ApplyFileToCommand(string command, string fileName)
+        {
+            var process =
+                commandExecutionHelper.BuildProcess(command, rdrInput: true, rdrOutput: true, rdrError: true);
+
+            var fileContent = fileSystem.File.ReadAllText(fileName);
+
+            process.StandardInput.Write(fileContent);
+
+            var outStringBuilder = new StringBuilder();
+            var errorStringBuilder = new StringBuilder();
+
+            process.ErrorDataReceived += (sender, eventArgs) => errorStringBuilder.Append(eventArgs.Data);
+            process.OutputDataReceived += (sender, eventArgs) => outStringBuilder.Append(eventArgs.Data);
+
+            process.Start();
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+            if (process.ExitCode > 0)
+            {
+                logger.LogError($"{command} failed with exit code {process.ExitCode}");
+                logger.LogError(outStringBuilder.ToString());
+                logger.LogError(errorStringBuilder.ToString());
+                throw new Exception($"{command} failed with exit code {process.ExitCode}");
+            }
         }
 
         public void Generate()
@@ -49,14 +95,14 @@ namespace Sentinel.Core.Generators.IPTables
         {
             StringBuilder builder = new StringBuilder();
             GenerateRules(builder, IPVersion.v4);
-            fileSystem.File.WriteAllText("/etc/iptables/rules.v4", builder.ToString());
+            fileSystem.File.WriteAllText(IPv4_CONFIG, builder.ToString());
         }
 
         private void GenerateIPv6()
         {
             StringBuilder builder = new StringBuilder();
             GenerateRules(builder, IPVersion.v6);
-            fileSystem.File.WriteAllText("/etc/iptables/rules.v6", builder.ToString());
+            fileSystem.File.WriteAllText(IPv6_CONFIG, builder.ToString());
         }
 
         private void GenerateRules(StringBuilder builder, IPVersion version)
