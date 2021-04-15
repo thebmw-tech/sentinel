@@ -2,7 +2,6 @@
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
-using Sentinel.Core.Commands;
 
 namespace Sentinel.Core.Command.Commands.Shell
 {

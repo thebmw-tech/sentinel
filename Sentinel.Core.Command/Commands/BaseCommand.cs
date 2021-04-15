@@ -1,8 +1,7 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 using Sentinel.Core.Command.Interfaces;
 
-namespace Sentinel.Core.Commands
+namespace Sentinel.Core.Command.Commands
 {
     public abstract class BaseCommand : ICommand
     {

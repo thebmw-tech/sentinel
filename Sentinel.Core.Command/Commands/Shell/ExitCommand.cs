@@ -3,7 +3,6 @@ using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using System.IO;
 using System.Threading.Tasks;
-using Sentinel.Core.Commands;
 
 namespace Sentinel.Core.Command.Commands.Shell
 {

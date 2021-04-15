@@ -1,11 +1,11 @@
-﻿using Sentinel.Core.Command.Attributes;
+﻿using System.IO;
+using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Services.Interfaces;
-using System.IO;
 using Sentinel.Models;
 
-namespace Sentinel.Core.Commands.Configuration
+namespace Sentinel.Core.Command.Commands.Configuration
 {
     [Command(CommandMode.Configuration, "interface", "Enter interface config mode")]
     public class InterfaceCommand : BaseCommand
