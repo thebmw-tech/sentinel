@@ -2,6 +2,7 @@
 {
     public enum CommandMode
     {
+        Any,
         Shell,
         Configuration
     }

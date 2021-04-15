@@ -5,29 +5,25 @@ using Moq;
 
 namespace Sentinel.Test.Helpers
 {
-    public class TestMockDIHelper<TTarget>
+    /// <summary>
+    /// Dependency Injection Helper for use when doing Mocked Testing
+    /// </summary>
+    /// <typeparam name="TTarget">The Class Being Tested</typeparam>
+    public class MockTestDIHelper<TTarget> : BaseTestDIHelper<TTarget>
     {
         private Dictionary<Type, Mock> mocks;
-        private Dictionary<Type, object> objects;
-        private TTarget instance;
+        
 
-        public TestMockDIHelper() : this(new Dictionary<Type, object>())
+        public MockTestDIHelper() : this(new Dictionary<Type, object>())
         {
             
         }
 
-        public TestMockDIHelper(Dictionary<Type, object> customObjects)
+        public MockTestDIHelper(Dictionary<Type, object> customObjects) : base(customObjects)
         {
-            objects = customObjects;
             mocks = new Dictionary<Type, Mock>();
 
             GenerateMocks();
-            GenerateInstance();
-        }
-
-        public TTarget GetInstance()
-        {
-            return instance;
         }
 
         public Mock<TMock> GetMock<TMock>() where TMock : class
@@ -35,9 +31,20 @@ namespace Sentinel.Test.Helpers
             return (Mock<TMock>) mocks[typeof(TMock)];
         }
 
-        public TObject GetObject<TObject>()
+        protected override object GetObjectOfType(Type type)
         {
-            return (TObject) objects[typeof(TObject)];
+            var overrideObject = base.GetObjectOfType(type);
+            if (overrideObject != null)
+            {
+                return overrideObject;
+            }
+            
+            if (mocks.ContainsKey(type))
+            {
+                return mocks[type].Object;
+            }
+
+            return null;
         }
 
         private void GenerateMocks()
@@ -52,23 +59,8 @@ namespace Sentinel.Test.Helpers
                     var mockType = typeof(Mock<>).MakeGenericType(constructorParam.ParameterType);
                     var mockInstance = (Mock) Activator.CreateInstance(mockType);
                     mocks.Add(constructorParam.ParameterType, mockInstance);
-                    objects.Add(constructorParam.ParameterType, mockInstance?.Object);
                 }
             }
-        }
-
-        private void GenerateInstance()
-        {
-            var t = typeof(TTarget);
-            var constructorParams = t.GetConstructors().First().GetParameters();
-            var args = new List<object>();
-
-            foreach (var constructorParam in constructorParams)
-            {
-                args.Add(objects[constructorParam.ParameterType]);
-            }
-
-            instance = (TTarget) Activator.CreateInstance(t, args.ToArray());
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Sentinel.Test.Core.Generators.Netplan
     {
         private readonly ITestOutputHelper outputHelper;
 
-        private readonly TestMockDIHelper<NetplanInterfaceConfigurationGenerator> diHelper;
+        private readonly MockTestDIHelper<NetplanInterfaceConfigurationGenerator> diHelper;
 
         private NetplanInterfaceConfigurationGenerator generator;
 
@@ -27,7 +27,7 @@ namespace Sentinel.Test.Core.Generators.Netplan
         {
             this.outputHelper = outputHelper;
 
-            diHelper = new TestMockDIHelper<NetplanInterfaceConfigurationGenerator>();
+            diHelper = new MockTestDIHelper<NetplanInterfaceConfigurationGenerator>();
 
             generator = diHelper.GetInstance();
         }

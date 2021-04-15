@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Command.Models;
@@ -9,85 +11,163 @@ namespace Sentinel.Shell
 {
     public class ConsoleShell : IShell
     {
+        private const int HIST_LENGTH = 1000;
+
         private readonly CommandInterpreter interpreter;
+
+        private bool inLoop = true;
 
         public ConsoleShell(CommandInterpreter interpreter)
         {
             this.interpreter = interpreter;
+
+            Environment = new Dictionary<string, object>();
         }
 
-        public ShellContext Context { get; set; }
+        
+
+        public Dictionary<string,object> Environment { get; set; }
         public CommandMode CommandMode { get; set; } = CommandMode.Shell;
 
-        public TextWriter Out => Console.Out;
+        public TextWriter Output => Console.Out;
         public TextWriter Error => Console.Error;
+
+        public void SYS_SetCommandMode(CommandMode commandMode)
+        {
+            CommandMode = commandMode;
+        }
+
+        public void SYS_ExitShell()
+        {
+            inLoop = false;
+        }
 
         public void ShellLoop(Func<CommandMode, string> getPrompt)
         {
-            
-            while (true)
+
+            while (inLoop)
             {
                 var prompt = getPrompt(CommandMode);
-                var command = GetCommandFromConsole(CommandMode, prompt);
+                var commandLine = GetCommandLineFromConsole(CommandMode, prompt);
 
-                var commandResult = interpreter.Execute(this, CommandMode, command);
+                var commandResult = interpreter.Execute(this, CommandMode, commandLine);
 
-                if (commandResult == CommandReturn.Exit)
-                {
-                    break;
-                }
+                Environment["LAST_EXIT_CODE"] = commandResult;
             }
         }
 
-        private string GetCommandFromConsole(CommandMode mode, string prompt)
+        private string GetCommandLineFromConsole(CommandMode mode, string prompt)
         {
             Console.Write(prompt);
 
-            string command = "";
+            List<char> command = new List<char>();
+
+            var commandAsString = new Func<string>(() => new string(command.ToArray()));
 
             while (true)
             {
                 var key = Console.ReadKey(true);
                 var pos = Console.GetCursorPosition();
+                var commandPos = pos.Left - prompt.Length;
 
                 switch (key)
                 {
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Backspace:
-                        if (command.Length > 0)
+                    // Handle Direction Keys
+                    case ConsoleKeyInfo k when k.Key == ConsoleKey.LeftArrow:
+                        if (commandPos > 0)
                         {
-                            command = command.Substring(0, command.Length - 1);
                             Console.SetCursorPosition(pos.Left - 1, pos.Top);
+                        }
+                        else
+                        {
+                            Bell();
+                        }
+                        break;
+                    case ConsoleKeyInfo k when k.Key == ConsoleKey.RightArrow:
+                        if (commandPos < command.Count)
+                        {
+                            Console.SetCursorPosition(pos.Left + 1, pos.Top);
+                        }
+                        else
+                        {
+                            Bell();
+                        }
+                        break;
+                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Home:
+                        Console.SetCursorPosition(prompt.Length, pos.Top);
+                        break;
+                    case ConsoleKeyInfo k when k.Key == ConsoleKey.End:
+                        Console.SetCursorPosition(prompt.Length + command.Count, pos.Top);
+                        break;
+                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Backspace:
+                        if (command.Count > 0)
+                        {
+                            command.RemoveAt(commandPos - 1);
+                            System.Diagnostics.Debug.WriteLine(commandAsString());
+                            Console.SetCursorPosition(prompt.Length, pos.Top);
+                            Console.Write(commandAsString());
                             Console.Write(' ');
                             Console.SetCursorPosition(pos.Left - 1, pos.Top);
                         }
                         else
                         {
                             // Sound Bell
-                            Console.Write('\a');
+                            Bell();
                         }
-
+                        break;
+                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Delete:
+                        if (command.Count > 0 && commandPos < command.Count)
+                        {
+                            command.RemoveAt(commandPos);
+                            System.Diagnostics.Debug.WriteLine(commandAsString());
+                            Console.SetCursorPosition(prompt.Length, pos.Top);
+                            Console.Write(commandAsString());
+                            Console.Write(' ');
+                            Console.SetCursorPosition(pos.Left, pos.Top);
+                        }
+                        else
+                        {
+                            // Sound Bell
+                            Bell();
+                        }
                         break;
                     case ConsoleKeyInfo k when k.Key == ConsoleKey.Enter:
                         Console.WriteLine();
-                        return command;
+                        return commandAsString();
                     case ConsoleKeyInfo k when k.Key == ConsoleKey.Tab:
-                        command = interpreter.Suggest(this, CommandMode, command);
+                        var tabSuggestion = interpreter.Suggest(this, CommandMode, commandAsString());
+                        command = new List<char>(tabSuggestion.ToCharArray());
                         Console.SetCursorPosition(prompt.Length, pos.Top);
-                        Console.Write($"{command}");
+                        Console.Write($"{commandAsString()}");
                         break;
                     case ConsoleKeyInfo k when k.KeyChar == '?':
                         Console.WriteLine();
-                        interpreter.Help(this, CommandMode, command);
-                        Console.Write($"{prompt}{command}");
+                        interpreter.Help(this, CommandMode, commandAsString());
+                        Console.Write($"{prompt}{commandAsString()}");
                         break;
                     case ConsoleKeyInfo k when k.KeyChar != 0 && (k.Modifiers == 0 || k.Modifiers == ConsoleModifiers.Shift):
-                        command += k.KeyChar;
-                        Console.Write(k.KeyChar);
+                        command.Insert(commandPos, k.KeyChar);
+                        if (command.Count == commandPos)
+                        {
+                            Console.Write(k.KeyChar);
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(prompt.Length, pos.Top);
+                            Console.Write(commandAsString());
+                            Console.SetCursorPosition(pos.Left + 1, pos.Top);
+                        }
+
                         break;
                     default:
                         break;
                 }
             }
+        }
+
+        private static void Bell()
+        {
+            Console.Write('\a');
         }
     }
 }

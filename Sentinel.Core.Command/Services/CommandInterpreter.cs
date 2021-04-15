@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
@@ -25,7 +27,7 @@ namespace Sentinel.Core.Command.Services
 
             commandCache = new Dictionary<CommandMode, Dictionary<string, Type>>();
 
-            var commandTypes = Assembly.GetAssembly(GetType()).GetTypes().Where(t => t.GetInterfaces().Contains(typeof(ICommand)));
+            var commandTypes = Assembly.GetAssembly(GetType()).GetTypes().Where(t => t.GetInterfaces().Contains(typeof(ICommand)) && !t.IsAbstract);
             foreach (var commandType in commandTypes)
             {
                 var attribute = commandType.GetCustomAttribute<CommandAttribute>();
@@ -38,23 +40,53 @@ namespace Sentinel.Core.Command.Services
             }
         }
 
-        public CommandReturn Execute(IShell shell, CommandMode mode, string command)
+        public int Execute(IShell shell, CommandMode mode, string commandLine)
         {
-            var commands = GetCommands(mode, command);
+            var commandsWithArgs = ParseCommandLine(commandLine);
 
-            switch (commands.Count)
+            var stringBuilder = new StringBuilder();
+            int exitCode = -1;
+
+            for (int i = 0; i < commandsWithArgs.Count; i++)
             {
-                case 0:
-                    shell.Out.WriteLine($"Command Not Found: \"{command}\"");
-                    break;
-                case 1:
-                    return ExecuteCommand(commands.First(), shell, command);
-                case > 1:
-                    shell.Out.WriteLine($"Ambiguous Command: \"{command}\"");
-                    break;
+                var commandWithArgs = commandsWithArgs[i];
+
+                var input = TextReader.Null;
+                var output = TextWriter.Null;
+                var error = shell.Error; // TODO support redirecting error output
+
+                // Setup inputs and outputs
+                if (commandsWithArgs.Count > 1)
+                {
+                    var str = stringBuilder.ToString();
+                    input = new StringReader(str);
+                    stringBuilder = new StringBuilder();
+                    output = new StringWriter(stringBuilder);
+                }
+
+                if (i == commandsWithArgs.Count - 1)
+                {
+                    output = shell.Output;
+                }
+
+                // Find the command and run it;
+                var commands = GetCommands(mode, commandWithArgs.Item1);
+
+                switch (commands.Count)
+                {
+                    case 0:
+                        shell.Error.WriteLine($"Command Not Found: \"{commandWithArgs.Item1}\"");
+                        return -1;
+                    case 1:
+                        exitCode = ExecuteCommand(commands.First(), shell, commandWithArgs.Item2, input, output, error);
+                        break;
+                    case > 1:
+                        shell.Error.WriteLine($"Ambiguous Command: \"{commandWithArgs.Item1}\"");
+                        return -1;
+                }
             }
 
-            return CommandReturn.Error;
+            return exitCode;
         }
 
         public void Help(IShell shell, CommandMode mode, string command)
@@ -74,8 +106,8 @@ namespace Sentinel.Core.Command.Services
                 switch (commands.Count)
                 {
                     case 1:
-                        var commandInstance = GetCommandInstance(commands[0], shell);
-                        commandInstance.Help(command);
+                        //var commandInstance = GetCommandInstance(commands[0], shell);
+                        //commandInstance.Help(command);
                         break;
                     case > 1:
                         Console.WriteLine();
@@ -94,12 +126,20 @@ namespace Sentinel.Core.Command.Services
 
         public string Suggest(IShell shell, CommandMode mode, string command)
         {
-            var commands = GetCommands(mode, command);
+            if (command.Trim().Length == 0)
+            {
+                return command;
+            }
+
+            var commandsWithArgs = ParseCommandLine(command);
+            var commandWithArgs = commandsWithArgs.Last();
+
+            var commands = GetCommands(mode, commandWithArgs.Item1);
             switch (commands.Count)
             {
                 case 1:
-                    var commandInstance = GetCommandInstance(commands[0], shell);
-                    return commandInstance.Suggest(command);
+                    var commandInstance = GetCommandInstance(commands.First(), shell);
+                    return commandInstance.Suggest(commandWithArgs.Item2);
                 case > 1:
                     Console.WriteLine();
 
@@ -108,21 +148,45 @@ namespace Sentinel.Core.Command.Services
                     
                     return HelperFunctions.LCDString(commandStrings);
                 case 0:
-                    shell.Out.Write('\a');
+                    shell.Output.Write('\a');
                     break;
             }
             return command;
         }
 
+
+        private List<Tuple<string, string[]>> ParseCommandLine(string commandLine)
+        {
+            var commandsWithArgs = commandLine.Split('|');
+            var parsedCommands = commandsWithArgs.Select(ParseCommandWithArgs).ToList();
+            return parsedCommands;
+        }
+
+        private Tuple<string, string[]> ParseCommandWithArgs(string commandWithArgs)
+        {
+            commandWithArgs = commandWithArgs.Trim();
+            var firstSpaceIndex = commandWithArgs.IndexOf(' ');
+            if (firstSpaceIndex == -1)
+            {
+                return new Tuple<string, string[]>(commandWithArgs, new string[] {});
+            }
+            var command = commandWithArgs.Substring(0, firstSpaceIndex);
+            var argsString = commandWithArgs.Substring(firstSpaceIndex + 1);
+            var args = argsString.ParseArguments().ToArray();
+            return new Tuple<string, string[]>(command, args);
+        }
+
+
+
+
+
+
         private List<Type> GetCommands(CommandMode mode, string command)
         {
-            var commandParts = command.Split(' ');
-            if (commandParts.Length == 0)
-            {
-                return new List<Type>();
-            }
+            var commands = commandCache.Where(kv => kv.Key == mode || kv.Key == CommandMode.Any)
+                .Select(kv => kv.Value).SelectMany(s => s).Where(kv => kv.Key.StartsWith(command))
+                .Select(kv => kv.Value).ToList();
 
-            var commands = commandCache[mode].Where(kv => kv.Key.StartsWith(commandParts[0])).Select(kv => kv.Value).ToList();
             return commands;
         }
 
@@ -136,22 +200,20 @@ namespace Sentinel.Core.Command.Services
             return commandInstance;
         }
 
-        private CommandReturn ExecuteCommand(Type commandType, IShell shell, string command)
+        private int ExecuteCommand(Type commandType, IShell shell, string[] args, TextReader input, TextWriter output, TextWriter error)
         {
             try
             {
-                var commandStr = HelperFunctions.GetSubCommand(command);
                 var commandInstance = GetCommandInstance(commandType, shell);
 
-                return commandInstance.Execute(commandStr);
+                return commandInstance.Main(args, input, output, error);
             }
             catch (Exception e)
             {
-                //logger.LogError(e, $"An Error Occurred Running \"{command}\"");
                 shell.Error.WriteLine(e.Message);
                 shell.Error.WriteLine(e.StackTrace);
                 shell.Error.Flush();
-                return CommandReturn.Error;
+                return -2;
             }
         }
 
