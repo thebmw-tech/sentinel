@@ -8,6 +8,7 @@ namespace Sentinel.Core.Repository.Interfaces
         IQueryable<T> GetCurrent();
         IQueryable<T> GetInProgress();
         IQueryable<T> GetSafe(); // Brandon Warner (2021-04-10): Do we need this?
-        public IQueryable<T> GetForRevision(int revisionId);
+        IQueryable<T> GetForRevision(int revisionId);
+        void CopySafeToRevision(int revisionId);
     }
 }

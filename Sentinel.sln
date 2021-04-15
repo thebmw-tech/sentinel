@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Core.Command", "Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Web", "Sentinel.Web\Sentinel.Web.csproj", "{6E33BCF1-6C38-4FA0-B898-6A2D78749265}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.Models", "Sentinel.Models\Sentinel.Models.csproj", "{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Release|Any CPU.Build.0 = Release|Any CPU
+		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

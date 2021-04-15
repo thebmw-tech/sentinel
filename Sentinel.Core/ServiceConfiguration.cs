@@ -6,6 +6,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using Sentinel.Core.Entities;
@@ -38,21 +39,28 @@ namespace Sentinel.Core
                 loggingBuilder.AddNLog();
             });
 
+            // Setup Mapper
+            services.AddAutoMapper(typeof(MappingProfile));
+
             // Setup Abstractions & Helpers
             services.AddTransient<IFileSystem, FileSystem>(); // TODO verify this should be transient
             services.AddTransient<ICommandExecutionHelper, CommandExecutionHelper>();
             services.AddTransient<Validator>();
 
             // Setup Repositories
-            services.AddTransient<IRevisionRepository, RevisionRepository>();
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IInterfaceRepository, InterfaceRepository>();
-            services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
+            services.AddTransient<IDestinationNatRuleRepository, DestinationNatRuleRepository>();
             services.AddTransient<IFirewallRuleRepository, FirewallRuleRepository>();
+            services.AddTransient<IFirewallTableRepository, FirewallTableRepository>();
+            services.AddTransient<IInterfaceRepository, InterfaceRepository>();
+            services.AddTransient<IRevisionRepository, RevisionRepository>();
+            services.AddTransient<ISourceNatRuleRepository, SourceNatRuleRepository>();
+            services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             // Setup Services
             services.AddTransient<IConfigurationGeneratorService, ConfigurationGeneratorService>();
             services.AddTransient<IInterfaceService, InterfaceService>();
+            services.AddTransient<IRevisionService, RevisionService>();
 
             // Add Platform Dependent Services
 #if DEBUG

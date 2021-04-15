@@ -8,4 +8,13 @@
     <ProjectReference Include="..\Sentinel.Core\Sentinel.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\Configuration\" />
+    <Folder Include="Commands\Interface\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
 </Project>

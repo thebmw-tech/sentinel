@@ -4,6 +4,7 @@
     {
         Any,
         Shell,
-        Configuration
+        Configuration,
+        Interface
     }
 }

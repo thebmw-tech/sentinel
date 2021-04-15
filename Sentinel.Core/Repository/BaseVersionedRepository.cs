@@ -40,5 +40,16 @@ namespace Sentinel.Core.Repository
         {
             return DbSet.Where(t => t.RevisionId == revisionId);
         }
+
+        public void CopySafeToRevision(int revisionId)
+        {
+            var safeItems = GetSafe();
+            foreach (var item in safeItems)
+            {
+                Create(item.GetCopyForRevision(revisionId));
+            }
+
+            SaveChanges();
+        }
     }
 }
