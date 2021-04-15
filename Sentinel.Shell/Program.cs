@@ -4,6 +4,7 @@ using Sentinel.Core;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
+using Sentry;
 
 namespace Sentinel.Shell
 {
@@ -11,6 +12,8 @@ namespace Sentinel.Shell
     {
         static void Main(string[] args)
         {
+            using var _ = SentrySdk.Init("https://70d83df83cd940cfa93bf0cc7ecc723f@sentry.thebmw.tech/5");
+
             Console.WriteLine("Sentinel ConsoleShell v0.1");
             Console.WriteLine("by thebmw");
             Console.WriteLine();

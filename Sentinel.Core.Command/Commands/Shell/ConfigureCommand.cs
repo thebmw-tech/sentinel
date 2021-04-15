@@ -25,7 +25,7 @@ namespace Sentinel.Core.Command.Commands.Shell
 
         public override string Suggest(string[] args)
         {
-            throw new System.NotImplementedException();
+            return "configure";
         }
     }
 }

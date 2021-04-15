@@ -126,12 +126,20 @@ namespace Sentinel.Core.Command.Services
 
         public string Suggest(IShell shell, CommandMode mode, string command)
         {
-            var commands = GetCommands(mode, command);
+            if (command.Trim().Length == 0)
+            {
+                return command;
+            }
+
+            var commandsWithArgs = ParseCommandLine(command);
+            var commandWithArgs = commandsWithArgs.Last();
+
+            var commands = GetCommands(mode, commandWithArgs.Item1);
             switch (commands.Count)
             {
                 case 1:
-                    //var commandInstance = GetCommandInstance(commands[0], shell);
-                    return command; //commandInstance.Suggest(command);
+                    var commandInstance = GetCommandInstance(commands.First(), shell);
+                    return commandInstance.Suggest(commandWithArgs.Item2);
                 case > 1:
                     Console.WriteLine();
 
@@ -202,7 +210,6 @@ namespace Sentinel.Core.Command.Services
             }
             catch (Exception e)
             {
-                //logger.LogError(e, $"An Error Occurred Running \"{command}\"");
                 shell.Error.WriteLine(e.Message);
                 shell.Error.WriteLine(e.StackTrace);
                 shell.Error.Flush();
