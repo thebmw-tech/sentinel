@@ -11,43 +11,58 @@ namespace Sentinel.Shell
 {
     public class ConsoleShell : IShell
     {
+        private const int HIST_LENGTH = 1000;
+
         private readonly CommandInterpreter interpreter;
+
+        private bool inLoop = true;
 
         public ConsoleShell(CommandInterpreter interpreter)
         {
             this.interpreter = interpreter;
+
+            Environment = new Dictionary<string, object>();
         }
 
-        public ShellContext Context { get; set; }
+        
+
+        public Dictionary<string,object> Environment { get; set; }
         public CommandMode CommandMode { get; set; } = CommandMode.Shell;
 
-        public TextWriter Out => Console.Out;
+        public TextWriter Output => Console.Out;
         public TextWriter Error => Console.Error;
+
+        public void SYS_SetCommandMode(CommandMode commandMode)
+        {
+            CommandMode = commandMode;
+        }
+
+        public void SYS_ExitShell()
+        {
+            inLoop = false;
+        }
 
         public void ShellLoop(Func<CommandMode, string> getPrompt)
         {
 
-            while (true)
+            while (inLoop)
             {
                 var prompt = getPrompt(CommandMode);
-                var command = GetCommandFromConsole(CommandMode, prompt);
+                var commandLine = GetCommandLineFromConsole(CommandMode, prompt);
 
-                var commandResult = interpreter.Execute(this, CommandMode, command);
+                var commandResult = interpreter.Execute(this, CommandMode, commandLine);
 
-                if (commandResult == CommandReturn.Exit)
-                {
-                    break;
-                }
+                Environment["LAST_EXIT_CODE"] = commandResult;
             }
         }
 
-        private string GetCommandFromConsole(CommandMode mode, string prompt)
+        private string GetCommandLineFromConsole(CommandMode mode, string prompt)
         {
             Console.Write(prompt);
 
             List<char> command = new List<char>();
 
-            var commandAsString = new Func<String>(() => new string(command.ToArray()));
+            var commandAsString = new Func<string>(() => new string(command.ToArray()));
 
             while (true)
             {
