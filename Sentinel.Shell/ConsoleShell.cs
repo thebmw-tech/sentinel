@@ -6,6 +6,9 @@ using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Command.Models;
 using Sentinel.Core.Command.Services;
+using Sentinel.Core.Repository;
+using Sentinel.Core.Repository.Interfaces;
+using Sentinel.Models;
 
 namespace Sentinel.Shell
 {
@@ -14,12 +17,14 @@ namespace Sentinel.Shell
         private const int HIST_LENGTH = 1000;
 
         private readonly CommandInterpreter interpreter;
+        private readonly ISystemConfigurationRepository systemConfigurationRepository;
 
         private bool inLoop = true;
 
-        public ConsoleShell(CommandInterpreter interpreter)
+        public ConsoleShell(CommandInterpreter interpreter, ISystemConfigurationRepository systemConfigurationRepository)
         {
             this.interpreter = interpreter;
+            this.systemConfigurationRepository = systemConfigurationRepository;
 
             Environment = new Dictionary<string, object>();
         }
@@ -42,12 +47,30 @@ namespace Sentinel.Shell
             inLoop = false;
         }
 
-        public void ShellLoop(Func<CommandMode, string> getPrompt)
+        private string GetPrompt(CommandMode mode)
+        {
+            var configuration = systemConfigurationRepository.GetCurrent();
+
+            switch (mode)
+            {
+                case CommandMode.Shell:
+                    return $"{configuration.Hostname}> ";
+                case CommandMode.Configuration:
+                    return $"{configuration.Hostname}(config)# ";
+                case CommandMode.Interface:
+                    var i = (InterfaceDTO) Environment["INTERFACE"];
+                    return $"{configuration.Hostname}(config-int{{{i.Name}}})# ";
+                default:
+                    return "";
+            }
+        }
+
+        public void ShellLoop()
         {
 
             while (inLoop)
             {
-                var prompt = getPrompt(CommandMode);
+                var prompt = GetPrompt(CommandMode);
                 var commandLine = GetCommandLineFromConsole(CommandMode, prompt);
 
                 var commandResult = interpreter.Execute(this, CommandMode, commandLine);

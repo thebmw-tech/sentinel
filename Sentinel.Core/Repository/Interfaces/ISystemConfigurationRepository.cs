@@ -7,5 +7,7 @@ namespace Sentinel.Core.Repository.Interfaces
         SystemConfiguration GetSafe();
         SystemConfiguration GetCurrent();
         SystemConfiguration GetInProgress();
+
+        void CopySafeToRevision(int revisionId);
     }
 }

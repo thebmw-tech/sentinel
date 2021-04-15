@@ -13,6 +13,14 @@ namespace Sentinel.Core.Repository
             this.revisionRepository = revisionRepository;
         }
 
+        public void CopySafeToRevision(int revisionId)
+        {
+            var safe = GetSafe();
+            var newCopy = safe.GetCopyForRevision(revisionId);
+            Create(newCopy);
+            SaveChanges();
+        }
+
         public SystemConfiguration GetCurrent()
         {
             var revisionId = revisionRepository.GetCurrentRevisionId();
@@ -44,5 +52,7 @@ namespace Sentinel.Core.Repository
             var configuration = DbSet.FirstOrDefault(sc => sc.RevisionId == revisionId);
             return configuration;
         }
+
+        
     }
 }

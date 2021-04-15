@@ -30,25 +30,9 @@ namespace Sentinel.Shell
 
             var shell = services.GetService<ConsoleShell>();
 
-            var getPrompt = new Func<CommandMode, string>((mode) =>
-            {
-                var systemConfigurationRepository = services.GetService<ISystemConfigurationRepository>();
-                var configuration = systemConfigurationRepository.GetCurrent();
-
-                switch (mode)
-                {
-                    case CommandMode.Shell:
-                        return $"{configuration.Hostname}> ";
-                    case CommandMode.Configuration:
-                        return $"{configuration.Hostname}(config)# ";
-                    default:
-                        return "";
-                }
-            });
-
             Console.WriteLine(" Done!");
 
-            shell.ShellLoop(getPrompt);
+            shell.ShellLoop();
         }
     }
 }
