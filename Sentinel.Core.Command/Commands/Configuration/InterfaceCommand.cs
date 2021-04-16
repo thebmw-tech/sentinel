@@ -25,7 +25,7 @@ namespace Sentinel.Core.Command.Commands.Configuration
                 return 1;
             }
 
-            shell.Environment["INTERFACE"] = GetOrNewInterface(args[0]);
+            shell.Environment["CONFIG_INTERFACE"] = GetOrNewInterface(args[0]);
 
             shell.SYS_SetCommandMode(CommandMode.Interface);
             return 0;

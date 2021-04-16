@@ -20,6 +20,7 @@ namespace Sentinel.Core.Command.Commands.Shell
         {
             var revision = revisionService.CreateRevisionForEditing();
             shell.Environment["CONFIG_REVISION_ID"] = revision.Id;
+            shell.Environment["CONFIG_REVISION_HAS_CHANGES"] = false;
 
             shell.SYS_SetCommandMode(CommandMode.Configuration);
 

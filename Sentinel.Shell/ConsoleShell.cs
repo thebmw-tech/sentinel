@@ -51,15 +51,17 @@ namespace Sentinel.Shell
         {
             var configuration = systemConfigurationRepository.GetCurrent();
 
+            int? revision = Environment.ContainsKey("CONFIG_REVISION_ID") ? (int)Environment["CONFIG_REVISION_ID"] : null;
+
             switch (mode)
             {
                 case CommandMode.Shell:
                     return $"{configuration.Hostname}> ";
                 case CommandMode.Configuration:
-                    return $"{configuration.Hostname}(config)# ";
+                    return $"{configuration.Hostname}(config{{{revision}}})# ";
                 case CommandMode.Interface:
-                    var i = (InterfaceDTO) Environment["INTERFACE"];
-                    return $"{configuration.Hostname}(config-int{{{i.Name}}})# ";
+                    var i = (InterfaceDTO) Environment["CONFIG_INTERFACE"];
+                    return $"{configuration.Hostname}(config{{{revision}}}-int{{{i.Name}}})# ";
                 default:
                     return "";
             }

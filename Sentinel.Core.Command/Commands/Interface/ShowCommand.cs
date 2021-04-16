@@ -17,8 +17,8 @@ namespace Sentinel.Core.Command.Commands.Interface
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
-            var @interface = (InterfaceDTO)shell.Environment["INTERFACE"];
-            var intJson = Newtonsoft.Json.JsonConvert.SerializeObject(@interface, Formatting.Indented);
+            var @interface = (InterfaceDTO)shell.Environment["CONFIG_INTERFACE"];
+            var intJson = JsonConvert.SerializeObject(@interface, Formatting.Indented);
             output.WriteLine(intJson);
             return 0;
         }
