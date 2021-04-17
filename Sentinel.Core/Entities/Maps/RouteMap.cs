@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using static Sentinel.Core.SentinelConstants;
 
@@ -9,6 +10,8 @@ namespace Sentinel.Core.Entities.Maps
         public override void Configure(EntityTypeBuilder<Route> builder)
         {
             base.Configure(builder);
+
+            builder.ToTable("Routes");
 
             builder.HasKey(r => new {r.RevisionId, r.Address, r.SubnetMask});
 
@@ -21,6 +24,9 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.Property(r => r.Version)
                 .IsRequired();
+
+            builder.Property(r => r.NextHopAddress)
+                .HasMaxLength(IP_ADDRESS_LENGTH);
 
             builder.Property(r => r.Description)
                 .HasMaxLength(DESCRIPTION_LENGTH);

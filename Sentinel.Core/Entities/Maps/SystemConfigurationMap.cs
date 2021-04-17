@@ -9,6 +9,8 @@ namespace Sentinel.Core.Entities.Maps
         {
             base.Configure(builder);
 
+            builder.ToTable("SystemConfigurations");
+
             builder.HasKey(sc => sc.RevisionId);
 
             builder.Property(sc => sc.Enabled)

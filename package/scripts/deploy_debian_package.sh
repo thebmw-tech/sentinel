@@ -25,3 +25,4 @@ SSH_CONNECTION="${REPO_SERVER_USER}@${REPO_SERVER_HOST}"
 scp ${BASE_SSH_ARGS} ${NEW_DEB_PACKAGE} ${SSH_CONNECTION}:/tmp/${BASE_PACKAGE}
 ssh ${BASE_SSH_ARGS} ${SSH_CONNECTION} reprepro -b /var/www/html/repos/debian -C ${COMPONENT} includedeb misty /tmp/${BASE_PACKAGE}
 ssh ${BASE_SSH_ARGS} ${SSH_CONNECTION} rm /tmp/${BASE_PACKAGE}
+ssh ${BASE_SSH_ARGS} ${SSH_CONNECTION} backblaze-b2 sync --delete /var/www/html/ b2://sentinel-repo/

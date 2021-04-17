@@ -18,9 +18,15 @@ namespace Sentinel.Core.Command.Commands.Interface
             this.subCommandInterpreter = subCommandInterpreter;
         }
 
+        private InterfaceDTO GetInterface()
+        {
+            var @interface = (InterfaceDTO)shell.Environment["CONFIG_INTERFACE"];
+            return @interface;
+        }
+
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
-            return 0;
+            return subCommandInterpreter.Execute(this, shell, args, input, output, error);
         }
 
         public override string Suggest(string[] args)

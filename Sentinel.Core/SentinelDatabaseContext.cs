@@ -58,14 +58,7 @@ namespace Sentinel.Core
 
         }
 
-        public DbSet<DestinationNatRule> DestinationNatRules { get; set; }
-        public DbSet<FirewallRule> FirewallRules { get; set; }
-        public DbSet<Gateway> Gateways { get; set; }
-        public DbSet<Interface> Interfaces { get; set; }
-        public DbSet<Revision> Revisions { get; set; }
-        public DbSet<Route> Routes { get; set; }
-        public DbSet<SourceNatRule> SourceNatRules { get; set; }
-        public DbSet<SystemConfiguration> SystemConfigurations { get; set; }
+
         public DbSet<User> Users { get; set; }
     }
 }

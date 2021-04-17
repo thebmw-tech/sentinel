@@ -10,6 +10,7 @@ namespace Sentinel.Core
         {
             CreateMap<Revision, RevisionDTO>().ReverseMap();
             CreateMap<Interface, InterfaceDTO>().ReverseMap();
+            CreateMap<FirewallTable, FirewallTableDTO>().ReverseMap();
         }
     }
 }

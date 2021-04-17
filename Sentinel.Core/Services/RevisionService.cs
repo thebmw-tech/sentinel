@@ -67,5 +67,11 @@ namespace Sentinel.Core.Services
             var revision = revisionRepository.Find(r => r.Id == revisionId);
             return mapper.Map<RevisionDTO>(revision);
         }
+
+        public RevisionDTO GetSafe()
+        {
+            var revisionId = revisionRepository.GetSafeRevisionId();
+            return GetRevisionById(revisionId);
+        }
     }
 }

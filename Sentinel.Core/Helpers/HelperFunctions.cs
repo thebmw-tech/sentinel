@@ -145,5 +145,19 @@ namespace Sentinel.Core.Helpers
             propertyInfo.SetValue(obj, value);
         }
 
+        public static Tuple<string, string[]> ParseCommandWithArgs(string commandWithArgs)
+        {
+            commandWithArgs = commandWithArgs.Trim();
+            var firstSpaceIndex = commandWithArgs.IndexOf(' ');
+            if (firstSpaceIndex == -1)
+            {
+                return new Tuple<string, string[]>(commandWithArgs, new string[] { });
+            }
+            var command = commandWithArgs.Substring(0, firstSpaceIndex);
+            var argsString = commandWithArgs.Substring(firstSpaceIndex + 1);
+            var args = argsString.ParseArguments().ToArray();
+            return new Tuple<string, string[]>(command, args);
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Sentinel.Core.Command.Attributes
 {
@@ -10,8 +11,8 @@ namespace Sentinel.Core.Command.Attributes
 
         public SubCommandAttribute(string baseCommand, string helpText)
         {
-            this.BaseCommand = baseCommand;
-            this.HelpText = helpText;
+            BaseCommand = baseCommand;
+            HelpText = helpText;
         }
     }
 }

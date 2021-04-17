@@ -158,28 +158,9 @@ namespace Sentinel.Core.Command.Services
         private List<Tuple<string, string[]>> ParseCommandLine(string commandLine)
         {
             var commandsWithArgs = commandLine.Split('|');
-            var parsedCommands = commandsWithArgs.Select(ParseCommandWithArgs).ToList();
+            var parsedCommands = commandsWithArgs.Select(HelperFunctions.ParseCommandWithArgs).ToList();
             return parsedCommands;
         }
-
-        private Tuple<string, string[]> ParseCommandWithArgs(string commandWithArgs)
-        {
-            commandWithArgs = commandWithArgs.Trim();
-            var firstSpaceIndex = commandWithArgs.IndexOf(' ');
-            if (firstSpaceIndex == -1)
-            {
-                return new Tuple<string, string[]>(commandWithArgs, new string[] {});
-            }
-            var command = commandWithArgs.Substring(0, firstSpaceIndex);
-            var argsString = commandWithArgs.Substring(firstSpaceIndex + 1);
-            var args = argsString.ParseArguments().ToArray();
-            return new Tuple<string, string[]>(command, args);
-        }
-
-
-
-
-
 
         private List<Type> GetCommands(CommandMode mode, string command)
         {

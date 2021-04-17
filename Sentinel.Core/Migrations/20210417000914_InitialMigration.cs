@@ -72,7 +72,7 @@ namespace Sentinel.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FirewallTable",
+                name: "FirewallTables",
                 columns: table => new
                 {
                     RevisionId = table.Column<int>(type: "INTEGER", nullable: false),
@@ -85,25 +85,7 @@ namespace Sentinel.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FirewallTable", x => new { x.RevisionId, x.Id });
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Gateways",
-                columns: table => new
-                {
-                    RevisionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    GatewayType = table.Column<int>(type: "INTEGER", nullable: false),
-                    InterfaceName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    IPAddress = table.Column<string>(type: "TEXT", maxLength: 45, nullable: false),
-                    IPVersion = table.Column<int>(type: "INTEGER", nullable: false),
-                    Enabled = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Gateways", x => new { x.RevisionId, x.Id });
+                    table.PrimaryKey("PK_FirewallTables", x => new { x.RevisionId, x.Id });
                 });
 
             migrationBuilder.CreateTable(
@@ -118,11 +100,9 @@ namespace Sentinel.Core.Migrations
                     IPv4ConfigurationType = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
                     IPv4Address = table.Column<string>(type: "TEXT", maxLength: 15, nullable: true),
                     IPv4SubnetMask = table.Column<byte>(type: "INTEGER", nullable: true),
-                    IPv4GatewayId = table.Column<Guid>(type: "TEXT", nullable: true),
                     IPv6ConfigurationType = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
                     IPv6Address = table.Column<string>(type: "TEXT", maxLength: 39, nullable: true),
                     IPv6SubnetMask = table.Column<byte>(type: "INTEGER", nullable: true),
-                    IPv6GatewayId = table.Column<Guid>(type: "TEXT", nullable: true),
                     InboundFirewallTableId = table.Column<Guid>(type: "TEXT", nullable: true),
                     OutboundFirewallTableId = table.Column<Guid>(type: "TEXT", nullable: true),
                     LocalFirewallTableId = table.Column<Guid>(type: "TEXT", nullable: true),
@@ -155,8 +135,9 @@ namespace Sentinel.Core.Migrations
                     RevisionId = table.Column<int>(type: "INTEGER", nullable: false),
                     Address = table.Column<string>(type: "TEXT", maxLength: 45, nullable: false),
                     SubnetMask = table.Column<byte>(type: "INTEGER", nullable: false),
+                    RouteType = table.Column<int>(type: "INTEGER", nullable: false),
                     Version = table.Column<int>(type: "INTEGER", nullable: false),
-                    GatewayId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    NextHopAddress = table.Column<string>(type: "TEXT", maxLength: 45, nullable: true),
                     Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
@@ -240,11 +221,6 @@ namespace Sentinel.Core.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Gateways_InterfaceName",
-                table: "Gateways",
-                column: "InterfaceName");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Revisions_CommitDate",
                 table: "Revisions",
                 column: "CommitDate");
@@ -276,10 +252,7 @@ namespace Sentinel.Core.Migrations
                 name: "FirewallRules");
 
             migrationBuilder.DropTable(
-                name: "FirewallTable");
-
-            migrationBuilder.DropTable(
-                name: "Gateways");
+                name: "FirewallTables");
 
             migrationBuilder.DropTable(
                 name: "Interfaces");

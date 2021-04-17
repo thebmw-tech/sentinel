@@ -6,5 +6,7 @@ namespace Sentinel.Core.Services.Interfaces
     {
         RevisionDTO CreateRevisionForEditing();
         RevisionDTO GetRevisionById(int revisionId);
+        RevisionDTO GetSafe();
+        
     }
 }

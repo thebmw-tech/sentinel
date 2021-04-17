@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,10 +10,18 @@ namespace Sentinel.Core.Command.Commands.Interface
 {
     public partial class SetCommand
     {
-        [SubCommand("name", "Sets the interface name")]
-        public void SetName(string[] args)
+        [SubCommand("description", "Sets the interface name")]
+        public int SetDescription(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
+            if (args.Length != 1)
+            {
+                error.WriteLine("Wrong number of arguments");
+                return 1;
+            }
 
+            // TODO validate incoming value
+            GetInterface().Description = args[0];
+            return 0;
         }
     }
 }

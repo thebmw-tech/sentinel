@@ -59,6 +59,7 @@ namespace Sentinel.Core
 
             // Setup Services
             services.AddTransient<IConfigurationGeneratorService, ConfigurationGeneratorService>();
+            services.AddTransient<IFirewallTableService, FirewallTableService>();
             services.AddTransient<IInterfaceService, InterfaceService>();
             services.AddTransient<IRevisionService, RevisionService>();
 
@@ -73,7 +74,6 @@ namespace Sentinel.Core
             services.AddTransient<IConfigurationGenerator<DestinationNatRule>, DummyConfigurationGenerator<DestinationNatRule>>();
             services.AddTransient<IConfigurationGenerator<FirewallRule>, IPTablesPersistentConfigurationGenerator>();
             services.AddTransient<IConfigurationGenerator<FirewallTable>, DummyConfigurationGenerator<FirewallTable>>();
-            services.AddTransient<IConfigurationGenerator<Gateway>, DummyConfigurationGenerator<Gateway>>();
             services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
             services.AddTransient<IConfigurationGenerator<Route>, DummyConfigurationGenerator<Route>>();
             services.AddTransient<IConfigurationGenerator<SourceNatRule>, DummyConfigurationGenerator<SourceNatRule>>();
