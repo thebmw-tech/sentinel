@@ -5,11 +5,13 @@ namespace Sentinel.Core.Entities
 {
     public class Route : BaseVersionedEntity<Route>
     {
+        public RouteType RouteType { get; set; }
+
         public string Address { get; set; }
         public byte SubnetMask { get; set; }
         public IPVersion Version { get; set; }
-        
-        public Guid GatewayId { get; set; }
+
+        public string NextHopAddress { get; set; }
 
         public string Description { get; set; }
     }

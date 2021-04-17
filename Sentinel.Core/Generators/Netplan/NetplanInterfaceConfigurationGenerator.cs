@@ -19,7 +19,6 @@ namespace Sentinel.Core.Generators.Netplan
         private readonly IInterfaceRepository interfaceRepository;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
         private readonly IRouteRepository routeRepository;
-        private readonly IGatewayRepository gatewayRepository;
 
         private readonly ICommandExecutionHelper commandExecutionHelper;
 
@@ -28,13 +27,12 @@ namespace Sentinel.Core.Generators.Netplan
         private readonly ILogger<NetplanInterfaceConfigurationGenerator> logger;
 
         public NetplanInterfaceConfigurationGenerator(IInterfaceRepository interfaceRepository, ISystemConfigurationRepository systemConfigurationRepository, 
-            IRouteRepository routeRepository, IGatewayRepository gatewayRepository, ICommandExecutionHelper commandExecutionHelper, IFileSystem fileSystem, 
+            IRouteRepository routeRepository, ICommandExecutionHelper commandExecutionHelper, IFileSystem fileSystem, 
             ILogger<NetplanInterfaceConfigurationGenerator> logger)
         {
             this.interfaceRepository = interfaceRepository;
             this.systemConfigurationRepository = systemConfigurationRepository;
             this.routeRepository = routeRepository;
-            this.gatewayRepository = gatewayRepository;
             this.commandExecutionHelper = commandExecutionHelper;
             this.fileSystem = fileSystem;
 
@@ -74,13 +72,8 @@ namespace Sentinel.Core.Generators.Netplan
 
             var currentSystemConfiguration = systemConfigurationRepository.GetCurrent();
 
-            var gatewayV4 = currentSystemConfiguration.IPv4DefaultGateway != null
-                ? gatewayRepository.GetCurrentGatewayById(currentSystemConfiguration.IPv4DefaultGateway.Value) : null;
-            var gatewayV6 = currentSystemConfiguration.IPv6DefaultGateway != null
-                ? gatewayRepository.GetCurrentGatewayById(currentSystemConfiguration.IPv6DefaultGateway.Value) : null;
-
-            var currentRoutes = routeRepository.GetCurrent().Select(r =>
-                new Tuple<Entities.Route, Entities.Gateway>(r, gatewayRepository.GetCurrentGatewayById(r.GatewayId))).ToList();
+            //var currentRoutes = routeRepository.GetCurrent().Select(r =>
+            //    new Tuple<Entities.Route, Entities.Gateway>(r, gatewayRepository.GetCurrentGatewayById(r.GatewayId))).ToList();
 
             var netplan = new Models.Configuration.Netplan.Netplan()
             {
@@ -114,17 +107,7 @@ namespace Sentinel.Core.Generators.Netplan
                     eth.Addresses.Add($"{iface.IPv6Address}/{iface.IPv6SubnetMask}");
                 }
 
-                if (gatewayV4?.InterfaceName == iface.Name)
-                {
-                    eth.Gateway4 = gatewayV4.IPAddress;
-                }
-
-                if (gatewayV6?.InterfaceName == iface.Name)
-                {
-                    eth.Gateway6 = gatewayV6.IPAddress;
-                }
-
-                AddRoutesToInterface(eth, iface.Name, currentRoutes);
+                //AddRoutesToInterface(eth, iface.Name, currentRoutes);
 
                 netplan.Network.Ethernets.Add(iface.Name, eth);
             }
@@ -154,7 +137,7 @@ namespace Sentinel.Core.Generators.Netplan
                     vlan.Addresses.Add($"{iface.IPv6Address}/{iface.IPv6SubnetMask}");
                 }
 
-                AddRoutesToInterface(vlan, iface.Name, currentRoutes);
+                //AddRoutesToInterface(vlan, iface.Name, currentRoutes);
 
                 netplan.Network.Vlans.Add(iface.Name.Replace('.', '_'), vlan);
             }
@@ -162,15 +145,15 @@ namespace Sentinel.Core.Generators.Netplan
             return netplan;
         }
 
-        private void AddRoutesToInterface(Models.Configuration.Netplan.Interface iface, string interfaceName,
-            List<Tuple<Entities.Route, Entities.Gateway>> routes)
-        {
-            var routesForInterface = routes.Where(r => r.Item2.InterfaceName == interfaceName).ToList();
-            if (routesForInterface.Any())
-            {
-                iface.Routes = routesForInterface.Select(t => new Route()
-                    {To = $"{t.Item1.Address}/{t.Item1.SubnetMask}", Via = t.Item2.IPAddress}).ToList();
-            }
-        }
+        //private void AddRoutesToInterface(Models.Configuration.Netplan.Interface iface, string interfaceName,
+        //    List<Tuple<Entities.Route, Entities.Gateway>> routes)
+        //{
+        //    var routesForInterface = routes.Where(r => r.Item2.InterfaceName == interfaceName).ToList();
+        //    if (routesForInterface.Any())
+        //    {
+        //        iface.Routes = routesForInterface.Select(t => new Route()
+        //            {To = $"{t.Item1.Address}/{t.Item1.SubnetMask}", Via = t.Item2.IPAddress}).ToList();
+        //    }
+        //}
     }
 }

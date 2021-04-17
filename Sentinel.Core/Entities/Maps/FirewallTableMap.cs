@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using static Sentinel.Core.SentinelConstants;
 
@@ -9,6 +10,8 @@ namespace Sentinel.Core.Entities.Maps
         public override void Configure(EntityTypeBuilder<FirewallTable> builder)
         {
             base.Configure(builder);
+
+            builder.ToTable("FirewallTables");
 
             builder.HasKey(t => new { t.RevisionId, t.Id });
 

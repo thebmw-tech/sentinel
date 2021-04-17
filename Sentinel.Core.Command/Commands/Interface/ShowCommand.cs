@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Newtonsoft.Json;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
+using Sentinel.Core.Services.Interfaces;
 using Sentinel.Models;
 
 namespace Sentinel.Core.Command.Commands.Interface
@@ -10,16 +12,20 @@ namespace Sentinel.Core.Command.Commands.Interface
     [Command(CommandMode.Interface, "show", "Shows information about the current interface.")]
     public class ShowCommand : BaseCommand
     {
-        public ShowCommand(IShell shell) : base(shell)
+        private readonly IInterfaceService interfaceService;
+
+        public ShowCommand(IShell shell, IInterfaceService interfaceService) : base(shell)
         {
-            
+            this.interfaceService = interfaceService;
         }
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
-            var @interface = (InterfaceDTO)shell.Environment["INTERFACE"];
-            var intJson = Newtonsoft.Json.JsonConvert.SerializeObject(@interface, Formatting.Indented);
-            output.WriteLine(intJson);
+            var revisionId = (int)shell.Environment["CONFIG_REVISION_ID"];
+            var @interface = (InterfaceDTO)shell.Environment["CONFIG_INTERFACE"];
+
+            interfaceService.PrintInterfaceToTextWriter(revisionId, @interface, output);
+            
             return 0;
         }
 

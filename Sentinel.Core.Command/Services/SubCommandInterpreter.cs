@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Sentinel.Core.Command.Attributes;
@@ -30,8 +31,11 @@ namespace Sentinel.Core.Command.Services
             }
         }
 
-        public CommandReturn Execute(T instance, IShell shell, string command)
+        public int Execute(T instance, IShell shell, string[] commandLine, TextReader input, TextWriter output, TextWriter error)
         {
+            var command = commandLine[0];
+            var args = commandLine.Skip(1).ToArray();
+
             var commands = GetCommands(command);
 
             switch (commands.Count)
@@ -40,13 +44,13 @@ namespace Sentinel.Core.Command.Services
                     Console.WriteLine($"Command Not Found: \"{command}\"");
                     break;
                 case 1:
-                    return ExecuteCommand(instance, commands.First(), command);
+                    return ExecuteCommand(instance, commands.First(), args, input, output, error);
                 case > 1:
                     Console.WriteLine($"Ambiguous Command: \"{command}\"");
                     break;
             }
 
-            return CommandReturn.Error;
+            return 1;
         }
 
         public void Help(IShell shell, string command)
@@ -64,35 +68,28 @@ namespace Sentinel.Core.Command.Services
 
         private List<MethodInfo> GetCommands(string command)
         {
-            var commandParts = command.Split(' ');
-            if (commandParts.Length == 0)
-            {
-                return new List<MethodInfo>();
-            }
-
-            var commands = commandCache.Where(kv => kv.Key.StartsWith(commandParts[0])).Select(kv => kv.Value).ToList();
+            var commands = commandCache.Where(kv => kv.Key.StartsWith(command)).Select(kv => kv.Value).ToList();
             return commands;
         }
 
-        private CommandReturn ExecuteCommand(T instance, MethodInfo commandMethod, string command)
+        private int ExecuteCommand(T instance, MethodInfo commandMethod, string[] args, TextReader input, TextWriter output, TextWriter error)
         {
             try
             {
-                var commandStr = HelperFunctions.GetSubCommand(command);
-                var result = commandMethod.Invoke(instance, new object?[] { commandStr });
+                var result = commandMethod.Invoke(instance, new object[] { args, input, output, error });
 
                 if (result != null)
-                    return (CommandReturn) result;
+                    return (int) result;
 
-                return CommandReturn.Normal;
+                return 0;
             }
             catch (Exception e)
             {
                 //logger.LogError(e, $"An Error Occurred Running \"{command}\"");
-                Console.Error.WriteLine(e.Message);
-                Console.Error.WriteLine(e.StackTrace);
-                Console.Error.Flush();
-                return CommandReturn.Error;
+                error.WriteLine(e.Message);
+                error.WriteLine(e.StackTrace);
+                error.Flush();
+                return 1;
             }
         }
     }

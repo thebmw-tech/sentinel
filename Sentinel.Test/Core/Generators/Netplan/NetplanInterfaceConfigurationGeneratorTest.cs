@@ -67,27 +67,7 @@ namespace Sentinel.Test.Core.Generators.Netplan
             diHelper.GetMock<ISystemConfigurationRepository>().Setup(s => s.GetCurrent())
                 .Returns(new SystemConfiguration());
 
-            var testGateway = new Gateway()
-            {
-                Enabled = true,
-                Id = Guid.NewGuid(),
-                InterfaceName = "eth0",
-                IPAddress = "192.168.1.254"
-            };
-
-            diHelper.GetMock<IGatewayRepository>().Setup(s => s.GetCurrentGatewayById(testGateway.Id))
-                .Returns(testGateway);
-
-            var testRoute = new Route()
-            {
-                Enabled = true,
-                GatewayId = testGateway.Id,
-                Address = "192.168.2.0",
-                SubnetMask = 24
-            };
-
-            diHelper.GetMock<IRouteRepository>().Setup(s => s.GetCurrent()).Returns(new List<Route>() { testRoute }.AsQueryable());
-
+            
             diHelper.GetMock<IInterfaceRepository>().Setup(s => s.GetCurrent())
                 .Returns(
                     new List<Sentinel.Core.Entities.Interface>()

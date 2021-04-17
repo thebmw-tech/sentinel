@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Sentinel.Core.Helpers
@@ -113,7 +114,50 @@ namespace Sentinel.Core.Helpers
             return command.Substring(firstSpaceIndex + 1);
         }
 
+        public static void SetProperty<TObject>(TObject obj, String propertyName, String propertyValue)
+        {
+            var objType = typeof(TObject);
+            var propertyInfo = objType.GetProperty(propertyName);
+            if (propertyInfo == null)
+            {
+                throw new ArgumentException("Could not find property.", propertyName);
+            }
 
+            object value = null;
+            if (propertyValue != "null")
+            {
+                if (propertyInfo.PropertyType.IsConstructedGenericType)
+                {
+                    var propertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
+                    value = Convert.ChangeType(propertyValue, propertyType);
+                }
+                else
+                {
+                    value = Convert.ChangeType(propertyValue, propertyInfo.PropertyType);
+                }
+
+                if (value == null)
+                {
+                    throw new ArgumentException($"Invalid value {propertyValue}.", propertyName);
+                }
+            }
+
+            propertyInfo.SetValue(obj, value);
+        }
+
+        public static Tuple<string, string[]> ParseCommandWithArgs(string commandWithArgs)
+        {
+            commandWithArgs = commandWithArgs.Trim();
+            var firstSpaceIndex = commandWithArgs.IndexOf(' ');
+            if (firstSpaceIndex == -1)
+            {
+                return new Tuple<string, string[]>(commandWithArgs, new string[] { });
+            }
+            var command = commandWithArgs.Substring(0, firstSpaceIndex);
+            var argsString = commandWithArgs.Substring(firstSpaceIndex + 1);
+            var args = argsString.ParseArguments().ToArray();
+            return new Tuple<string, string[]>(command, args);
+        }
 
     }
 }

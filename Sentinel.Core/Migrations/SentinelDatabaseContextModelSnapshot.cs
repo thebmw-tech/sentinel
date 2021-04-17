@@ -206,46 +206,7 @@ namespace Sentinel.Core.Migrations
 
                     b.HasKey("RevisionId", "Id");
 
-                    b.ToTable("FirewallTable");
-                });
-
-            modelBuilder.Entity("Sentinel.Core.Entities.Gateway", b =>
-                {
-                    b.Property<int>("RevisionId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GatewayType")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("IPAddress")
-                        .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("IPVersion")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("InterfaceName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("RevisionId", "Id");
-
-                    b.HasIndex("InterfaceName");
-
-                    b.ToTable("Gateways");
+                    b.ToTable("FirewallTables");
                 });
 
             modelBuilder.Entity("Sentinel.Core.Entities.Interface", b =>
@@ -273,9 +234,6 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(0);
 
-                    b.Property<Guid?>("IPv4GatewayId")
-                        .HasColumnType("TEXT");
-
                     b.Property<byte?>("IPv4SubnetMask")
                         .HasColumnType("INTEGER");
 
@@ -287,9 +245,6 @@ namespace Sentinel.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(0);
-
-                    b.Property<Guid?>("IPv6GatewayId")
-                        .HasColumnType("TEXT");
 
                     b.Property<byte?>("IPv6SubnetMask")
                         .HasColumnType("INTEGER");
@@ -359,8 +314,12 @@ namespace Sentinel.Core.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("GatewayId")
+                    b.Property<string>("NextHopAddress")
+                        .HasMaxLength(45)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("RouteType")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Version")
                         .HasColumnType("INTEGER");

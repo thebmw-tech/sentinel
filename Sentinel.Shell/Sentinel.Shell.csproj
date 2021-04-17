@@ -4,6 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <SignAssembly>true</SignAssembly>
+    <Authors>thebmw</Authors>
+    <Company>thebmw Tech</Company>
+    <Copyright>2021 Brandon Warner</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

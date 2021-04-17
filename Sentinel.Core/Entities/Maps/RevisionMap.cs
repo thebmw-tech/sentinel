@@ -10,6 +10,8 @@ namespace Sentinel.Core.Entities.Maps
         {
             base.Configure(builder);
 
+            builder.ToTable("Revisions");
+
             builder.HasKey(r => r.Id);
 
             builder.Property(r => r.CreatedDate)

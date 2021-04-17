@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Sentinel.Shell": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false
+    }
+  }
+}

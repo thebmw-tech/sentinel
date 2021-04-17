@@ -9,6 +9,8 @@ namespace Sentinel.Core.Entities.Maps
         {
             base.Configure(builder);
 
+            builder.ToTable("FirewallRules");
+
             builder.Property(r => r.Action)
                 .IsRequired();
 

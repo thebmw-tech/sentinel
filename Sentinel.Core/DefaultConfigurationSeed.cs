@@ -53,7 +53,7 @@ namespace Sentinel.Core
                 InterfaceType = InterfaceType.Ethernet,
                 Enabled = true,
                 IPv6ConfigurationType = IpConfigurationTypeV6.None,
-                IPv4ConfigurationType = IpConfigurationTypeV4.DHCP,
+                IPv4ConfigurationType = IpConfigurationTypeV4.Static,
                 IPv4Address = "192.168.1.1",
                 IPv4SubnetMask = 24
             };

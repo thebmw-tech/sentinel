@@ -12,6 +12,8 @@ namespace Sentinel.Core.Entities.Maps
         {
             base.Configure(builder);
 
+            builder.ToTable("Interfaces");
+
             // Setup Primary Key
             builder.HasKey(i => new {i.RevisionId, i.Name});
 
