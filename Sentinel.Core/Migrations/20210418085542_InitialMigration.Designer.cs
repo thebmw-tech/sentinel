@@ -9,8 +9,8 @@ using Sentinel.Core;
 namespace Sentinel.Core.Migrations
 {
     [DbContext(typeof(SentinelDatabaseContext))]
-    [Migration("20210418000120_AddRevisionDeleteHasChanges")]
-    partial class AddRevisionDeleteHasChanges
+    [Migration("20210418085542_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -227,30 +227,6 @@ namespace Sentinel.Core.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("IPv4Address")
-                        .HasMaxLength(15)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("IPv4ConfigurationType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
-
-                    b.Property<byte?>("IPv4SubnetMask")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("IPv6Address")
-                        .HasMaxLength(39)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("IPv6ConfigurationType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
-
-                    b.Property<byte?>("IPv6SubnetMask")
-                        .HasColumnType("INTEGER");
-
                     b.Property<Guid?>("InboundFirewallTableId")
                         .HasColumnType("TEXT");
 
@@ -269,6 +245,35 @@ namespace Sentinel.Core.Migrations
                     b.HasKey("RevisionId", "Name");
 
                     b.ToTable("Interfaces");
+                });
+
+            modelBuilder.Entity("Sentinel.Core.Entities.InterfaceAddress", b =>
+                {
+                    b.Property<int>("RevisionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("InterfaceName")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AddressConfigurationType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(45)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte?>("SubnetMask")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("RevisionId", "InterfaceName", "AddressConfigurationType", "Address");
+
+                    b.ToTable("InterfaceAddresses");
                 });
 
             modelBuilder.Entity("Sentinel.Core.Entities.Revision", b =>
@@ -298,6 +303,9 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
 
+                    b.Property<DateTime?>("Locked")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CommitDate");
@@ -325,6 +333,11 @@ namespace Sentinel.Core.Migrations
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("InterfaceName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NextHopAddress")
                         .HasMaxLength(45)

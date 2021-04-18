@@ -1,9 +1,9 @@
 ﻿namespace Sentinel.Core.Enums
 {
-    public enum IpConfigurationTypeV6 : int
+    public enum AddressConfigurationType : int
     {
-        None,
         Static,
+        DHCP,
         DHCP6
     }
 }

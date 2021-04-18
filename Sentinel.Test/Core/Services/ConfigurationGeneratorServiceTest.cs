@@ -41,7 +41,7 @@ namespace Sentinel.Test.Core.Services
 
             service.Generate();
 
-            configurationGeneratorMock.Verify(v => v.Generate(), Times.Exactly(7));
+            configurationGeneratorMock.Verify(v => v.Generate(), Times.Exactly(8));
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Sentinel.Test.Core.Services
 
             service.Apply();
 
-            configurationGeneratorMock.Verify(v => v.Apply(), Times.Exactly(7));
+            configurationGeneratorMock.Verify(v => v.Apply(), Times.Exactly(8));
         }
     }
 }

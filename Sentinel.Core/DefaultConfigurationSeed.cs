@@ -51,15 +51,22 @@ namespace Sentinel.Core
                 Name = kernelInterfaces.First(),
                 Description = "LAN",
                 InterfaceType = InterfaceType.Ethernet,
-                Enabled = true,
-                IPv6ConfigurationType = IpConfigurationTypeV6.None,
-                IPv4ConfigurationType = IpConfigurationTypeV4.Static,
-                IPv4Address = "192.168.1.1",
-                IPv4SubnetMask = 24
+                Enabled = true
             };
 
             var interfaceRepo = services.GetService<IInterfaceRepository>();
             lanInterface = interfaceRepo.Create(lanInterface);
+
+            var lanAddress = new InterfaceAddress()
+            {
+                RevisionId = revision.Id,
+                InterfaceName = lanInterface.Name,
+                Address = "192.168.1.1",
+                SubnetMask = 24
+            };
+
+            var interfaceAddressRepo = services.GetService<IInterfaceAddressRepository>();
+            interfaceAddressRepo.Create(lanAddress);
 
 
             revisionRepo.SaveChanges();

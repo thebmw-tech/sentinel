@@ -56,7 +56,7 @@ namespace Sentinel.Core.Command.Services
             return 1;
         }
 
-        public void Help(IShell shell, string command)
+        public void Help(IShell shell, string[] args)
         {
             var commands = commandCache.Values.Select(m => m.GetCustomAttribute<SubCommandAttribute>())
                 .Where(a => a != null).Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText)).ToList();

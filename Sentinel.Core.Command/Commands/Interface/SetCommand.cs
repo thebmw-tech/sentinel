@@ -27,5 +27,10 @@ namespace Sentinel.Core.Command.Commands.Interface
         {
             return subCommandInterpreter.Suggest(shell, args);
         }
+
+        public override void Help(string[] args, TextWriter output)
+        {
+            subCommandInterpreter.Help(shell, args);
+        }
     }
 }
