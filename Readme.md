@@ -5,7 +5,7 @@
 ## Why
 - TODO
 ## Repos
-`deb https://repo.sentinel.thebmw.tech/repos/debian/ misty <cycle>`
+`deb https://sentinel-repo.s3.us-west-002.backblazeb2.com/repos/debian/ misty <cycle>`
 
 |Cycle|Explaination|
 |--|--|

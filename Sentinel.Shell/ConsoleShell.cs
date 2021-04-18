@@ -66,7 +66,7 @@ namespace Sentinel.Shell
                 var configuration = systemConfigurationRepository.GetCurrent();
                 hostname = configuration.Hostname;
             }
-            catch (Exception e)
+            catch
             {
                 Console.Error.WriteLine("ERROR LOADING CONFIGURATION");
                 Console.Error.WriteLine("You may need to run database migrations manually");

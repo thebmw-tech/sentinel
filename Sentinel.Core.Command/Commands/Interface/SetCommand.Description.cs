@@ -37,10 +37,14 @@ namespace Sentinel.Core.Command.Commands.Interface
             {
                 if (args.Length > 0)
                 {
+                    if (string.IsNullOrEmpty(args[0]))
+                    {
+                        return " ";
+                    }
                     return args[0];
                 }
 
-                return "";
+                return " ";
             }
         }
     }

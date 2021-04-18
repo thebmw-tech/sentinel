@@ -94,25 +94,30 @@ namespace Sentinel.Core.Command.Services
             return exitCode;
         }
 
-        public void Help(IShell shell, CommandMode mode, string command)
+        public void Help(IShell shell, CommandMode mode, string commandLine)
         {
-            if (String.IsNullOrWhiteSpace(command))
+            var output = shell.Output;
+
+            if (String.IsNullOrWhiteSpace(commandLine))
             {
                 var commandAttributes = GetAttributesForCommands(commandCache[mode].Values.ToList())
+                    .Where(a => a.PublicCommand)
                     .Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText))
                     .ToList();
 
-                ConsoleFormatHelper.WriteSpacedTuples(commandAttributes);
+                ConsoleFormatHelper.WriteSpacedTuples(commandAttributes, output);
             }
             else
             {
-                var commands = GetCommands(mode, command);
+                var commandsWithArgs = ParseCommandLine(commandLine);
+                var commandWithArgs = commandsWithArgs.Last();
+                var commands = GetCommands(mode, commandWithArgs.Item1);
 
                 switch (commands.Count)
                 {
                     case 1:
-                        //var commandInstance = GetCommandInstance(commands[0], shell);
-                        //commandInstance.Help(command);
+                        var commandInstance = GetCommandInstance(commands[0], shell);
+                        commandInstance.Help(commandWithArgs.Item2, output);
                         break;
                     case > 1:
                         Console.WriteLine();
@@ -121,7 +126,6 @@ namespace Sentinel.Core.Command.Services
                             .Where(s => s != null).Select(s => s.BaseCommand).ToList();
 
                         break;
-                        //return HelperFunctions.LCDString(commandStrings);
                     case 0:
                         Console.Write('\a');
                         break;
@@ -146,8 +150,6 @@ namespace Sentinel.Core.Command.Services
                     var commandInstance = GetCommandInstance(commands.First(), shell);
                     return $"{commandWithArgs.Item1} {commandInstance.Suggest(commandWithArgs.Item2)}";
                 case > 1:
-                    Console.WriteLine();
-
                     var commandStrings = commands.Select(c => c.GetCustomAttribute<CommandAttribute>())
                         .Where(s => s != null).Select(s => s.BaseCommand).ToList();
                     

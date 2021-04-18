@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.Linq;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
+using Sentinel.Core.Helpers;
 using Sentinel.Core.Services.Interfaces;
 using Sentinel.Models;
 
@@ -49,7 +51,30 @@ namespace Sentinel.Core.Command.Commands.Configuration
 
         public override string Suggest(string[] args)
         {
-            return "interface";
+            if (args.Length == 0)
+            {
+                return "";
+            }
+
+            var interfaceNames = interfaceService.GetInterfacesInRevision(shell.GetEnvironment<int>("CONFIG_REVISION_ID"))
+                .Where(i => i.Name.StartsWith(args[0])).Select(i=>i.Name).ToList();
+
+            return HelperFunctions.LCDString(interfaceNames);
+        }
+
+        public override void Help(string[] args, TextWriter output)
+        {
+            var interfaces = interfaceService.GetInterfacesInRevision(shell.GetEnvironment<int>("CONFIG_REVISION_ID"));
+
+            if (args.Length > 0)
+            {
+                interfaces = interfaces.Where(i => i.Name.StartsWith(args[0])).ToList();
+            }
+
+            foreach (var @interface in interfaces)
+            {
+                output.WriteLine($" {@interface.Name}");
+            }
         }
     }
 }

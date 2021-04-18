@@ -10,5 +10,7 @@ namespace Sentinel.Core.Command.Interfaces
         int Main(string[] args, TextReader input, TextWriter output, TextWriter error);
 
         string Suggest(string[] args);
+
+        void Help(string[] args, TextWriter output);
     }
 }

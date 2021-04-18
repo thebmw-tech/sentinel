@@ -156,5 +156,22 @@ namespace Sentinel.Core.Services
                 revisionRepository.SaveChanges();
             }
         }
+
+        public void CleanupAllLocks()
+        {
+            using var transaction = dbContext.Database.BeginTransaction();
+
+            var revisionsWithLocks = revisionRepository.Filter(r => r.Locked.HasValue).ToList();
+
+            foreach (var revsion in revisionsWithLocks)
+            {
+                revsion.Locked = null;
+                revisionRepository.Update(revsion);
+            }
+
+            revisionRepository.SaveChanges();
+
+            transaction.Commit();
+        }
     }
 }

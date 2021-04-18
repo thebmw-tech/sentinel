@@ -61,7 +61,7 @@ namespace Sentinel.Core.Command.Services
             var commands = commandCache.Values.Select(m => m.GetCustomAttribute<SubCommandAttribute>())
                 .Where(a => a != null).Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText)).ToList();
 
-            ConsoleFormatHelper.WriteSpacedTuples(commands);
+            ConsoleFormatHelper.WriteSpacedTuples(commands, shell.Output);
         }
 
         public string Suggest(IShell shell, string[] commandLine)

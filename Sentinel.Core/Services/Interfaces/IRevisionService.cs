@@ -14,5 +14,6 @@ namespace Sentinel.Core.Services.Interfaces
         RevisionDTO GetSafe();
         void UpdateRevisionLock(int revisionId);
         void UnlockRevision(int revisionId);
+        void CleanupAllLocks();
     }
 }
