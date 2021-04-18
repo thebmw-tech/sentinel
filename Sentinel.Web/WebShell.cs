@@ -25,6 +25,11 @@ namespace Sentinel.Web
 
         public TextWriter Output { get; private set; }
 
+        public T GetEnvironment<T>(string key)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void SYS_ExitShell()
         {
             

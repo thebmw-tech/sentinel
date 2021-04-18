@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services.Interfaces;
@@ -44,8 +47,66 @@ namespace Sentinel.Core.Services
             this.logger = logger;
         }
 
+        public void CleanupOldLocks()
+        {
+            using var transaction = dbContext.Database.BeginTransaction();
+
+            var revisionsWithLocks = revisionRepository.Filter(r => r.Locked.HasValue).ToList();
+
+            foreach (var revsion in revisionsWithLocks)
+            {
+                if ((DateTime.UtcNow - revsion.Locked).Value.TotalMinutes > SentinelConstants.LOCK_EXP_MIN)
+                {
+                    revsion.Locked = null;
+                    revisionRepository.Update(revsion);
+                }
+            }
+
+            revisionRepository.SaveChanges();
+
+            transaction.Commit();
+        }
+
+        public void CommitRevision(int revisionId)
+        {
+            using var transaction = dbContext.Database.BeginTransaction();
+            
+            throw new System.NotImplementedException();
+        }
+
+        public void ConfirmRevision(int revisionId)
+        {
+            var revision = revisionRepository.Find(r => r.Id == revisionId);
+            revision.ConfirmDate = DateTime.UtcNow;
+            revision.Locked = null;
+            revisionRepository.Update(revision);
+            revisionRepository.SaveChanges();
+        }
+
         public RevisionDTO CreateRevisionForEditing()
         {
+            var inProgress = revisionRepository.GetInProgressRevisionId();
+            if (inProgress.HasValue)
+            {
+                var inProgressRevision = revisionRepository.Find(r => r.Id == inProgress);
+                if (inProgressRevision.Locked.HasValue)
+                {
+                    // TODO create custom exception for here.
+                    throw new Exception("Someone else is editing the configuration already");
+                }
+                if (!inProgressRevision.Deleted && !inProgressRevision.HasChanges)
+                {
+                    inProgressRevision.Locked = DateTime.UtcNow;
+                    revisionRepository.Update(inProgressRevision);
+                    revisionRepository.SaveChanges();
+
+                    return mapper.Map<RevisionDTO>(inProgressRevision);
+                }
+                // TODO create custom exception for here
+                throw new Exception("Unlocked Configuration In Progress");
+            }
+
+
             using var transaction = dbContext.Database.BeginTransaction();
 
             var revision = revisionRepository.CreateNewRevision();
@@ -72,6 +133,28 @@ namespace Sentinel.Core.Services
         {
             var revisionId = revisionRepository.GetSafeRevisionId();
             return GetRevisionById(revisionId);
+        }
+
+        public void UpdateRevisionLock(int revisionId)
+        {
+            var revision = revisionRepository.Find(r => r.Id == revisionId);
+            if (revision != null)
+            {
+                revision.Locked = DateTime.UtcNow;
+                revisionRepository.Update(revision);
+                revisionRepository.SaveChanges();
+            }
+        }
+
+        public void UnlockRevision(int revisionId)
+        {
+            var revision = revisionRepository.Find(r => r.Id == revisionId);
+            if (revision != null)
+            {
+                revision.Locked = null;
+                revisionRepository.Update(revision);
+                revisionRepository.SaveChanges();
+            }
         }
     }
 }

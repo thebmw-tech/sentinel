@@ -1,8 +1,10 @@
-﻿using Sentinel.Core.Command.Attributes;
+﻿using System;
+using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using System.IO;
 using Sentinel.Core.Services.Interfaces;
+using Sentinel.Models;
 
 namespace Sentinel.Core.Command.Commands.Shell
 {
@@ -18,10 +20,29 @@ namespace Sentinel.Core.Command.Commands.Shell
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
-            var revision = revisionService.CreateRevisionForEditing();
-            shell.Environment["CONFIG_REVISION_ID"] = revision.Id;
-            shell.Environment["CONFIG_REVISION_HAS_CHANGES"] = false;
+            if (args.Length > 1)
+            {
+                error.WriteLine("Invalid number of arguments");
+                return 1;
+            }
 
+            RevisionDTO revision = null;
+
+            if (args.Length == 0)
+            {
+                revision = revisionService.CreateRevisionForEditing();
+            }
+            else
+            {
+                var arg = args[0];
+                if ("resume".StartsWith(arg))
+                {
+
+                }
+                throw new NotImplementedException();
+            }
+
+            shell.Environment["CONFIG_REVISION_ID"] = revision.Id;
             shell.SYS_SetCommandMode(CommandMode.Configuration);
 
             return 0;

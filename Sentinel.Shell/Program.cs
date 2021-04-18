@@ -4,6 +4,7 @@ using Sentinel.Core;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
+using Sentinel.Core.Services.Interfaces;
 using Sentry;
 
 namespace Sentinel.Shell
@@ -37,6 +38,9 @@ namespace Sentinel.Shell
                 .BuildServiceProvider();
 
             HelperFunctions.VerifyFirstRun(services);
+
+            var revisionServce = services.GetService<IRevisionService>();
+            revisionServce.CleanupOldLocks();
 
             var shell = services.GetService<ConsoleShell>();
 

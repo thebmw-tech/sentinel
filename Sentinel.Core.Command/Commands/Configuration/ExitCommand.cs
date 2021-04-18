@@ -21,19 +21,20 @@ namespace Sentinel.Core.Command.Commands.Configuration
             if (args.Length == 0)
             {
                 var revisionId = (int)shell.Environment["CONFIG_REVISION_ID"];
-                var revisionHasChanges = (bool) shell.Environment["CONFIG_REVISION_HAS_CHANGES"]; // TODO this should be less manual
                 var revision = revisionService.GetRevisionById(revisionId);
-                if (revisionHasChanges && !revision.CommitDate.HasValue)
+                if (revision.HasChanges && !revision.CommitDate.HasValue)
                 {
                     error.WriteLine("Please \"commit\" or \"exit discard\" to leave configuration mode.");
                     return 1;
                 }
 
-                if (revisionHasChanges && !revision.ConfirmDate.HasValue)
+                if (revision.HasChanges && !revision.ConfirmDate.HasValue)
                 {
-                    error.WriteLine("You have not confirmed configuraiton. Please confirm or rollback before exiting.");
+                    error.WriteLine("You have not confirmed configuraiton. Please \"confirm\" or \"rollback\" before exiting.");
                     return 1;
                 }
+
+                revisionService.UnlockRevision(revisionId);
 
                 var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG"));
                 foreach (var key in keysToDelete)

@@ -31,6 +31,11 @@ namespace Sentinel.Core.Command.Services
             foreach (var commandType in commandTypes)
             {
                 var attribute = commandType.GetCustomAttribute<CommandAttribute>();
+                if (attribute == null)
+                {
+                    continue;
+                }
+
                 if (!commandCache.ContainsKey(attribute.Mode))
                 {
                     commandCache.Add(attribute.Mode, new Dictionary<string, Type>());
@@ -139,7 +144,7 @@ namespace Sentinel.Core.Command.Services
             {
                 case 1:
                     var commandInstance = GetCommandInstance(commands.First(), shell);
-                    return commandInstance.Suggest(commandWithArgs.Item2);
+                    return $"{commandWithArgs.Item1} {commandInstance.Suggest(commandWithArgs.Item2)}";
                 case > 1:
                     Console.WriteLine();
 

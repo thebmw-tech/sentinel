@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Sentinel.Core.Command.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class SubCommandAttribute : Attribute
     {
         public string BaseCommand { get; set; }

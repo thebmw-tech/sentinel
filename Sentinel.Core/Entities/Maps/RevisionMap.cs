@@ -19,6 +19,14 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.HasIndex(r => r.CommitDate);
             builder.HasIndex(r => r.ConfirmDate);
+
+            builder.Property(r => r.HasChanges)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            builder.Property(r => r.Deleted)
+                .IsRequired()
+                .HasDefaultValue(false);
         }
     }
 }
