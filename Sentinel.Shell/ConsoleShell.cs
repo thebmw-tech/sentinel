@@ -82,8 +82,8 @@ namespace Sentinel.Shell
                 case CommandMode.Configuration:
                     return $"{hostname}(config{{{revision:X}}})# ";
                 case CommandMode.Interface:
-                    var i = (InterfaceDTO) Environment["CONFIG_INTERFACE"];
-                    return $"{hostname}(config{{{revision:X}}}-int{{{i.Name}}})# ";
+                    var i = (string) Environment["CONFIG_INTERFACE_NAME"];
+                    return $"{hostname}(config{{{revision:X}}}-int{{{i}}})# ";
                 default:
                     return "";
             }

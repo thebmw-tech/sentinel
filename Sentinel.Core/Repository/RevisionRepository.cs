@@ -40,5 +40,12 @@ namespace Sentinel.Core.Repository
             SaveChanges();
             return revision;
         }
+
+        public void MarkRevisionHasChanges(int revisionId)
+        {
+            var revision = Find(r => r.Id == revisionId);
+            revision.HasChanges = true;
+            Update(revision);
+        }
     }
 }

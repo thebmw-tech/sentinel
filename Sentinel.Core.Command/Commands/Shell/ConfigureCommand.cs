@@ -37,9 +37,19 @@ namespace Sentinel.Core.Command.Commands.Shell
                 var arg = args[0];
                 if ("resume".StartsWith(arg))
                 {
-
+                    revision = revisionService.ResumeEditingRevision();
+                    if (revision == null)
+                    {
+                        error.WriteLine("Failed to resume editing");
+                        return 1;
+                    }
                 }
-                throw new NotImplementedException();
+            }
+
+            if (revision == null)
+            {
+                error.WriteLine("Failed to get revision for editing");
+                return 1;
             }
 
             shell.Environment["CONFIG_REVISION_ID"] = revision.Id;

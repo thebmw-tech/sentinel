@@ -255,7 +255,6 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("AddressConfigurationType")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(0);
 

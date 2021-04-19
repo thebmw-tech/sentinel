@@ -9,7 +9,7 @@ using Sentinel.Core;
 namespace Sentinel.Core.Migrations
 {
     [DbContext(typeof(SentinelDatabaseContext))]
-    [Migration("20210418085542_InitialMigration")]
+    [Migration("20210418232155_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -257,7 +257,6 @@ namespace Sentinel.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("AddressConfigurationType")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(0);
 

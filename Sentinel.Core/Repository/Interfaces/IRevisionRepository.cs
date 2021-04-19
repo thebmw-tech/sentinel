@@ -8,5 +8,7 @@ namespace Sentinel.Core.Repository.Interfaces
         int GetSafeRevisionId();
         int GetCurrentRevisionId();
         int? GetInProgressRevisionId();
+
+        void MarkRevisionHasChanges(int revisionId);
     }
 }

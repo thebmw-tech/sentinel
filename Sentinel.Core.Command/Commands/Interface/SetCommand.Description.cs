@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Interfaces;
+using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Models;
 
 namespace Sentinel.Core.Command.Commands.Interface
@@ -15,9 +16,10 @@ namespace Sentinel.Core.Command.Commands.Interface
         [SubCommand("description", "Sets the interface description")]
         public class SetDescriptionCommand : BaseCommand
         {
-            public SetDescriptionCommand(IShell shell) : base(shell)
+            private readonly IInterfaceRepository interfaceRepository;
+            public SetDescriptionCommand(IShell shell, IInterfaceRepository interfaceRepository) : base(shell)
             {
-
+                this.interfaceRepository = interfaceRepository;
             }
 
             public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
@@ -28,8 +30,13 @@ namespace Sentinel.Core.Command.Commands.Interface
                     return 1;
                 }
 
+
                 // TODO validate incoming value
-                shell.GetEnvironment<InterfaceDTO>("CONFIG_INTERFACE").Description = args[0];
+                var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
+                var interfaceName = shell.GetEnvironment<string>("CONFIG_INTERFACE_NAME");
+
+                interfaceRepository.Modify(i => i.RevisionId == revisionId && i.Name == interfaceName,
+                    i => { i.Description = args[0]; });
                 return 0;
             }
 

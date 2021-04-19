@@ -18,6 +18,7 @@ namespace Sentinel.Core.Services
         private readonly IDestinationNatRuleRepository destinationNatRuleRepository;
         private readonly IFirewallRuleRepository firewallRuleRepository;
         private readonly IFirewallTableRepository firewallTableRepository;
+        private readonly IInterfaceAddressRepository interfaceAddressRepository;
         private readonly IInterfaceRepository interfaceRepository;
         private readonly ISourceNatRuleRepository sourceNatRuleRepository;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
@@ -28,9 +29,9 @@ namespace Sentinel.Core.Services
 
         public RevisionService(SentinelDatabaseContext dbContext, IRevisionRepository revisionRepository,
             IDestinationNatRuleRepository destinationNatRuleRepository, IFirewallRuleRepository firewallRuleRepository,
-            IFirewallTableRepository firewallTableRepository, IInterfaceRepository interfaceRepository,
-            ISourceNatRuleRepository sourceNatRuleRepository, ISystemConfigurationRepository systemConfigurationRepository,
-            IMapper mapper, ILogger<RevisionService> logger)
+            IFirewallTableRepository firewallTableRepository, IInterfaceAddressRepository interfaceAddressRepository,
+            IInterfaceRepository interfaceRepository, ISourceNatRuleRepository sourceNatRuleRepository,
+            ISystemConfigurationRepository systemConfigurationRepository, IMapper mapper, ILogger<RevisionService> logger)
         {
             this.dbContext = dbContext;
 
@@ -39,6 +40,7 @@ namespace Sentinel.Core.Services
             this.destinationNatRuleRepository = destinationNatRuleRepository;
             this.firewallRuleRepository = firewallRuleRepository;
             this.firewallTableRepository = firewallTableRepository;
+            this.interfaceAddressRepository = interfaceAddressRepository;
             this.interfaceRepository = interfaceRepository;
             this.sourceNatRuleRepository = sourceNatRuleRepository;
             this.systemConfigurationRepository = systemConfigurationRepository;
@@ -115,6 +117,7 @@ namespace Sentinel.Core.Services
             firewallRuleRepository.CopySafeToRevision(revision.Id);
             firewallTableRepository.CopySafeToRevision(revision.Id);
             interfaceRepository.CopySafeToRevision(revision.Id);
+            interfaceAddressRepository.CopySafeToRevision(revision.Id);
             sourceNatRuleRepository.CopySafeToRevision(revision.Id);
             systemConfigurationRepository.CopySafeToRevision(revision.Id);
 
@@ -172,6 +175,28 @@ namespace Sentinel.Core.Services
             revisionRepository.SaveChanges();
 
             transaction.Commit();
+        }
+
+        public RevisionDTO ResumeEditingRevision()
+        {
+            var inProgress = revisionRepository.GetInProgressRevisionId();
+            if (inProgress.HasValue)
+            {
+                var inProgressRevision = revisionRepository.Find(r => r.Id == inProgress);
+                if (inProgressRevision.Locked.HasValue)
+                {
+                    // TODO create custom exception for here.
+                    throw new Exception("Someone else is editing the configuration already");
+                }
+
+                inProgressRevision.Locked = DateTime.UtcNow;
+                revisionRepository.Update(inProgressRevision);
+                revisionRepository.SaveChanges();
+
+                return mapper.Map<RevisionDTO>(inProgressRevision);
+            }
+
+            return null;
         }
     }
 }

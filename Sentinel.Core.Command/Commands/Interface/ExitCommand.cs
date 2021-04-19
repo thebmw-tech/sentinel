@@ -2,6 +2,7 @@
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using System.IO;
+using System.Linq;
 
 namespace Sentinel.Core.Command.Commands.Interface
 {
@@ -15,6 +16,12 @@ namespace Sentinel.Core.Command.Commands.Interface
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
+            var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG_INTERFACE"));
+            foreach (var key in keysToDelete)
+            {
+                shell.Environment.Remove(key);
+            }
+
             // TODO this should check and save the interface
             shell.SYS_SetCommandMode(CommandMode.Configuration);
             return 0;

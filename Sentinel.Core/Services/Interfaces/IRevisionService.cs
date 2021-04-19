@@ -15,5 +15,6 @@ namespace Sentinel.Core.Services.Interfaces
         void UpdateRevisionLock(int revisionId);
         void UnlockRevision(int revisionId);
         void CleanupAllLocks();
+        RevisionDTO ResumeEditingRevision();
     }
 }

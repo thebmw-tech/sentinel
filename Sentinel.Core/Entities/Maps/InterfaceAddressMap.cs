@@ -25,7 +25,8 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.Property(a => a.AddressConfigurationType)
                 .IsRequired()
-                .HasDefaultValue(AddressConfigurationType.Static);
+                .HasDefaultValue(AddressConfigurationType.Static)
+                .ValueGeneratedNever();
 
         }
     }

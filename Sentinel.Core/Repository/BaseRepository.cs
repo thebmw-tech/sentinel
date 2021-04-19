@@ -23,7 +23,7 @@ namespace Sentinel.Core.Repository
             return DbSet.AsQueryable();
         }
 
-        public TType Create(TType entity)
+        public virtual TType Create(TType entity)
         {
             if (entity == null)
             {
