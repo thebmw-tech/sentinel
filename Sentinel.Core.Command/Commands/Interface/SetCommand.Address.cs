@@ -15,7 +15,7 @@ namespace Sentinel.Core.Command.Commands.Interface
 {
     public partial class SetCommand
     {
-        [SubCommand("address", "Sets the interface description")]
+        [SubCommand("address", "Adds and address to the interface")]
         public class SetAddressCommand : BaseCommand, IFilteredCommand
         {
             private readonly IInterfaceAddressRepository interfaceAddressRepository;

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Interfaces;
+using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Models;
 
@@ -13,7 +14,7 @@ namespace Sentinel.Core.Command.Commands.Interface
 {
     public partial class SetCommand
     {
-        [SubCommand("firewall", "Sets the interface description")]
+        [SubCommand("firewall", "Sets the interface firewall")]
         public class SetFirewallCommand : BaseCommand
         {
             private readonly IInterfaceRepository interfaceRepository;
@@ -44,7 +45,7 @@ namespace Sentinel.Core.Command.Commands.Interface
                 var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
                 var interfaceName = shell.GetEnvironment<string>("CONFIG_INTERFACE_NAME");
 
-                var firewallTable = firewallTableRepository.Find(t => t.Name == args[1]);
+                var firewallTable = firewallTableRepository.Find(t => t.RevisionId == revisionId && t.Name == args[1]);
                 if (firewallTable == null)
                 {
                     error.WriteLine("No firewall table with name \"{args[1]}\" found.");
@@ -73,17 +74,24 @@ namespace Sentinel.Core.Command.Commands.Interface
 
             public override string Suggest(string[] args)
             {
-                if (args.Length > 0)
+                if (args.Length == 1)
                 {
-                    if (string.IsNullOrEmpty(args[0]))
-                    {
-                        return " ";
-                    }
-                    return args[0];
+                    var type = args[0];
+                    var fullType = firewallTypes.FirstOrDefault(t => t.StartsWith(type));
+                    return fullType ?? " ";
+                }
+
+                if (args.Length == 2)
+                {
+                    var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
+                    var firewallTableNames = firewallTableRepository.Filter(t => t.RevisionId == revisionId && t.Name.StartsWith(args[1])).Select(t => t.Name).ToList();
+                    return $"{args[0]} {HelperFunctions.LCDString(firewallTableNames)}";
                 }
 
                 return " ";
             }
+
+            
         }
     }
 }
