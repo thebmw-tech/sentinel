@@ -61,6 +61,7 @@ namespace Sentinel.Core.Command.Commands.Configuration
             }
 
             shell.Environment["CONFIG_INTERFACE_NAME"] = @interface.Name;
+            shell.Environment["CONFIG_INTERFACE_TYPE"] = @interface.InterfaceType;
 
             shell.SYS_SetCommandMode(CommandMode.Interface);
             return 0;

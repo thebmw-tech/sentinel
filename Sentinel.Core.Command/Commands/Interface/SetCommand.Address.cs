@@ -16,7 +16,7 @@ namespace Sentinel.Core.Command.Commands.Interface
     public partial class SetCommand
     {
         [SubCommand("address", "Sets the interface description")]
-        public class SetAddressCommand : BaseCommand
+        public class SetAddressCommand : BaseCommand, IFilteredCommand
         {
             private readonly IInterfaceAddressRepository interfaceAddressRepository;
             private readonly SentinelDatabaseContext dbContext;
@@ -107,6 +107,13 @@ namespace Sentinel.Core.Command.Commands.Interface
                 interfaceAddressRepository.SaveChanges();
 
                 return 0;
+            }
+
+            public static bool ShouldShow(IShell shell)
+            {
+                var interfaceType = shell.GetEnvironment<InterfaceType>("CONFIG_INTERFACE_TYPE");
+                return interfaceType == InterfaceType.Ethernet || interfaceType == InterfaceType.Vlan ||
+                       interfaceType == InterfaceType.Wireless;
             }
 
             public override string Suggest(string[] args)

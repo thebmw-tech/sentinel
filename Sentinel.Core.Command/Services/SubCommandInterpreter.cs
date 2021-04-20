@@ -39,7 +39,7 @@ namespace Sentinel.Core.Command.Services
             var command = commandLine[0];
             var args = commandLine.Skip(1).ToArray();
 
-            var commands = GetCommands(command);
+            var commands = GetCommands(command, shell);
 
             switch (commands.Count)
             {
@@ -58,7 +58,7 @@ namespace Sentinel.Core.Command.Services
 
         public void Help(IShell shell, string[] args)
         {
-            var commands = commandCache.Values.Select(m => m.GetCustomAttribute<SubCommandAttribute>())
+            var commands = commandCache.Values.Where(t => CheckFilter(t, shell)).Select(m => m.GetCustomAttribute<SubCommandAttribute>())
                 .Where(a => a != null).Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText)).ToList();
 
             ConsoleFormatHelper.WriteSpacedTuples(commands, shell.Output);
@@ -73,7 +73,7 @@ namespace Sentinel.Core.Command.Services
             var command = commandLine[0];
             var args = commandLine.Skip(1).ToArray();
 
-            var commands = GetCommands(command);
+            var commands = GetCommands(command, shell);
 
             if (commands.Count == 1)
             {
@@ -95,9 +95,19 @@ namespace Sentinel.Core.Command.Services
             return string.Join(' ', commandLine);
         }
 
-        private List<Type> GetCommands(string command)
+        private bool CheckFilter(Type type, IShell shell)
         {
-            var commands = commandCache.Where(kv => kv.Key.StartsWith(command)).Select(kv => kv.Value).ToList();
+            if (type.IsAssignableTo(typeof(IFilteredCommand)))
+            {
+                var cmd = (IFilteredCommand) GetCommandInstance(type, shell);
+                return cmd.ShouldShow(shell);
+            }
+            return true;
+        }
+
+        private List<Type> GetCommands(string command, IShell shell)
+        {
+            var commands = commandCache.Where(kv => kv.Key.StartsWith(command)).Select(kv => kv.Value).Where(t => CheckFilter(t, shell)).ToList();
             return commands;
         }
 
@@ -113,10 +123,14 @@ namespace Sentinel.Core.Command.Services
 
         private int ExecuteCommand(IShell shell, Type commandType, string[] args, TextReader input, TextWriter output, TextWriter error)
         {
+            if (!CheckFilter(commandType, shell))
+            {
+                return 1;
+            }
             try
             {
                 var instance = GetCommandInstance(commandType, shell);
-
+                
                 var result = instance.Main(args, input, output, error);
 
                 return result;
