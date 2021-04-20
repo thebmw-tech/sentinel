@@ -20,9 +20,10 @@ namespace Sentinel.Core.Command.Commands.Interface
             private readonly IFirewallTableRepository firewallTableRepository;
 
             private readonly string[] firewallTypes = new string[] {"in", "out", "local"};
-            public SetFirewallCommand(IShell shell, IInterfaceRepository interfaceRepository) : base(shell)
+            public SetFirewallCommand(IShell shell, IInterfaceRepository interfaceRepository, IFirewallTableRepository firewallTableRepository) : base(shell)
             {
                 this.interfaceRepository = interfaceRepository;
+                this.firewallTableRepository = firewallTableRepository;
             }
 
             public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)

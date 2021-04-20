@@ -109,7 +109,7 @@ namespace Sentinel.Core.Command.Commands.Interface
                 return 0;
             }
 
-            public static bool ShouldShow(IShell shell)
+            public bool ShouldShow(IShell shell)
             {
                 var interfaceType = shell.GetEnvironment<InterfaceType>("CONFIG_INTERFACE_TYPE");
                 return interfaceType == InterfaceType.Ethernet || interfaceType == InterfaceType.Vlan ||
