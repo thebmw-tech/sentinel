@@ -29,6 +29,10 @@ namespace Sentinel.Core
     {
         public static IServiceCollection RegisterSentinelCore(this IServiceCollection services)
         {
+            var config = SentinelConfiguration.LoadFromFile("");
+
+            services.AddSingleton<SentinelConfiguration>(config);
+
             services.AddDbContext<SentinelDatabaseContext>();
 
             // Setup Logging

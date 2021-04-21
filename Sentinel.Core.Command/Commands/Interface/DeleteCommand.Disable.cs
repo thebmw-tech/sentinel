@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Repository.Interfaces;
-using Sentinel.Models;
 
 namespace Sentinel.Core.Command.Commands.Interface
 {
-    public partial class SetCommand
+    public partial class DeleteCommand
     {
-        [SubCommand("disabled", "Sets the interface to be disabled")]
-        public class SetDisabledCommand : BaseCommand
+        [SubCommand("disable", "")]
+        public class DeleteDisabledCommand : BaseCommand
         {
             private readonly IInterfaceRepository interfaceRepository;
-            public SetDisabledCommand(IShell shell, IInterfaceRepository interfaceRepository) : base(shell)
+            public DeleteDisabledCommand(IShell shell, IInterfaceRepository interfaceRepository) : base(shell)
             {
                 this.interfaceRepository = interfaceRepository;
             }
@@ -36,13 +30,12 @@ namespace Sentinel.Core.Command.Commands.Interface
                 var interfaceName = shell.GetEnvironment<string>("CONFIG_INTERFACE_NAME");
 
                 interfaceRepository.Modify(i => i.RevisionId == revisionId && i.Name == interfaceName,
-                    i => { i.Enabled = false; });
+                    i => { i.Enabled = true; });
                 return 0;
             }
 
             public override string Suggest(string[] args)
             {
-                
                 return "";
             }
         }
