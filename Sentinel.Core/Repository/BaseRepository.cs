@@ -45,9 +45,14 @@ namespace Sentinel.Core.Repository
             return entity;
         }
 
-        public TType Delete(Expression<Func<TType, bool>> predicate)
+        public void Delete(Expression<Func<TType, bool>> predicate)
         {
-            throw new NotImplementedException();
+            var itemsToDelete = DbSet.Where(predicate).ToList();
+            if (itemsToDelete.Count == 0)
+            {
+                throw new InvalidOperationException($"{nameof(predicate)} did not match any records");
+            }
+            DbSet.RemoveRange(itemsToDelete);
         }
 
         public IQueryable<TType> Filter(Expression<Func<TType, bool>> predicate)

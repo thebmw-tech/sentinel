@@ -12,7 +12,7 @@ namespace Sentinel.Core.Repository.Interfaces
         TType Find(Expression<Func<TType, bool>> predicate);
         TType Create(TType entity);
         TType Delete(TType t);
-        TType Delete(Expression<Func<TType, bool>> predicate);
+        void Delete(Expression<Func<TType, bool>> predicate);
         TType Update(TType t);
         int SaveChanges();
     }

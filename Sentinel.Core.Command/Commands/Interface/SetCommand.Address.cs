@@ -8,6 +8,7 @@ using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
+using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Models;
 
@@ -19,12 +20,9 @@ namespace Sentinel.Core.Command.Commands.Interface
         public class SetAddressCommand : BaseCommand, IFilteredCommand
         {
             private readonly IInterfaceAddressRepository interfaceAddressRepository;
-            private readonly SentinelDatabaseContext dbContext;
-            public SetAddressCommand(IShell shell, IInterfaceAddressRepository interfaceAddressRepository,
-                SentinelDatabaseContext dbContext) : base(shell)
+            public SetAddressCommand(IShell shell, IInterfaceAddressRepository interfaceAddressRepository) : base(shell)
             {
                 this.interfaceAddressRepository = interfaceAddressRepository;
-                this.dbContext = dbContext;
             }
 
             public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
@@ -75,22 +73,12 @@ namespace Sentinel.Core.Command.Commands.Interface
                 }
                 else
                 {
-                    var addressStringParts = addressString.Split('/');
-                    var addr = addressStringParts[0];
-
-                    // TODO validate ip address;
-
-                    if (!byte.TryParse(addressStringParts[1], out byte mask))
-                    {
-                        error.WriteLine("Subnet Mask must be a number");
-                    }
-
-                    // TODO validate mask;
+                    var addressWithMask = AddressHelper.ValidateAndSplitAddressWithMask(addressString);
 
                     var staticAddress = interfaceAddressRepository.Find(a =>
                         a.RevisionId == revisionId && a.InterfaceName == interfaceName &&
                         a.AddressConfigurationType == AddressConfigurationType.Static &&
-                        a.Address == addr);
+                        a.Address == addressWithMask.Item1);
                     if (staticAddress != null)
                     {
                         error.WriteLine($"Address {addressString} already configured on {interfaceName}");
@@ -98,8 +86,8 @@ namespace Sentinel.Core.Command.Commands.Interface
                     }
 
                     address.AddressConfigurationType = AddressConfigurationType.Static;
-                    address.Address = addr;
-                    address.SubnetMask = mask;
+                    address.Address = addressWithMask.Item1;
+                    address.SubnetMask = addressWithMask.Item2;
                 }
 
 

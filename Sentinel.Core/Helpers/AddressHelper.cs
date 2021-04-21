@@ -66,5 +66,20 @@ namespace Sentinel.Core.Helpers
             return new IPAddress(broadcastAddress);
         }
 
+        public static Tuple<string, byte> ValidateAndSplitAddressWithMask(string addressWithMask)
+        {
+            var addressStringParts = addressWithMask.Split('/');
+            var addr = addressStringParts[0];
+
+            // TODO validate ip address;
+
+            if (!byte.TryParse(addressStringParts[1], out byte mask))
+            {
+                throw new ArgumentException("Invalid Subnet Mask");
+            }
+
+            return new Tuple<string, byte>(addr, mask);
+        }
+
     }
 }
