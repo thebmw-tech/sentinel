@@ -10,7 +10,7 @@ namespace Sentinel.Core.Command.Commands.Interface
     public partial class DeleteCommand
     {
         [SubCommand("address", "")]
-        public class DeleteAddressCommand : BaseCommand
+        public class DeleteAddressCommand : BaseCommand, IFilteredCommand
         {
             private readonly IInterfaceAddressRepository interfaceAddressRepository;
             public DeleteAddressCommand(IShell shell, IInterfaceAddressRepository interfaceAddressRepository) : base(shell)
@@ -63,6 +63,13 @@ namespace Sentinel.Core.Command.Commands.Interface
                 output.WriteLine($"Removed address {addressString}");
 
                 return 0;
+            }
+
+            public bool ShouldShow(IShell shell)
+            {
+                var interfaceType = shell.GetEnvironment<InterfaceType>("CONFIG_INTERFACE_TYPE");
+                return interfaceType == InterfaceType.Ethernet || interfaceType == InterfaceType.Vlan ||
+                       interfaceType == InterfaceType.Wireless;
             }
 
             public override string Suggest(string[] args)
