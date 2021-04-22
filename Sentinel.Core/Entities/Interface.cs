@@ -14,14 +14,6 @@ namespace Sentinel.Core.Entities
         public long? SpoofedMAC { get; set; }
 
 
-        public IpConfigurationTypeV4 IPv4ConfigurationType { get; set; }
-        public string IPv4Address { get; set; }
-        public byte? IPv4SubnetMask { get; set; }
-
-        public IpConfigurationTypeV6 IPv6ConfigurationType { get; set; }
-        public string IPv6Address { get; set; }
-        public byte? IPv6SubnetMask { get; set; }
-
         public Guid? InboundFirewallTableId { get; set; }
         public Guid? OutboundFirewallTableId { get; set; }
         public Guid? LocalFirewallTableId { get; set; }

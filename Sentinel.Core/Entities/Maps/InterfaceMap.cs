@@ -28,20 +28,6 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.Property(i => i.Description)
                 .HasMaxLength(DESCRIPTION_LENGTH);
-
-            builder.Property(i => i.IPv4ConfigurationType)
-                .IsRequired()
-                .HasDefaultValue(IpConfigurationTypeV4.None);
-
-            builder.Property(i => i.IPv4Address)
-                .HasMaxLength(IPv4_ADDRESS_LENGTH);
-
-            builder.Property(i => i.IPv6ConfigurationType)
-                .IsRequired()
-                .HasDefaultValue(IpConfigurationTypeV6.None);
-
-            builder.Property(i => i.IPv6Address)
-                .HasMaxLength(IPv6_ADDRESS_LENGTH);
         }
     }
 }

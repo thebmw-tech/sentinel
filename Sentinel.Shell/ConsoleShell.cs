@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Command.Models;
 using Sentinel.Core.Command.Services;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
+using Sentinel.Core.Services.Interfaces;
 using Sentinel.Models;
 
 namespace Sentinel.Shell
@@ -18,20 +22,22 @@ namespace Sentinel.Shell
 
         private readonly CommandInterpreter interpreter;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
+        private readonly IRevisionService revisionService;
 
         private bool inLoop = true;
 
-        public ConsoleShell(CommandInterpreter interpreter, ISystemConfigurationRepository systemConfigurationRepository)
+        public ConsoleShell(CommandInterpreter interpreter, ISystemConfigurationRepository systemConfigurationRepository, IRevisionService revisionService)
         {
             this.interpreter = interpreter;
             this.systemConfigurationRepository = systemConfigurationRepository;
+            this.revisionService = revisionService;
 
-            Environment = new Dictionary<string, object>();
+            Environment = new ConcurrentDictionary<string, object>();
         }
 
         
 
-        public Dictionary<string,object> Environment { get; set; }
+        public IDictionary<string,object> Environment { get; set; }
         public CommandMode CommandMode { get; set; } = CommandMode.Shell;
 
         public TextWriter Output => Console.Out;
@@ -47,28 +53,59 @@ namespace Sentinel.Shell
             inLoop = false;
         }
 
+        public T GetEnvironment<T>(string key)
+        {
+            return (T) Environment[key];
+        }
+
         private string GetPrompt(CommandMode mode)
         {
-            var configuration = systemConfigurationRepository.GetCurrent();
+            var hostname = "";
+            try
+            {
+                var configuration = systemConfigurationRepository.GetCurrent();
+                hostname = configuration.Hostname;
+            }
+            catch
+            {
+                Console.Error.WriteLine("ERROR LOADING CONFIGURATION");
+                Console.Error.WriteLine("You may need to run database migrations manually");
+                hostname = System.Environment.MachineName;
+            }
 
             int? revision = Environment.ContainsKey("CONFIG_REVISION_ID") ? (int)Environment["CONFIG_REVISION_ID"] : null;
 
             switch (mode)
             {
                 case CommandMode.Shell:
-                    return $"{configuration.Hostname}> ";
+                    return $"{hostname}> ";
                 case CommandMode.Configuration:
-                    return $"{configuration.Hostname}(config{{{revision}}})# ";
+                    return $"{hostname}(config{{{revision:X}}})# ";
                 case CommandMode.Interface:
-                    var i = (InterfaceDTO) Environment["CONFIG_INTERFACE"];
-                    return $"{configuration.Hostname}(config{{{revision}}}-int{{{i.Name}}})# ";
+                    var i = (string) Environment["CONFIG_INTERFACE_NAME"];
+                    return $"{hostname}(config{{{revision:X}}}-int{{{i}}})# ";
                 default:
                     return "";
             }
         }
 
+        private void ShellBackgroundTask()
+        {
+            while (inLoop)
+            {
+                if (Environment.ContainsKey("CONFIG_REVISION_ID"))
+                {
+                    var revisionId = (int) Environment["CONFIG_REVISION_ID"];
+                    System.Diagnostics.Debug.WriteLine($"Updating revision {revisionId} lock.");
+                    revisionService.UpdateRevisionLock(revisionId);
+                }
+                Thread.Sleep(30000);
+            }
+        }
+
         public void ShellLoop()
         {
+            Task.Run(ShellBackgroundTask);
 
             while (inLoop)
             {

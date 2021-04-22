@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Sentinel.Core.Helpers
 {
     public class ConsoleFormatHelper
     {
-        public static void WriteSpacedTuples(List<Tuple<string, string>> tuples)
+        public static void WriteSpacedTuples(List<Tuple<string, string>> tuples, TextWriter output)
         {
             tuples = tuples.OrderBy(t => t.Item1).ToList();
 
@@ -15,10 +16,10 @@ namespace Sentinel.Core.Helpers
             foreach (var tuple in tuples)
             {
                 var spacing = firstColumnSpacing - tuple.Item1.Length;
-                Console.Write(' ');
-                Console.Write(tuple.Item1);
-                for (int i = 0; i < spacing; i++) Console.Write(' ');
-                Console.WriteLine(tuple.Item2);
+                output.Write(' ');
+                output.Write(tuple.Item1);
+                for (int i = 0; i < spacing; i++) output.Write(' ');
+                output.WriteLine(tuple.Item2);
             }
         }
     }

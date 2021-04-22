@@ -7,7 +7,7 @@ namespace Sentinel.Core.Command.Interfaces
 {
     public interface IShell
     {
-        Dictionary<string, object> Environment { get; }
+        IDictionary<string, object> Environment { get; }
         CommandMode CommandMode { get; }
 
         void SYS_SetCommandMode(CommandMode commandMode);
@@ -15,6 +15,8 @@ namespace Sentinel.Core.Command.Interfaces
 
         TextWriter Output { get; }
         TextWriter Error { get; }
+
+        T GetEnvironment<T>(string key);
 
     }
 }

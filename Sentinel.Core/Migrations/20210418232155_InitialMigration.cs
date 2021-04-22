@@ -89,6 +89,22 @@ namespace Sentinel.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InterfaceAddresses",
+                columns: table => new
+                {
+                    RevisionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    InterfaceName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    AddressConfigurationType = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
+                    Address = table.Column<string>(type: "TEXT", maxLength: 45, nullable: false),
+                    SubnetMask = table.Column<byte>(type: "INTEGER", nullable: true),
+                    Enabled = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InterfaceAddresses", x => new { x.RevisionId, x.InterfaceName, x.AddressConfigurationType, x.Address });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Interfaces",
                 columns: table => new
                 {
@@ -97,12 +113,6 @@ namespace Sentinel.Core.Migrations
                     InterfaceType = table.Column<int>(type: "INTEGER", nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     SpoofedMAC = table.Column<long>(type: "INTEGER", nullable: true),
-                    IPv4ConfigurationType = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    IPv4Address = table.Column<string>(type: "TEXT", maxLength: 15, nullable: true),
-                    IPv4SubnetMask = table.Column<byte>(type: "INTEGER", nullable: true),
-                    IPv6ConfigurationType = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    IPv6Address = table.Column<string>(type: "TEXT", maxLength: 39, nullable: true),
-                    IPv6SubnetMask = table.Column<byte>(type: "INTEGER", nullable: true),
                     InboundFirewallTableId = table.Column<Guid>(type: "TEXT", nullable: true),
                     OutboundFirewallTableId = table.Column<Guid>(type: "TEXT", nullable: true),
                     LocalFirewallTableId = table.Column<Guid>(type: "TEXT", nullable: true),
@@ -121,7 +131,10 @@ namespace Sentinel.Core.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "DATETIME('now')"),
                     CommitDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    ConfirmDate = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    ConfirmDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Locked = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    HasChanges = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    Deleted = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -136,6 +149,7 @@ namespace Sentinel.Core.Migrations
                     Address = table.Column<string>(type: "TEXT", maxLength: 45, nullable: false),
                     SubnetMask = table.Column<byte>(type: "INTEGER", nullable: false),
                     RouteType = table.Column<int>(type: "INTEGER", nullable: false),
+                    InterfaceName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Version = table.Column<int>(type: "INTEGER", nullable: false),
                     NextHopAddress = table.Column<string>(type: "TEXT", maxLength: 45, nullable: true),
                     Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
@@ -253,6 +267,9 @@ namespace Sentinel.Core.Migrations
 
             migrationBuilder.DropTable(
                 name: "FirewallTables");
+
+            migrationBuilder.DropTable(
+                name: "InterfaceAddresses");
 
             migrationBuilder.DropTable(
                 name: "Interfaces");

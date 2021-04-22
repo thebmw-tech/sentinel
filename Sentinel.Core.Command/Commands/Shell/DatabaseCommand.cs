@@ -3,17 +3,15 @@ using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using System.IO;
 using Sentinel.Core.Command.Services;
-using Sentinel.Core.Helpers;
-using Sentinel.Models;
 
-namespace Sentinel.Core.Command.Commands.Interface
+namespace Sentinel.Core.Command.Commands.Shell
 {
-    [Command(CommandMode.Interface, "set", "Sets a configuration on the interface")]
-    public partial class SetCommand : BaseCommand
+    [Command(CommandMode.Shell, "database", "Database Commands")]
+    public partial class DatabaseCommand : BaseCommand
     {
-        private readonly SubCommandInterpreter<SetCommand> subCommandInterpreter;
+        private readonly SubCommandInterpreter<DatabaseCommand> subCommandInterpreter;
 
-        public SetCommand(IShell shell, SubCommandInterpreter<SetCommand> subCommandInterpreter) : base(shell)
+        public DatabaseCommand(IShell shell, SubCommandInterpreter<DatabaseCommand> subCommandInterpreter) : base(shell)
         {
             this.subCommandInterpreter = subCommandInterpreter;
         }
@@ -26,11 +24,6 @@ namespace Sentinel.Core.Command.Commands.Interface
         public override string Suggest(string[] args)
         {
             return subCommandInterpreter.Suggest(shell, args);
-        }
-
-        public override void Help(string[] args, TextWriter output)
-        {
-            subCommandInterpreter.Help(shell, args);
         }
     }
 }

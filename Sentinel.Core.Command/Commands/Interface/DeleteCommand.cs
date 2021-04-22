@@ -1,19 +1,17 @@
 ﻿using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
-using Sentinel.Core.Command.Interfaces;
 using System.IO;
+using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Command.Services;
-using Sentinel.Core.Helpers;
-using Sentinel.Models;
 
 namespace Sentinel.Core.Command.Commands.Interface
 {
-    [Command(CommandMode.Interface, "set", "Sets a configuration on the interface")]
-    public partial class SetCommand : BaseCommand
+    [Command(CommandMode.Interface, "delete", "Delete some interface configuration")]
+    public partial class DeleteCommand : BaseCommand
     {
-        private readonly SubCommandInterpreter<SetCommand> subCommandInterpreter;
+        private readonly SubCommandInterpreter<DeleteCommand> subCommandInterpreter;
 
-        public SetCommand(IShell shell, SubCommandInterpreter<SetCommand> subCommandInterpreter) : base(shell)
+        public DeleteCommand(IShell shell, SubCommandInterpreter<DeleteCommand> subCommandInterpreter) : base(shell)
         {
             this.subCommandInterpreter = subCommandInterpreter;
         }
@@ -32,5 +30,6 @@ namespace Sentinel.Core.Command.Commands.Interface
         {
             subCommandInterpreter.Help(shell, args);
         }
+
     }
 }

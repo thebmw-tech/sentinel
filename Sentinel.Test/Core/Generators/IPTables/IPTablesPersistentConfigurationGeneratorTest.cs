@@ -48,8 +48,8 @@ namespace Sentinel.Test.Core.Generators.IPTables
 
             diHelper.GetMock<IFirewallTableRepository>().Setup(s => s.GetCurrent()).Returns(tables.AsQueryable());
 
-            var wanInterface = Builders.InterfaceBuilder.Build("eth0", type4: IpConfigurationTypeV4.Static, address4: "1.2.3.4", mask4: 22, inFw: wanInTable.Id, localFw: wanLocalTable.Id);
-            var lanInterface = Builders.InterfaceBuilder.Build("eth1", type4: IpConfigurationTypeV4.Static, address4: "192.168.1.1", mask4: 24);
+            var wanInterface = Builders.InterfaceBuilder.Build("eth0", inFw: wanInTable.Id, localFw: wanLocalTable.Id);
+            var lanInterface = Builders.InterfaceBuilder.Build("eth1");
             var interfaces = new List<Sentinel.Core.Entities.Interface>() { wanInterface, lanInterface };
 
             diHelper.GetMock<IInterfaceRepository>().Setup(s => s.GetCurrent()).Returns(interfaces.AsQueryable());
@@ -60,8 +60,8 @@ namespace Sentinel.Test.Core.Generators.IPTables
                 OutboundInterfaceName = wanInterface.Name,
                 Order = 0,
                 IPVersion = IPVersion.v4,
-                SourceAddress = lanInterface.IPv4Address,
-                SourceSubnetMask = lanInterface.IPv4SubnetMask
+                SourceAddress = "192.168.1.1",
+                SourceSubnetMask = 24
             };
 
             var sourceNatRules = new List<SourceNatRule>() {defaultOutboundNatRule};
@@ -76,7 +76,7 @@ namespace Sentinel.Test.Core.Generators.IPTables
                 IPVersion = IPVersion.v4,
                 Protocol = IPProtocol.TCP,
                 InboundInterfaceName = wanInterface.Name,
-                DestinationAddress = wanInterface.IPv4Address,
+                DestinationAddress = "1.2.3.4",
                 DestinationSubnetMask = 32,
                 DestinationPortRangeStart = 80,
                 DestinationPortRangeEnd = 80,

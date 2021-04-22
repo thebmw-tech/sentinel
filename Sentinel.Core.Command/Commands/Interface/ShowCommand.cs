@@ -22,7 +22,9 @@ namespace Sentinel.Core.Command.Commands.Interface
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
             var revisionId = (int)shell.Environment["CONFIG_REVISION_ID"];
-            var @interface = (InterfaceDTO)shell.Environment["CONFIG_INTERFACE"];
+            var interfaceName = (string)shell.Environment["CONFIG_INTERFACE_NAME"];
+
+            var @interface = interfaceService.GetInterfaceWithName(revisionId, interfaceName);
 
             interfaceService.PrintInterfaceToTextWriter(revisionId, @interface, output);
             

@@ -25,7 +25,7 @@ namespace Sentinel.Core.Command.Commands.Shell
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
-            return subCommandInterpreter.Execute(this, shell, args, input, output, error);
+            return subCommandInterpreter.Execute(shell, args, input, output, error);
         }
 
         public override string Suggest(string[] args)
@@ -33,18 +33,18 @@ namespace Sentinel.Core.Command.Commands.Shell
             throw new NotImplementedException();
         }
 
-        [SubCommand("interfaces", "Show information about interfaces")]
-        public int ShowInterfaces(string[] args, TextReader input, TextWriter output, TextWriter error)
-        {
-            var safeRevision = revisionService.GetSafe();
-            var interfaces = interfaceService.GetInterfacesInRevision(safeRevision.Id);
-            foreach (var @interface in interfaces)
-            {
-                interfaceService.PrintInterfaceToTextWriter(safeRevision.Id, @interface, output);
-            }
+        //[SubCommand("interfaces", "Show information about interfaces")]
+        //public int ShowInterfaces(string[] args, TextReader input, TextWriter output, TextWriter error)
+        //{
+        //    var safeRevision = revisionService.GetSafe();
+        //    var interfaces = interfaceService.GetInterfacesInRevision(safeRevision.Id);
+        //    foreach (var @interface in interfaces)
+        //    {
+        //        interfaceService.PrintInterfaceToTextWriter(safeRevision.Id, @interface, output);
+        //    }
 
-            return 0;
-        }
+        //    return 0;
+        //}
 
         public string ShowInterfacesSuggestions(string[] args, TextWriter error)
         {

@@ -76,18 +76,12 @@ namespace Sentinel.Test.Core.Generators.Netplan
                         {
                             Name = "eth0",
                             Enabled = true,
-                            IPv4Address = "192.168.1.1",
-                            IPv4SubnetMask = 24,
-                            IPv4ConfigurationType = IpConfigurationTypeV4.Static,
                             InterfaceType = InterfaceType.Ethernet
                         },
                         new Sentinel.Core.Entities.Interface()
                         {
                             Name = "eth1.1337",
                             Enabled = true,
-                            IPv4Address = "192.168.1.1",
-                            IPv4SubnetMask = 24,
-                            IPv4ConfigurationType = IpConfigurationTypeV4.Static,
                             InterfaceType = InterfaceType.Vlan
                         }
                     }.AsQueryable());

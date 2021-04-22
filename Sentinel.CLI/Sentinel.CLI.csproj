@@ -5,4 +5,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Sentinel.Core\Sentinel.Core.csproj" />
+    <ProjectReference Include="..\Sentinel.Models\Sentinel.Models.csproj" />
+  </ItemGroup>
+
 </Project>

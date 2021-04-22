@@ -21,9 +21,14 @@ namespace Sentinel.Web
 
         public TextWriter Error { get; private set; }
 
-        public Dictionary<string, object> Environment { get; set; }
+        public IDictionary<string, object> Environment { get; set; }
 
         public TextWriter Output { get; private set; }
+
+        public T GetEnvironment<T>(string key)
+        {
+            return (T) Environment[key];
+        }
 
         public void SYS_ExitShell()
         {

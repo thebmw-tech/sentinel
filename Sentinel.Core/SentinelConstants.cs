@@ -10,5 +10,7 @@
 
         public const int DESCRIPTION_LENGTH = 255;
 
+        public const int LOCK_EXP_MIN = 3;
+
     }
 }

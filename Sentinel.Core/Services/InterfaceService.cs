@@ -7,6 +7,7 @@ using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Models;
 using System.IO;
 using System.Linq;
+using Sentinel.Core.Enums;
 
 namespace Sentinel.Core.Services
 {
@@ -14,14 +15,16 @@ namespace Sentinel.Core.Services
     {
         private readonly IInterfaceRepository interfaceRepository;
         private readonly IFirewallTableRepository firewallTableRepository;
+        private readonly IInterfaceAddressRepository interfaceAddressRepository;
 
         private readonly IMapper mapper;
 
         public InterfaceService(IInterfaceRepository interfaceRepository, IFirewallTableRepository firewallTableRepository,
-            IMapper mapper)
+            IInterfaceAddressRepository interfaceAddressRepository, IMapper mapper)
         {
             this.interfaceRepository = interfaceRepository;
             this.firewallTableRepository = firewallTableRepository;
+            this.interfaceAddressRepository = interfaceAddressRepository;
             this.mapper = mapper;
         }
 
@@ -44,17 +47,21 @@ namespace Sentinel.Core.Services
             writer.WriteLine($"  Enabled: {@interface.Enabled}");
             writer.WriteLine($"  Description: {@interface.Description}");
 
-            writer.WriteLine($"  v4 Configuration: {@interface.IPv4ConfigurationType}");
-            if (@interface.IPv4SubnetMask.HasValue)
+            writer.WriteLine($"  Address Configuration: {@interface.IPv4ConfigurationType}");
+            var addresses = interfaceAddressRepository.GetForRevision(revisionId)
+                .Where(a => a.InterfaceName == @interface.Name);
+            foreach (var address in addresses)
             {
-                writer.WriteLine($"  v4 Address: {@interface.IPv4Address}/{@interface.IPv4SubnetMask}");
+                if (address.AddressConfigurationType == AddressConfigurationType.Static)
+                {
+                    writer.WriteLine($"  - {address.Address}/{address.SubnetMask}");
+                }
+                else
+                {
+                    writer.WriteLine($"  - {address.AddressConfigurationType.ToString()}");
+                }
             }
 
-            writer.WriteLine($"  v6 Configuration: {@interface.IPv6ConfigurationType}");
-            if (@interface.IPv6SubnetMask.HasValue)
-            {
-                writer.WriteLine($"  v6 Address: {@interface.IPv6Address}/{@interface.IPv6SubnetMask}");
-            }
 
             var inFirewallTable = firewallTableRepository.Find(t =>
                 t.RevisionId == revisionId && t.Id == @interface.InboundFirewallTableId);

@@ -9,15 +9,13 @@ namespace Sentinel.Core.Command.Attributes
         public CommandMode Mode { get; set; }
         public string BaseCommand { get; set; }
         public string HelpText { get; set; }
-        public CommandIO IoMode { get; set; }
         public bool PublicCommand { get; set; }
 
-        public CommandAttribute(CommandMode mode, string baseCommand, string helpText, CommandIO ioMode = CommandIO.Default, bool publicCommand = true)
+        public CommandAttribute(CommandMode mode, string baseCommand, string helpText, bool publicCommand = true)
         {
             Mode = mode;
             BaseCommand = baseCommand;
             HelpText = helpText;
-            IoMode = ioMode;
             PublicCommand = publicCommand;
         }
     }
