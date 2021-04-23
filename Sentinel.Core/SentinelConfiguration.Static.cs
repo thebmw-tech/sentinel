@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sentinel.Core.Helpers;
 using YamlDotNet.Serialization;
 
 namespace Sentinel.Core
@@ -15,8 +16,15 @@ namespace Sentinel.Core
 
         }
 
-        public static SentinelConfiguration LoadFromFile(string path)
+        public static SentinelConfiguration LoadFromFile()
         {
+            var path = HelperFunctions.FindExistingFile(new[]
+            {
+                "/etc/sentinel/conf.yml",
+                "~/.config/sentinel/conf.yml",
+                "C:\\projects\\sentinel\\conf.yml",
+            }, "/etc/sentinel/conf.yml");
+
             var fileContents = File.ReadAllText(path);
 
             var deserializer = new DeserializerBuilder().Build();
@@ -26,9 +34,16 @@ namespace Sentinel.Core
 
         public static void SaveDefaultConfigToFile(string path)
         {
+
             var defaultConfig = new SentinelConfiguration()
             {
-
+                DatabaseProvider = "sqlite",
+                DatabaseConnectionString = "Data Source=/etc/sentinel/conf.db",
+                EnabledGenerators = new string[]
+                {
+                    "IPTablesPersistent",
+                    "NetworkD"
+                }
             };
 
             var serializer = new SerializerBuilder().Build();

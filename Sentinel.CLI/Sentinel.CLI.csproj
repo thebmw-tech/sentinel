@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Sentinel.Models\Sentinel.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+
 </Project>
