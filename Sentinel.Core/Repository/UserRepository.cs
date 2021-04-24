@@ -19,8 +19,8 @@ namespace Sentinel.Core.Repository
                 Username = userName,
                 Password = BCrypt.Net.BCrypt.HashPassword(password)
             };
-            dbContext.Users.Add(user);
-            dbContext.SaveChanges();
+            Create(user);
+            SaveChanges();
             return user;
         }
     }

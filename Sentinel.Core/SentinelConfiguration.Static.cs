@@ -11,6 +11,22 @@ namespace Sentinel.Core
 {
     public partial class SentinelConfiguration
     {
+        private static SentinelConfiguration instance;
+
+        public static SentinelConfiguration Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = LoadFromFile();
+                }
+
+                return instance;
+            }
+        }
+
+
         private SentinelConfiguration()
         {
 
@@ -48,8 +64,9 @@ namespace Sentinel.Core
 
             var serializer = new SerializerBuilder().Build();
 
-            using (var writer = new StreamWriter(new FileStream(path, FileMode.Truncate)))
+            using (var writer = new StreamWriter(new FileStream(path, FileMode.Create)))
             {
+                
                 serializer.Serialize(writer, defaultConfig);
             }
         }

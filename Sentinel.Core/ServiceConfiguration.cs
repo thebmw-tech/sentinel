@@ -28,6 +28,8 @@ namespace Sentinel.Core
     {
         public static IServiceCollection RegisterSentinelCore(this IServiceCollection services)
         {
+            services.AddSingleton(SentinelConfiguration.Instance);
+
             services.AddDbContext<SentinelDatabaseContext>();
 
             // Setup Logging
