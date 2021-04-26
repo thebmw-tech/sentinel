@@ -13,7 +13,7 @@ using Sentinel.Core.Repository.Interfaces;
 
 namespace Sentinel.Core.Generators.IPTables
 {
-    public class IPTablesPersistentConfigurationGenerator : IConfigurationGenerator<Entities.FirewallRule>
+    public class IPTablesPersistentConfigurationGenerator : IConfigurationGenerator<IPTablesPersistentConfigurationGenerator>
     {
         private const string IPv4_CONFIG = "/etc/iptables/rules.v4";
         private const string IPv6_CONFIG = "/etc/iptables/rules.v6";

@@ -11,7 +11,7 @@ namespace Sentinel.Core.Services
 {
     public class ConfigurationGeneratorService : IConfigurationGeneratorService
     {
-        private readonly IConfigurationGenerator<IConfigurationEntity>[] configurationGenerators;
+   
 
         private readonly IServiceProvider serviceProvider;
         private readonly ILogger<ConfigurationGeneratorService> logger;
@@ -22,31 +22,17 @@ namespace Sentinel.Core.Services
             this.serviceProvider = serviceProvider;
             this.logger = logger;
 
-            var configGenBase = typeof(IConfigurationGenerator<>);
-
-            var configEntityTypes = configGenBase.Assembly.GetTypes()
-                .Where(t => t.IsAssignableTo(typeof(IConfigurationEntity)) && !t.IsAbstract);
-
-            var configGenTypes = configEntityTypes.Select(t => configGenBase.MakeGenericType(t));
-
-            configurationGenerators = configGenTypes
-                .Select(t => (IConfigurationGenerator<IConfigurationEntity>)serviceProvider.GetService(t)).ToArray();
+            
         }
 
         public void Apply()
         {
-            foreach (var configurationGenerator in configurationGenerators)
-            {
-                configurationGenerator.Apply();
-            }
+            
         }
 
         public void Generate()
         {
-            foreach (var configurationGenerator in configurationGenerators)
-            {
-                configurationGenerator.Generate();
-            }
+           
         }
 
         public void GenerateAndApply()

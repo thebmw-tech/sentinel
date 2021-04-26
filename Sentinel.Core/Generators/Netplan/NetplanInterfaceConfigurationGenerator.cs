@@ -14,7 +14,7 @@ using Route = Sentinel.Core.Models.Configuration.Netplan.Route;
 
 namespace Sentinel.Core.Generators.Netplan
 {
-    public class NetplanInterfaceConfigurationGenerator : IConfigurationGenerator<Entities.Interface>
+    public class NetplanInterfaceConfigurationGenerator : IConfigurationGenerator<NetplanInterfaceConfigurationGenerator>
     {
         private readonly IInterfaceRepository interfaceRepository;
         private readonly IInterfaceAddressRepository interfaceAddressRepository;

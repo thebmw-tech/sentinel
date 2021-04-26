@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using Sentinel.Core.Entities;
 using Sentinel.Core.Generators;
-using Sentinel.Core.Generators.Dummy;
 using Sentinel.Core.Generators.Interfaces;
 using Sentinel.Core.Generators.IPTables;
 using Sentinel.Core.Generators.Netplan;
@@ -29,9 +28,7 @@ namespace Sentinel.Core
     {
         public static IServiceCollection RegisterSentinelCore(this IServiceCollection services)
         {
-            //var config = SentinelConfiguration.LoadFromFile("");
-
-            //services.AddSingleton<SentinelConfiguration>(config);
+            services.AddSingleton(SentinelConfiguration.Instance);
 
             services.AddDbContext<SentinelDatabaseContext>();
 
@@ -75,14 +72,9 @@ namespace Sentinel.Core
              services.AddTransient<IKernelInterfaceService, KernelInterfaceService>();
 #endif
 
-            // Setup Generators -- This will eventualy be based on some configuration file options.
-            services.AddTransient<IConfigurationGenerator<DestinationNatRule>, DummyConfigurationGenerator<DestinationNatRule>>();
-            services.AddTransient<IConfigurationGenerator<FirewallRule>, IPTablesPersistentConfigurationGenerator>();
-            services.AddTransient<IConfigurationGenerator<FirewallTable>, DummyConfigurationGenerator<FirewallTable>>();
-            services.AddTransient<IConfigurationGenerator<InterfaceAddress>, DummyConfigurationGenerator<InterfaceAddress>>();
-            services.AddTransient<IConfigurationGenerator<Interface>, NetplanInterfaceConfigurationGenerator>();
-            services.AddTransient<IConfigurationGenerator<Route>, DummyConfigurationGenerator<Route>>();
-            services.AddTransient<IConfigurationGenerator<SourceNatRule>, DummyConfigurationGenerator<SourceNatRule>>();
+            // Register All Generators Even Ones That Aren't Used
+            services.AddTransient<IConfigurationGenerator<IPTablesPersistentConfigurationGenerator>, IPTablesPersistentConfigurationGenerator>();;
+            services.AddTransient<IConfigurationGenerator<NetplanInterfaceConfigurationGenerator>, NetplanInterfaceConfigurationGenerator>();
 
 
 

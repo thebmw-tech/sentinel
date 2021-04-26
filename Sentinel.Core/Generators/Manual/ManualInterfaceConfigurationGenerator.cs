@@ -2,7 +2,7 @@
 
 namespace Sentinel.Core.Generators.Manual
 {
-    public class ManualInterfaceConfigurationGenerator : IConfigurationGenerator<Entities.Interface>
+    public class ManualInterfaceConfigurationGenerator : IConfigurationGenerator<ManualInterfaceConfigurationGenerator>
     {
         public void Apply()
         {
