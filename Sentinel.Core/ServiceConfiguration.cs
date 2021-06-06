@@ -22,8 +22,6 @@ using Sentinel.Core.Services;
 using Sentinel.Core.Services.Interfaces;
 using Sentinel.Core.Validation;
 using Sentinel.Core.Validation.Entities;
-using Hangfire;
-using Hangfire.Storage.SQLite;
 
 namespace Sentinel.Core
 {
@@ -41,19 +39,6 @@ namespace Sentinel.Core
                 loggingBuilder.ClearProviders();
                 loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                 loggingBuilder.AddNLog();
-            });
-
-            // Setup Hangfire
-            services.AddHangfire(configuration =>
-            {
-                configuration.UseSimpleAssemblyNameTypeSerializer()
-                    .UseRecommendedSerializerSettings()
-                    .UseColouredConsoleLogProvider();
-
-                if (SentinelConfiguration.Instance.HangfireDatabaseProvider == "sqlite")
-                {
-                    configuration.UseSQLiteStorage(SentinelConfiguration.Instance.HangfireDatabaseConnectionString);
-                }
             });
 
             // Setup Mapper
