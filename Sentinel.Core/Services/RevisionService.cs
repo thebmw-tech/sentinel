@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using Sentinel.Core.Entities;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services.Interfaces;
 using Sentinel.Models;
@@ -22,6 +23,9 @@ namespace Sentinel.Core.Services
         private readonly IInterfaceRepository interfaceRepository;
         private readonly ISourceNatRuleRepository sourceNatRuleRepository;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
+        private readonly IVlanInterfaceRepository vlanInterfaceRepository;
+
+        private readonly IConfigurationGeneratorService configurationGeneratorService;
 
         private readonly IMapper mapper;
         
@@ -31,7 +35,8 @@ namespace Sentinel.Core.Services
             IDestinationNatRuleRepository destinationNatRuleRepository, IFirewallRuleRepository firewallRuleRepository,
             IFirewallTableRepository firewallTableRepository, IInterfaceAddressRepository interfaceAddressRepository,
             IInterfaceRepository interfaceRepository, ISourceNatRuleRepository sourceNatRuleRepository,
-            ISystemConfigurationRepository systemConfigurationRepository, IMapper mapper, ILogger<RevisionService> logger)
+            ISystemConfigurationRepository systemConfigurationRepository, IVlanInterfaceRepository vlanInterfaceRepository,
+            IConfigurationGeneratorService configurationGeneratorService, IMapper mapper, ILogger<RevisionService> logger)
         {
             this.dbContext = dbContext;
 
@@ -44,6 +49,9 @@ namespace Sentinel.Core.Services
             this.interfaceRepository = interfaceRepository;
             this.sourceNatRuleRepository = sourceNatRuleRepository;
             this.systemConfigurationRepository = systemConfigurationRepository;
+            this.vlanInterfaceRepository = vlanInterfaceRepository;
+
+            this.configurationGeneratorService = configurationGeneratorService;
 
             this.mapper = mapper;
             this.logger = logger;
@@ -69,11 +77,66 @@ namespace Sentinel.Core.Services
             transaction.Commit();
         }
 
+        private void RollbackRevision(Revision revision)
+        {
+            revision.CommitDate = null;
+            revisionRepository.Update(revision);
+            revisionRepository.SaveChanges();
+        }
+
+        public void RollbackRevision(int revisionId)
+        {
+            var revision = revisionRepository.Find(r => r.Id == revisionId);
+            if (revision.ConfirmDate.HasValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(revisionId), "Can't Rollback Confirmed Revision");
+            }
+            RollbackRevision(revision);
+        }
+
+        public void RollbackIfNotConfirmed(int revisionId)
+        {
+            var revision = revisionRepository.Find(r => r.Id == revisionId);
+            if (revision.ConfirmDate.HasValue)
+            {
+                return;
+            }
+            RollbackRevision(revision);
+            configurationGeneratorService.GenerateAndApply();
+        }
+
         public void CommitRevision(int revisionId)
         {
             using var transaction = dbContext.Database.BeginTransaction();
-            
-            throw new System.NotImplementedException();
+
+            var revision = revisionRepository.Find(r => r.Id == revisionId);
+            revision.CommitDate = DateTime.UtcNow;
+            revisionRepository.Update(revision);
+            revisionRepository.SaveChanges();
+
+            try
+            {
+                configurationGeneratorService.Generate();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error generating new configurations");
+                RollbackRevision(revisionId);
+                configurationGeneratorService.Generate();
+            }
+
+            try
+            {
+                configurationGeneratorService.Apply();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error applying new configuration");
+                RollbackRevision(revisionId);
+                configurationGeneratorService.GenerateAndApply();
+            }
+
+            transaction.Commit();
         }
 
         public void ConfirmRevision(int revisionId)
@@ -120,6 +183,7 @@ namespace Sentinel.Core.Services
             interfaceAddressRepository.CopySafeToRevision(revision.Id);
             sourceNatRuleRepository.CopySafeToRevision(revision.Id);
             systemConfigurationRepository.CopySafeToRevision(revision.Id);
+            vlanInterfaceRepository.CopySafeToRevision(revision.Id);
 
             transaction.Commit();
 

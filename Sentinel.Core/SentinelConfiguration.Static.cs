@@ -26,12 +26,6 @@ namespace Sentinel.Core
             }
         }
 
-
-        private SentinelConfiguration()
-        {
-
-        }
-
         public static SentinelConfiguration LoadFromFile()
         {
             var path = HelperFunctions.FindExistingFile(new[]

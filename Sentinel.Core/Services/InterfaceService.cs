@@ -8,6 +8,7 @@ using Sentinel.Models;
 using System.IO;
 using System.Linq;
 using Sentinel.Core.Enums;
+using Sentinel.Core.Helpers;
 
 namespace Sentinel.Core.Services
 {
@@ -16,15 +17,17 @@ namespace Sentinel.Core.Services
         private readonly IInterfaceRepository interfaceRepository;
         private readonly IFirewallTableRepository firewallTableRepository;
         private readonly IInterfaceAddressRepository interfaceAddressRepository;
+        private readonly IVlanInterfaceRepository vlanInterfaceRepository;
 
         private readonly IMapper mapper;
 
         public InterfaceService(IInterfaceRepository interfaceRepository, IFirewallTableRepository firewallTableRepository,
-            IInterfaceAddressRepository interfaceAddressRepository, IMapper mapper)
+            IInterfaceAddressRepository interfaceAddressRepository, IVlanInterfaceRepository vlanInterfaceRepository, IMapper mapper)
         {
             this.interfaceRepository = interfaceRepository;
             this.firewallTableRepository = firewallTableRepository;
             this.interfaceAddressRepository = interfaceAddressRepository;
+            this.vlanInterfaceRepository = vlanInterfaceRepository;
             this.mapper = mapper;
         }
 
@@ -42,12 +45,24 @@ namespace Sentinel.Core.Services
 
         public void PrintInterfaceToTextWriter(int revisionId, InterfaceDTO @interface, TextWriter writer)
         {
-
+            var interfaceType = Enum.Parse<InterfaceType>(@interface.InterfaceType);
             writer.WriteLine($"{@interface.Name}: ({@interface.InterfaceType})");
             writer.WriteLine($"  Enabled: {@interface.Enabled}");
             writer.WriteLine($"  Description: {@interface.Description}");
 
-            writer.WriteLine($"  Address Configuration: {@interface.IPv4ConfigurationType}");
+
+            switch (interfaceType)
+            {
+                case InterfaceType.Vlan:
+                    var vlanInterface = vlanInterfaceRepository.Find(v => v.InterfaceName == @interface.Name && v.RevisionId == revisionId);
+                    writer.WriteLine("  Vlan:");
+                    writer.WriteLine($"    Parent Interface: {vlanInterface.ParentInterfaceName}");
+                    writer.WriteLine($"    Vlan Id: {vlanInterface.VlanId}");
+                    break;
+                
+            }
+
+            writer.WriteLine($"  Addresses:");
             var addresses = interfaceAddressRepository.GetForRevision(revisionId)
                 .Where(a => a.InterfaceName == @interface.Name);
             foreach (var address in addresses)
@@ -58,10 +73,9 @@ namespace Sentinel.Core.Services
                 }
                 else
                 {
-                    writer.WriteLine($"  - {address.AddressConfigurationType.ToString()}");
+                    writer.WriteLine($"  - {address.AddressConfigurationType}");
                 }
             }
-
 
             var inFirewallTable = firewallTableRepository.Find(t =>
                 t.RevisionId == revisionId && t.Id == @interface.InboundFirewallTableId);

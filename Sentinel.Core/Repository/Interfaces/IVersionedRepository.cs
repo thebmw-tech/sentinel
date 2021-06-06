@@ -13,5 +13,6 @@ namespace Sentinel.Core.Repository.Interfaces
         IQueryable<T> GetForRevision(int revisionId);
         void Modify(Expression<Func<T, bool>> predicate, Action<T> updateAction);
         void CopySafeToRevision(int revisionId);
+        void CopyFromRevision(int srcRevisionId, int dstRevisionId);
     }
 }

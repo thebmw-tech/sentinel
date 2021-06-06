@@ -69,5 +69,16 @@ namespace Sentinel.Core.Repository
 
             SaveChanges();
         }
+
+        public void CopyFromRevision(int srcRevisionId, int dstRevisionId)
+        {
+            var items = GetForRevision(srcRevisionId);
+            foreach (var item in items)
+            {
+                Create(item.GetCopyForRevision(dstRevisionId));
+            }
+
+            SaveChanges();
+        }
     }
 }

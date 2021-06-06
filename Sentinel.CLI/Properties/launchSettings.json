@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Sentinel.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "HangfireServer"
+    }
+  }
+}

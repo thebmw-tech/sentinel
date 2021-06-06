@@ -14,6 +14,7 @@ using Sentinel.Core.Generators;
 using Sentinel.Core.Generators.Interfaces;
 using Sentinel.Core.Generators.IPTables;
 using Sentinel.Core.Generators.Netplan;
+using Sentinel.Core.Generators.NetworkD;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
@@ -21,6 +22,8 @@ using Sentinel.Core.Services;
 using Sentinel.Core.Services.Interfaces;
 using Sentinel.Core.Validation;
 using Sentinel.Core.Validation.Entities;
+using Hangfire;
+using Hangfire.Storage.SQLite;
 
 namespace Sentinel.Core
 {
@@ -38,6 +41,19 @@ namespace Sentinel.Core
                 loggingBuilder.ClearProviders();
                 loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                 loggingBuilder.AddNLog();
+            });
+
+            // Setup Hangfire
+            services.AddHangfire(configuration =>
+            {
+                configuration.UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseColouredConsoleLogProvider();
+
+                if (SentinelConfiguration.Instance.HangfireDatabaseProvider == "sqlite")
+                {
+                    configuration.UseSQLiteStorage(SentinelConfiguration.Instance.HangfireDatabaseConnectionString);
+                }
             });
 
             // Setup Mapper
@@ -58,6 +74,7 @@ namespace Sentinel.Core
             services.AddTransient<ISourceNatRuleRepository, SourceNatRuleRepository>();
             services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IVlanInterfaceRepository, VlanInterfaceRepository>();
 
             // Setup Services
             services.AddTransient<IConfigurationGeneratorService, ConfigurationGeneratorService>();
@@ -75,6 +92,7 @@ namespace Sentinel.Core
             // Register All Generators Even Ones That Aren't Used
             services.AddTransient<IConfigurationGenerator<IPTablesPersistentConfigurationGenerator>, IPTablesPersistentConfigurationGenerator>();;
             services.AddTransient<IConfigurationGenerator<NetplanInterfaceConfigurationGenerator>, NetplanInterfaceConfigurationGenerator>();
+            services.AddTransient<IConfigurationGenerator<NetworkDConfigurationGenerator>, NetworkDConfigurationGenerator>();
 
 
 
