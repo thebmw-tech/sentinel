@@ -20,7 +20,8 @@ namespace Sentinel.Core.Entities.Maps
                 .HasMaxLength(63)
                 .IsRequired();
 
-
+            builder.Property(sc => sc.DHCPHostname)
+                .HasMaxLength(63);
         }
     }
 }

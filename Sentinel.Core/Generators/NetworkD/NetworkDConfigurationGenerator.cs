@@ -16,6 +16,7 @@ namespace Sentinel.Core.Generators.NetworkD
         private readonly IInterfaceRepository interfaceRepository;
         private readonly IInterfaceAddressRepository interfaceAddressRepository;
         private readonly IVlanInterfaceRepository vlanInterfaceRepository;
+        private readonly IRouteRepository routeRepository;
 
         private readonly IFileSystem fileSystem;
 
@@ -31,11 +32,12 @@ namespace Sentinel.Core.Generators.NetworkD
 
         public NetworkDConfigurationGenerator(IInterfaceRepository interfaceRepository,
             IInterfaceAddressRepository interfaceAddressRepository, IVlanInterfaceRepository vlanInterfaceRepository,
-            IFileSystem fileSystem, ILogger<NetworkDConfigurationGenerator> logger)
+            IRouteRepository routeRepository, IFileSystem fileSystem, ILogger<NetworkDConfigurationGenerator> logger)
         {
             this.interfaceRepository = interfaceRepository;
             this.interfaceAddressRepository = interfaceAddressRepository;
             this.vlanInterfaceRepository = vlanInterfaceRepository;
+            this.routeRepository = routeRepository;
 
             this.fileSystem = fileSystem;
 
@@ -49,7 +51,14 @@ namespace Sentinel.Core.Generators.NetworkD
 
         public void Generate()
         {
-            throw new System.NotImplementedException();
+            CleanupFiles();
+            GenerateNetDevs();
+            GenerateNetworks();
+        }
+
+        private void CleanupFiles()
+        {
+
         }
 
         private void GenerateNetDevs()
@@ -80,7 +89,7 @@ namespace Sentinel.Core.Generators.NetworkD
                     throw new Exception("We should never get here");
             }
 
-            fileSystem.File.WriteAllText($"{NetworkFolder}{Path.PathSeparator}{virtualInterface.Name}.netdev", sb.ToString());
+            fileSystem.File.WriteAllText($"{NetworkFolder}{virtualInterface.Name}.netdev", sb.ToString());
         }
 
         private void GenerateVlanNetDev(Interface virtualInterface, StringBuilder sb)
@@ -109,8 +118,10 @@ namespace Sentinel.Core.Generators.NetworkD
             sb.Append("\n");
 
             GenerateNetworkNetwork(@interface, sb);
+            sb.Append("\n");
+            GenerateNetworkRoutes(@interface, sb);
 
-            fileSystem.File.WriteAllText($"{NetworkFolder}{Path.PathSeparator}{@interface.Name}.network", sb.ToString());
+            fileSystem.File.WriteAllText($"{NetworkFolder}{@interface.Name}.network", sb.ToString());
         }
 
         private void GenerateNetworkNetwork(Interface @interface, StringBuilder sb)
@@ -120,7 +131,68 @@ namespace Sentinel.Core.Generators.NetworkD
             sb.Append("[Network]\n");
             sb.Append($"Description={@interface.Description}\n");
 
+            var dhcpMode = "no";
 
+            if (addresses.Any(a =>
+                a.AddressConfigurationType == AddressConfigurationType.DHCP ||
+                a.AddressConfigurationType == AddressConfigurationType.DHCP6))
+            {
+                if (!addresses.Any(a => a.AddressConfigurationType == AddressConfigurationType.DHCP6))
+                {
+                    dhcpMode = "ipv4";
+                }
+                else if (!addresses.Any(a => a.AddressConfigurationType == AddressConfigurationType.DHCP))
+                {
+                    dhcpMode = "ipv6";
+                }
+                else
+                {
+                    dhcpMode = "yes";
+                }
+            }
+
+            sb.Append($"DHCP={dhcpMode}\n");
+
+            foreach (var address in addresses.Where(a => a.AddressConfigurationType == AddressConfigurationType.Static))
+            {
+                sb.Append($"Address={address.Address}/{address.SubnetMask}\n");
+            }
+
+            sb.Append("\n");
+
+            GenerateVirtualNetworkNetwork(@interface, sb);
+        }
+
+        private void GenerateVirtualNetworkNetwork(Interface @interface, StringBuilder sb)
+        {
+            var vlanInterfaces = vlanInterfaceRepository.GetCurrent().Where(v => v.ParentInterfaceName == @interface.Name);
+            foreach (var vlanInterface in vlanInterfaces)
+            {
+                sb.Append($"VLAN={vlanInterface.InterfaceName}\n");
+            }
+        }
+
+        private void GenerateNetworkRoutes(Interface @interface, StringBuilder sb)
+        {
+            var interfaceRoutes = routeRepository.GetCurrent().Where(r => r.InterfaceName == @interface.Name);
+            
+            foreach (var interfaceRoute in interfaceRoutes)
+            {
+                sb.Append("[Route]\n");
+                sb.Append($"Destination={interfaceRoute.Address}/{interfaceRoute.SubnetMask}\n");
+                switch (interfaceRoute.RouteType)
+                {
+                    case RouteType.Static:
+                        sb.Append($"Gateway={interfaceRoute.NextHopAddress}\n");
+                        sb.Append("Type=unicast\n");
+                        break;
+                    case RouteType.Null:
+                        sb.Append("Type=blackhole\n");
+                        break;
+                    default:
+                        throw new NotImplementedException($"{interfaceRoute.RouteType} is not supported.");
+                }
+            }
         }
     }
 }
