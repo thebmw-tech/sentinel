@@ -34,7 +34,7 @@ namespace Sentinel.Core.Services
             var enabledGeneratorTypeNames = SentinelConfiguration.Instance.EnabledGenerators;
 
             var enabledGeneratorTypes =
-                generatorTypes.Where(t => enabledGeneratorTypeNames.Any(n => t.Name.StartsWith(n)));
+                generatorTypes.Where(t => enabledGeneratorTypeNames.Any(n => t.Name == $"{n}ConfigurationGenerator"));
 
             var generatorGeneric = typeof(IConfigurationGenerator<>);
 
