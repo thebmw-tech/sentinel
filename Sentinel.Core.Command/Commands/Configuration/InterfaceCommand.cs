@@ -17,10 +17,12 @@ namespace Sentinel.Core.Command.Commands.Configuration
     public class InterfaceCommand : BaseCommand
     {
         private readonly IInterfaceRepository interfaceRepository;
+        private readonly IVlanInterfaceRepository vlanInterfaceRepository;
 
-        public InterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository) : base(shell)
+        public InterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository, IVlanInterfaceRepository vlanInterfaceRepository) : base(shell)
         {
             this.interfaceRepository = interfaceRepository;
+            this.vlanInterfaceRepository = vlanInterfaceRepository;
         }
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
@@ -58,6 +60,16 @@ namespace Sentinel.Core.Command.Commands.Configuration
 
                 interfaceRepository.Create(@interface);
                 interfaceRepository.SaveChanges();
+            }
+
+            if (@interface.InterfaceType == InterfaceType.Vlan)
+            {
+                var vlanInterface =
+                    vlanInterfaceRepository.Find(v => v.RevisionId == revisionId && v.InterfaceName == interfaceName);
+                if (vlanInterface == null)
+                {
+
+                }
             }
 
             shell.Environment["CONFIG_INTERFACE_NAME"] = @interface.Name;
