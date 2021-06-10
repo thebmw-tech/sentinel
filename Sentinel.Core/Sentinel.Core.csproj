@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Generators\NetworkD\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Resources\" />
   </ItemGroup>

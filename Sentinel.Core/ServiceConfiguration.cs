@@ -14,6 +14,7 @@ using Sentinel.Core.Generators;
 using Sentinel.Core.Generators.Interfaces;
 using Sentinel.Core.Generators.IPTables;
 using Sentinel.Core.Generators.Netplan;
+using Sentinel.Core.Generators.NetworkD;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
@@ -58,6 +59,7 @@ namespace Sentinel.Core
             services.AddTransient<ISourceNatRuleRepository, SourceNatRuleRepository>();
             services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IVlanInterfaceRepository, VlanInterfaceRepository>();
 
             // Setup Services
             services.AddTransient<IConfigurationGeneratorService, ConfigurationGeneratorService>();
@@ -75,6 +77,7 @@ namespace Sentinel.Core
             // Register All Generators Even Ones That Aren't Used
             services.AddTransient<IConfigurationGenerator<IPTablesPersistentConfigurationGenerator>, IPTablesPersistentConfigurationGenerator>();;
             services.AddTransient<IConfigurationGenerator<NetplanInterfaceConfigurationGenerator>, NetplanInterfaceConfigurationGenerator>();
+            services.AddTransient<IConfigurationGenerator<NetworkDConfigurationGenerator>, NetworkDConfigurationGenerator>();
 
 
 

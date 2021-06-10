@@ -12,13 +12,14 @@ namespace Sentinel.Core
 {
     public class SentinelDatabaseContext : DbContext
     {
+        private const string SQLITE = "sqlite";
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var configuration = SentinelConfiguration.Instance;
 
             switch (configuration.DatabaseProvider)
             {
-                case "sqlite":
+                case SQLITE:
                     optionsBuilder.UseSqlite(configuration.DatabaseConnectionString);
                     break;
                 default:

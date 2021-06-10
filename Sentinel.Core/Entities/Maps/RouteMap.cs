@@ -15,6 +15,9 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.HasKey(r => new {r.RevisionId, r.Address, r.SubnetMask});
 
+            builder.Property(r => r.RouteType)
+                .IsRequired();
+
             builder.Property(r => r.InterfaceName)
                 .HasMaxLength(INTERFACE_NAME_LENGTH)
                 .IsRequired();

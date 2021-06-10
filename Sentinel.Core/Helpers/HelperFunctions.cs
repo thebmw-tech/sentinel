@@ -159,5 +159,16 @@ namespace Sentinel.Core.Helpers
             return new Tuple<string, string[]>(command, args);
         }
 
+        public static bool EnumIsEqual<TEnum>(TEnum enumValue, string value)
+        {
+            if (!Enum.TryParse(typeof(TEnum), value, out var eResult))
+            {
+                return false;
+            }
+
+            var enumToCheck = (TEnum) eResult;
+            return enumToCheck.Equals(enumValue);
+        }
+
     }
 }
