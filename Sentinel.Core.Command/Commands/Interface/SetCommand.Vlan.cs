@@ -14,7 +14,7 @@ namespace Sentinel.Core.Command.Commands.Interface
 {
     public partial class SetCommand
     {
-        [SubCommand("parent-interface", "Sets the interface description")]
+        [SubCommand("vlan", "Sets the interface description")]
         public class SetParentInterfaceCommand : BaseCommand, IFilteredCommand
         {
             private readonly IInterfaceRepository interfaceRepository;
@@ -35,6 +35,13 @@ namespace Sentinel.Core.Command.Commands.Interface
                 // TODO validate incoming value
                 var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
                 var interfaceName = shell.GetEnvironment<string>("CONFIG_INTERFACE_NAME");
+
+                var vlanId = ushort.MaxValue;
+                if (!ushort.TryParse(args[0], out vlanId))
+                {
+                    // TODO display error
+                    return 2;
+                }
 
 
                 return 0;
@@ -57,7 +64,7 @@ namespace Sentinel.Core.Command.Commands.Interface
             public bool ShouldShow(IShell shell)
             {
                 var interfaceType = shell.GetEnvironment<InterfaceType>("CONFIG_INTERFACE_TYPE");
-                return interfaceType == InterfaceType.Vlan;
+                return interfaceType == InterfaceType.Ethernet;
             }
         }
     }

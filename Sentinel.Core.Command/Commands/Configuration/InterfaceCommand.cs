@@ -5,6 +5,7 @@ using NLog.Targets;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
+using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
@@ -68,7 +69,8 @@ namespace Sentinel.Core.Command.Commands.Configuration
                     vlanInterfaceRepository.Find(v => v.RevisionId == revisionId && v.InterfaceName == interfaceName);
                 if (vlanInterface == null)
                 {
-
+                    shell.Error.WriteLine("Missing VLAN Configuration");
+                    return 1;
                 }
             }
 
