@@ -55,6 +55,11 @@ namespace Sentinel.Core.Repository
             DbSet.RemoveRange(itemsToDelete);
         }
 
+        public bool Exists(Expression<Func<TType, bool>> predicate)
+        {
+            return DbSet.Any(predicate);
+        }
+
         public IQueryable<TType> Filter(Expression<Func<TType, bool>> predicate)
         {
             return DbSet.Where(predicate);

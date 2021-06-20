@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sentinel.Core;
 
 namespace Sentinel.Core.Migrations
 {
     [DbContext(typeof(SentinelDatabaseContext))]
-    partial class SentinelDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210619011014_Something")]
+    partial class Something
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -460,11 +462,6 @@ namespace Sentinel.Core.Migrations
                         .IsRequired()
                         .HasMaxLength(63)
                         .HasColumnType("TEXT");
-
-                    b.Property<uint>("ShellHistoryLength")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1000u);
 
                     b.HasKey("RevisionId");
 

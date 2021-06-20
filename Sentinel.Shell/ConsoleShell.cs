@@ -18,8 +18,6 @@ namespace Sentinel.Shell
 {
     public class ConsoleShell : IShell
     {
-        private const int HIST_LENGTH = 1000;
-
         private readonly CommandInterpreter interpreter;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
         private readonly IRevisionService revisionService;

@@ -61,13 +61,8 @@ namespace Sentinel.Core.Repository
 
         public void CopySafeToRevision(int revisionId)
         {
-            var safeItems = GetSafe();
-            foreach (var item in safeItems)
-            {
-                Create(item.GetCopyForRevision(revisionId));
-            }
-
-            SaveChanges();
+            var safeRevisionId = revisionRepository.GetSafeRevisionId();
+            CopyFromRevision(safeRevisionId, revisionId);
         }
 
         public void CopyFromRevision(int srcRevisionId, int dstRevisionId)

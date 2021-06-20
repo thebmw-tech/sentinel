@@ -30,7 +30,7 @@ namespace Sentinel.Core.Command.Commands.Shell
 
         public override string Suggest(string[] args)
         {
-            throw new NotImplementedException();
+                throw new NotImplementedException();
         }
 
         //[SubCommand("interfaces", "Show information about interfaces")]

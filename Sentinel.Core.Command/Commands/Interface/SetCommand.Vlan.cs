@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sentinel.Core.Command.Attributes;
 using Sentinel.Core.Command.Interfaces;
+using Sentinel.Core.Entities;
 using Sentinel.Core.Enums;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Models;
@@ -18,9 +19,12 @@ namespace Sentinel.Core.Command.Commands.Interface
         public class SetParentInterfaceCommand : BaseCommand, IFilteredCommand
         {
             private readonly IInterfaceRepository interfaceRepository;
-            public SetParentInterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository) : base(shell)
+            private readonly IVlanInterfaceRepository vlanInterfaceRepository;
+
+            public SetParentInterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository, IVlanInterfaceRepository vlanInterfaceRepository) : base(shell)
             {
                 this.interfaceRepository = interfaceRepository;
+                this.vlanInterfaceRepository = vlanInterfaceRepository;
             }
 
             public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
@@ -39,9 +43,29 @@ namespace Sentinel.Core.Command.Commands.Interface
                 var vlanId = ushort.MaxValue;
                 if (!ushort.TryParse(args[0], out vlanId))
                 {
-                    // TODO display error
+                    error.WriteLine("Invalid vlan id.");
                     return 2;
                 }
+
+                var vlanInterface = vlanInterfaceRepository.Find(v =>
+                    v.RevisionId == revisionId && v.ParentInterfaceName == interfaceName && v.VlanId == vlanId);
+
+                if (vlanInterface != null)
+                {
+                    error.WriteLine($"Vlan {vlanId} already configured on {interfaceName}");
+                    return 3;
+                }
+
+                vlanInterface = new VlanInterface()
+                {
+                    RevisionId = revisionId,
+                    ParentInterfaceName = interfaceName,
+                    VlanId = vlanId,
+                    InterfaceName = $"{interfaceName}.{vlanId}"
+                };
+
+                vlanInterfaceRepository.Create(vlanInterface);
+                vlanInterfaceRepository.SaveChanges();
 
 
                 return 0;

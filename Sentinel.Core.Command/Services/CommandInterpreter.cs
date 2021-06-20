@@ -201,7 +201,11 @@ namespace Sentinel.Core.Command.Services
                 shell.Error.WriteLine(e.Message);
                 shell.Error.WriteLine(e.StackTrace);
                 shell.Error.Flush();
+#if DEBUG
+                throw;
+#else
                 return -2;
+#endif
             }
         }
 

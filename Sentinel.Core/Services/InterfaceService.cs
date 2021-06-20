@@ -18,16 +18,24 @@ namespace Sentinel.Core.Services
         private readonly IFirewallTableRepository firewallTableRepository;
         private readonly IInterfaceAddressRepository interfaceAddressRepository;
         private readonly IVlanInterfaceRepository vlanInterfaceRepository;
+        private readonly ISourceNatRuleRepository sourceNatRuleRepository;
+        private readonly IDestinationNatRuleRepository destinationNatRuleRepository;
+        private readonly IRouteRepository routeRepository;
 
         private readonly IMapper mapper;
 
         public InterfaceService(IInterfaceRepository interfaceRepository, IFirewallTableRepository firewallTableRepository,
-            IInterfaceAddressRepository interfaceAddressRepository, IVlanInterfaceRepository vlanInterfaceRepository, IMapper mapper)
+            IInterfaceAddressRepository interfaceAddressRepository, IVlanInterfaceRepository vlanInterfaceRepository,
+            ISourceNatRuleRepository sourceNatRuleRepository, IDestinationNatRuleRepository destinationNatRuleRepository,
+            IRouteRepository routeRepository, IMapper mapper)
         {
             this.interfaceRepository = interfaceRepository;
             this.firewallTableRepository = firewallTableRepository;
             this.interfaceAddressRepository = interfaceAddressRepository;
             this.vlanInterfaceRepository = vlanInterfaceRepository;
+            this.sourceNatRuleRepository = sourceNatRuleRepository;
+            this.destinationNatRuleRepository = destinationNatRuleRepository;
+            this.routeRepository = routeRepository;
             this.mapper = mapper;
         }
 
@@ -41,6 +49,12 @@ namespace Sentinel.Core.Services
         {
             var @interface = interfaceRepository.Find(i => i.Name == name && i.RevisionId == revisionId);
             return mapper.Map<InterfaceDTO>(@interface);
+        }
+
+        public bool InterfaceHasVlan(int revisionId, string interfaceName, ushort vlanId)
+        {
+            return vlanInterfaceRepository.Exists(v =>
+                v.RevisionId == revisionId && v.ParentInterfaceName == interfaceName && v.VlanId == vlanId);
         }
 
         public void PrintInterfaceToTextWriter(int revisionId, InterfaceDTO @interface, TextWriter writer)
@@ -88,6 +102,53 @@ namespace Sentinel.Core.Services
             writer.WriteLine($"    In: {inFirewallTable?.Name ?? "None"}");
             writer.WriteLine($"    Out: {outFirewallTable?.Name ?? "None"}");
             writer.WriteLine($"    Local: {localFirewallTable?.Name ?? "None"}");
+        }
+
+        public void RemoveInterface(int revisionId, string name)
+        {
+            var @interface = interfaceRepository.Find(i => i.RevisionId == revisionId && i.Name == name);
+
+            if (@interface == null)
+            {
+
+            }
+
+            interfaceAddressRepository.Delete(a => a.RevisionId == revisionId && a.InterfaceName == name);
+            sourceNatRuleRepository.Delete(s => s.RevisionId == revisionId && s.OutboundInterfaceName == name);
+            destinationNatRuleRepository.Delete(d => d.RevisionId == revisionId && d.InboundInterfaceName == name);
+            routeRepository.Delete(r => r.RevisionId == revisionId && r.InterfaceName == name);
+
+            var vlanSubInterfaces = vlanInterfaceRepository.GetForRevision(revisionId)
+                .Where(v => v.ParentInterfaceName == name).ToList();
+            foreach (var vlanSubInterface in vlanSubInterfaces)
+            {
+                RemoveVlan(revisionId, name, vlanSubInterface.VlanId);
+            }
+
+
+            interfaceRepository.Delete(@interface);
+
+            interfaceRepository.SaveChanges();
+        }
+
+        public void RemoveVlan(int revisionId, string parentInterfaceName, ushort vlandId)
+        {
+            var vlanInterface = vlanInterfaceRepository.Find(v =>
+                v.RevisionId == revisionId && v.ParentInterfaceName == parentInterfaceName && v.VlanId == vlandId);
+
+            if (vlanInterface == null)
+            {
+                throw new Exception("");
+            }
+
+            if (interfaceRepository.Exists(i => i.RevisionId == revisionId && i.Name == vlanInterface.InterfaceName))
+            {
+                RemoveInterface(revisionId, vlanInterface.InterfaceName);
+            }
+
+            vlanInterfaceRepository.Delete(vlanInterface);
+
+            interfaceRepository.SaveChanges();
         }
     }
 }
