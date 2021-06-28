@@ -146,10 +146,10 @@ namespace Sentinel.Core.Command.Services
             var commands = GetCommands(mode, commandWithArgs.Item1);
             switch (commands.Count)
             {
-                case 1:
+                case > 1:
                     var commandInstance = GetCommandInstance(commands.First(), shell);
                     return $"{commandWithArgs.Item1} {commandInstance.Suggest(commandWithArgs.Item2)}";
-                case > 1:
+                case 1:
                     var commandStrings = commands.Select(c => c.GetCustomAttribute<CommandAttribute>())
                         .Where(s => s != null).Select(s => s.BaseCommand).ToList();
                     
@@ -202,10 +202,12 @@ namespace Sentinel.Core.Command.Services
                 shell.Error.WriteLine(e.StackTrace);
                 shell.Error.Flush();
 #if DEBUG
-                throw;
-#else
-                return -2;
+                if (e.InnerException != null)
+                {
+                    throw;
+                }
 #endif
+                return -2;
             }
         }
 

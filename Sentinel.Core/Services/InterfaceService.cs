@@ -110,7 +110,7 @@ namespace Sentinel.Core.Services
 
             if (@interface == null)
             {
-
+                throw new Exception("Can't delete an interface that doesn't exist");
             }
 
             interfaceAddressRepository.Delete(a => a.RevisionId == revisionId && a.InterfaceName == name);

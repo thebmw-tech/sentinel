@@ -6,7 +6,7 @@ using Sentinel.Core.Repository.Interfaces;
 namespace Sentinel.Core.Command.Commands.Interface
 {
     [Command(CommandMode.Interface, "interface", "interface", false)]
-    public class InterfaceCommand : Configuration.InterfaceCommand
+    public class InterfaceCommand : Configuration.EditCommand.EditInterfaceCommand
     {
         public InterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository,
             IVlanInterfaceRepository vlanInterfaceRepository) : base(shell, interfaceRepository,
