@@ -36,6 +36,11 @@ namespace Sentinel.Core.Command.Services
 
         public int Execute(IShell shell, string[] commandLine, TextReader input, TextWriter output, TextWriter error)
         {
+            if (commandLine.Length == 0)
+            {
+                //TODO do something here
+                return 1;
+            }
             var command = commandLine[0];
             var args = commandLine.Skip(1).ToArray();
 
@@ -95,6 +100,7 @@ namespace Sentinel.Core.Command.Services
             return string.Join(' ', commandLine);
         }
 
+        // TODO this should be more efficient
         private bool CheckFilter(Type type, IShell shell)
         {
             if (type.IsAssignableTo(typeof(IFilteredCommand)))
@@ -113,12 +119,7 @@ namespace Sentinel.Core.Command.Services
 
         private ICommand GetCommandInstance(Type commandType, IShell shell)
         {
-            var constructorParams = commandType.GetConstructors().First().GetParameters()
-                .Select(p => p.ParameterType == typeof(IShell) ? shell : serviceProvider.GetService(p.ParameterType)).ToArray();
-
-            var commandInstance = (ICommand)Activator.CreateInstance(commandType, constructorParams);
-
-            return commandInstance;
+            return CommandHelper.GetCommandInstance(commandType, shell, serviceProvider);
         }
 
         private int ExecuteCommand(IShell shell, Type commandType, string[] args, TextReader input, TextWriter output, TextWriter error)
@@ -141,7 +142,11 @@ namespace Sentinel.Core.Command.Services
                 error.WriteLine(e.Message);
                 error.WriteLine(e.StackTrace);
                 error.Flush();
+#if DEBUG
+                throw;
+#else
                 return 1;
+#endif
             }
         }
     }

@@ -9,6 +9,8 @@ namespace Sentinel.Core.Helpers
     {
         public static void WriteSpacedTuples(List<Tuple<string, string>> tuples, TextWriter output)
         {
+            if (tuples.Count == 0) return;
+
             tuples = tuples.OrderBy(t => t.Item1).ToList();
 
             var firstColumnSpacing = tuples.Max(t => t.Item1.Length) + 3;

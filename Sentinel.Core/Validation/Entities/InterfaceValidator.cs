@@ -7,7 +7,6 @@ namespace Sentinel.Core.Validation.Entities
         public override void Validate(Interface itemToValidate)
         {
             throw new System.NotImplementedException();
-            
         }
     }
 }

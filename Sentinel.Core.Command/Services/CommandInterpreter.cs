@@ -146,10 +146,10 @@ namespace Sentinel.Core.Command.Services
             var commands = GetCommands(mode, commandWithArgs.Item1);
             switch (commands.Count)
             {
-                case 1:
+                case > 1:
                     var commandInstance = GetCommandInstance(commands.First(), shell);
                     return $"{commandWithArgs.Item1} {commandInstance.Suggest(commandWithArgs.Item2)}";
-                case > 1:
+                case 1:
                     var commandStrings = commands.Select(c => c.GetCustomAttribute<CommandAttribute>())
                         .Where(s => s != null).Select(s => s.BaseCommand).ToList();
                     
@@ -180,12 +180,7 @@ namespace Sentinel.Core.Command.Services
 
         private ICommand GetCommandInstance(Type commandType, IShell shell)
         {
-            var constructorParams = commandType.GetConstructors().First().GetParameters()
-                .Select(p =>  p.ParameterType == typeof(IShell) ? shell : serviceProvider.GetService(p.ParameterType)).ToArray();
-
-            var commandInstance = (ICommand)Activator.CreateInstance(commandType, constructorParams);
-
-            return commandInstance;
+            return CommandHelper.GetCommandInstance(commandType, shell, serviceProvider);
         }
 
         private int ExecuteCommand(Type commandType, IShell shell, string[] args, TextReader input, TextWriter output, TextWriter error)
@@ -201,6 +196,12 @@ namespace Sentinel.Core.Command.Services
                 shell.Error.WriteLine(e.Message);
                 shell.Error.WriteLine(e.StackTrace);
                 shell.Error.Flush();
+#if DEBUG
+                if (e.InnerException != null)
+                {
+                    throw;
+                }
+#endif
                 return -2;
             }
         }

@@ -10,6 +10,11 @@ namespace Sentinel.Core.Services.Interfaces
         List<InterfaceDTO> GetInterfacesInRevision(int revisionId);
         InterfaceDTO GetInterfaceWithName(int revisionId, string name);
 
+        bool InterfaceHasVlan(int revisionId, string interfaceName, ushort vlanId);
+
+        void RemoveInterface(int revisionId, string name);
+        void RemoveVlan(int revisionId, string parentInterfaceName, ushort vlandId);
+
         void PrintInterfaceToTextWriter(int revisionId, InterfaceDTO @interface, TextWriter writer);
     }
 }

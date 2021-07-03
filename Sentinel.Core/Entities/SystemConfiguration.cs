@@ -9,6 +9,6 @@ namespace Sentinel.Core.Entities
 
         public string DHCPHostname { get; set; }
 
-        
+        public uint ShellHistoryLength { get; set; }
     }
 }

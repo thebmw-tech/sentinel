@@ -7,6 +7,7 @@ namespace Sentinel.Core.Repository.Interfaces
     public interface IRepository<TType> where TType : class
     {
         IQueryable<TType> All();
+        bool Exists(Expression<Func<TType, bool>> predicate);
         IQueryable<TType> Filter(Expression<Func<TType, bool>> predicate);
         TType Find(params object[] keys);
         TType Find(Expression<Func<TType, bool>> predicate);
