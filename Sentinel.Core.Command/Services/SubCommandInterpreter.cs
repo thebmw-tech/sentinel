@@ -119,12 +119,7 @@ namespace Sentinel.Core.Command.Services
 
         private ICommand GetCommandInstance(Type commandType, IShell shell)
         {
-            var constructorParams = commandType.GetConstructors().First().GetParameters()
-                .Select(p => p.ParameterType == typeof(IShell) ? shell : serviceProvider.GetService(p.ParameterType)).ToArray();
-
-            var commandInstance = (ICommand)Activator.CreateInstance(commandType, constructorParams);
-
-            return commandInstance;
+            return CommandHelper.GetCommandInstance(commandType, shell, serviceProvider);
         }
 
         private int ExecuteCommand(IShell shell, Type commandType, string[] args, TextReader input, TextWriter output, TextWriter error)

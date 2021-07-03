@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using Sentinel.Core.Command.Services;
 using Sentinel.Core.Enums;
+using Sentinel.Core.Environments;
+using Sentinel.Core.Factories;
 using Sentinel.Core.Helpers;
 using Sentinel.Core.Repository.Interfaces;
 
@@ -17,66 +19,17 @@ namespace Sentinel.Core.Command.Commands.Configuration
         public class EditInterfaceCommand : BaseCommand
         {
             private readonly IInterfaceRepository interfaceRepository;
-            private readonly IVlanInterfaceRepository vlanInterfaceRepository;
+            private readonly InterfaceEnvironment interfaceEnvironment;
 
-            public EditInterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository, IVlanInterfaceRepository vlanInterfaceRepository) : base(shell)
+            public EditInterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository, InterfaceEnvironment interfaceEnvironment) : base(shell)
             {
                 this.interfaceRepository = interfaceRepository;
-                this.vlanInterfaceRepository = vlanInterfaceRepository;
+                this.interfaceEnvironment = interfaceEnvironment;
             }
 
             public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
             {
-                if (args.Length != 2)
-                {
-                    error.WriteLine("Missing interface name");
-                    return 1;
-                }
-
-                var interfaceTypes = Enum.GetNames<InterfaceType>().Where(t => t.ToLower().StartsWith(args[0].ToLower())).ToList();
-
-                if (interfaceTypes.Count != 1)
-                {
-                    error.WriteLine("invalid interface type");
-                    return 1;
-                }
-
-                var interfaceType = Enum.Parse<InterfaceType>(interfaceTypes.First());
-
-                var interfaceName = args[1];
-
-                var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
-
-                var @interface = interfaceRepository.Find(i => i.RevisionId == revisionId && i.Name == interfaceName && i.InterfaceType == interfaceType);
-                if (@interface == null)
-                {
-                    @interface = new Entities.Interface()
-                    {
-                        Name = interfaceName,
-                        InterfaceType = interfaceType,
-                        RevisionId = revisionId,
-                        Enabled = true
-                    };
-
-                    interfaceRepository.Create(@interface);
-                    interfaceRepository.SaveChanges();
-                }
-
-                if (@interface.InterfaceType == InterfaceType.Vlan)
-                {
-                    var vlanInterface =
-                        vlanInterfaceRepository.Find(v => v.RevisionId == revisionId && v.InterfaceName == interfaceName);
-                    if (vlanInterface == null)
-                    {
-                        shell.Error.WriteLine("Missing VLAN Configuration");
-                        return 1;
-                    }
-                }
-
-                shell.Environment["CONFIG_INTERFACE_NAME"] = @interface.Name;
-                shell.Environment["CONFIG_INTERFACE_TYPE"] = @interface.InterfaceType;
-
-                shell.SYS_SetCommandMode(CommandMode.Interface);
+                interfaceEnvironment.Setup(shell, args);
                 return 0;
             }
 

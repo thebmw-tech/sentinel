@@ -3,27 +3,23 @@ using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using System.IO;
 using System.Linq;
+using Sentinel.Core.Environments;
 
 namespace Sentinel.Core.Command.Commands.Interface
 {
     [Command(CommandMode.Interface, "exit", "Exit from interface configuration")]
     public class ExitCommand : BaseCommand
     {
-        public ExitCommand(IShell shell) : base(shell)
-        {
+        private readonly InterfaceEnvironment interfaceEnvironment;
 
+        public ExitCommand(IShell shell, InterfaceEnvironment interfaceEnvironment) : base(shell)
+        {
+            this.interfaceEnvironment = interfaceEnvironment;
         }
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
-            var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG_INTERFACE"));
-            foreach (var key in keysToDelete)
-            {
-                shell.Environment.Remove(key);
-            }
-
-            // TODO this should check and save the interface
-            shell.SYS_SetCommandMode(CommandMode.Configuration);
+            interfaceEnvironment.Cleanup(shell);
             return 0;
         }
 
