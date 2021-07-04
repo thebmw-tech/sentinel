@@ -53,6 +53,7 @@ namespace Sentinel.Shell
 
         public T GetEnvironment<T>(string key)
         {
+            if (!Environment.ContainsKey(key)) return default;
             return (T) Environment[key];
         }
 
@@ -97,6 +98,7 @@ namespace Sentinel.Shell
                     System.Diagnostics.Debug.WriteLine($"Updating revision {revisionId} lock.");
                     revisionService.UpdateRevisionLock(revisionId);
                 }
+                
                 Thread.Sleep(30000);
             }
         }
@@ -179,7 +181,7 @@ namespace Sentinel.Shell
                         if (command.Count > 0 && commandPos < command.Count)
                         {
                             command.RemoveAt(commandPos);
-                            System.Diagnostics.Debug.WriteLine(commandAsString());
+                            System.Diagnostics.Debug.WriteLine(commandAsString()); 
                             Console.SetCursorPosition(prompt.Length, pos.Top);
                             Console.Write(commandAsString());
                             Console.Write(' ');
@@ -205,7 +207,7 @@ namespace Sentinel.Shell
                         interpreter.Help(this, CommandMode, commandAsString());
                         Console.Write($"{prompt}{commandAsString()}");
                         break;
-                    case ConsoleKeyInfo k when k.KeyChar != 0 && (k.Modifiers == 0 || k.Modifiers == ConsoleModifiers.Shift):
+                    case ConsoleKeyInfo k when k.KeyChar != 0 && (k.Modifiers is 0 or ConsoleModifiers.Shift):
                         command.Insert(commandPos, k.KeyChar);
                         if (command.Count == commandPos)
                         {

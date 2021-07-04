@@ -60,7 +60,13 @@ namespace Sentinel.Core.Command.Commands.Shell
 
         public override string Suggest(string[] args)
         {
-            return "configure";
+            switch (args.Length)
+            {
+                case 0:
+                case 1:
+                    return "resume";
+            }
+            return "";
         }
     }
 }

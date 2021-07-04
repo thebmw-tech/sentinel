@@ -36,8 +36,9 @@ namespace Sentinel.Shell
                 .RegisterSentinelCoreCommand()
                 .AddTransient<ConsoleShell>()
                 .BuildServiceProvider();
+            Console.WriteLine(" Done!");
 
-            HelperFunctions.VerifyFirstRun(services);
+            Console.Write("Setup...");
 
             var revisionServce = services.GetService<IRevisionService>();
             revisionServce.CleanupOldLocks();
