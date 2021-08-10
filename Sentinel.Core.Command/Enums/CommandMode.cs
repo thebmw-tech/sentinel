@@ -5,6 +5,8 @@
         Any,
         Shell,
         Configuration,
-        Interface
+        Interface,
+        FirewallTable,
+        FirewallRule
     }
 }

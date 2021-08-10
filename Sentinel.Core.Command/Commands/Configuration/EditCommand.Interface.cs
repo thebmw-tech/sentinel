@@ -46,7 +46,7 @@ namespace Sentinel.Core.Command.Commands.Configuration
                     return HelperFunctions.LCDString(interfaceTypes);
                 }
 
-                var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
+                var revisionId = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
 
                 var interfaceNames = interfaceRepository.GetForRevision(revisionId)
                     .Where(i => i.Name.StartsWith(args[0])).Select(i => i.Name).ToList();
