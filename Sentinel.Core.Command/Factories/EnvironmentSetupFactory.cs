@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Environments;
@@ -16,10 +18,11 @@ namespace Sentinel.Core.Factories
 
         public IEnvironmentSetup Build(CommandMode commandMode)
         {
-            switch (commandMode)
+            var typeName = $"{commandMode}Environment";
+            var envType = Assembly.GetCallingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+            if (envType != null)
             {
-                case CommandMode.Interface:
-                    return (IEnvironmentSetup) serviceProvider.GetService(typeof(InterfaceEnvironment));
+                return (IEnvironmentSetup)serviceProvider.GetService(envType);
             }
 
             throw new NotImplementedException();
