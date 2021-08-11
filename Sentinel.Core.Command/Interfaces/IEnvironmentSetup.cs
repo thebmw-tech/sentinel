@@ -4,5 +4,7 @@
     {
         string[] Setup(IShell shell, string[] args);
         void Cleanup(IShell shell);
+
+        string GetPrompt(IShell shell, string hostname);
     }
 }

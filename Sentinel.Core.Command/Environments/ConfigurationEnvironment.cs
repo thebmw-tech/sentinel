@@ -9,6 +9,12 @@ namespace Sentinel.Core.Environments
             throw new System.NotImplementedException();
         }
 
+        public string GetPrompt(IShell shell, string hostname)
+        {
+            var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
+            return $"{hostname}(config{{{revision:X}}})#";
+        }
+
         public string[] Setup(IShell shell, string[] args)
         {
             throw new System.NotImplementedException();

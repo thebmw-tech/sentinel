@@ -18,7 +18,21 @@ namespace Sentinel.Core.Environments
 
         public void Cleanup(IShell shell)
         {
-            throw new System.NotImplementedException();
+            var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG_FIREWALL_TABLE"));
+            foreach (var key in keysToDelete)
+            {
+                shell.Environment.Remove(key);
+            }
+
+            shell.SYS_SetCommandMode(CommandMode.Configuration);
+        }
+
+        public string GetPrompt(IShell shell, string hostname)
+        {
+            var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
+            var table = shell.GetEnvironment<string>("CONFIG_FIREWALL_TABLE_NAME");
+
+            return $"{hostname}(config{{{revision:X}}}-firewall{{{table}}})#";
         }
 
         public string[] Setup(IShell shell, string[] args)

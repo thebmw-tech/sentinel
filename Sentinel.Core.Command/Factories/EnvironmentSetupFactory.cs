@@ -9,7 +9,7 @@ namespace Sentinel.Core.Factories
 {
     public class EnvironmentSetupFactory
     {
-        private IServiceProvider serviceProvider;
+        private readonly IServiceProvider serviceProvider;
 
         public EnvironmentSetupFactory(IServiceProvider serviceProvider)
         {

@@ -9,6 +9,7 @@ using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Command.Models;
 using Sentinel.Core.Command.Services;
+using Sentinel.Core.Factories;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services.Interfaces;
@@ -21,14 +22,16 @@ namespace Sentinel.Shell
         private readonly CommandInterpreter interpreter;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
         private readonly IRevisionService revisionService;
+        private readonly EnvironmentSetupFactory environmentSetupFactory;
 
         private bool inLoop = true;
 
-        public ConsoleShell(CommandInterpreter interpreter, ISystemConfigurationRepository systemConfigurationRepository, IRevisionService revisionService)
+        public ConsoleShell(CommandInterpreter interpreter, ISystemConfigurationRepository systemConfigurationRepository, IRevisionService revisionService, EnvironmentSetupFactory environmentSetupFactory)
         {
             this.interpreter = interpreter;
             this.systemConfigurationRepository = systemConfigurationRepository;
             this.revisionService = revisionService;
+            this.environmentSetupFactory = environmentSetupFactory;
 
             Environment = new ConcurrentDictionary<string, object>();
         }
@@ -71,6 +74,10 @@ namespace Sentinel.Shell
                 Console.Error.WriteLine("You may need to run database migrations manually");
                 hostname = System.Environment.MachineName;
             }
+
+            var prompt = environmentSetupFactory.Build(mode).GetPrompt(this, hostname);
+
+            return $"{prompt} ";
 
             int? revision = Environment.ContainsKey("CONFIG_REVISION_ID") ? (int)Environment["CONFIG_REVISION_ID"] : null;
 
