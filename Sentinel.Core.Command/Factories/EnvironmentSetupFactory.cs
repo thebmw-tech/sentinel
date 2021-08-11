@@ -7,7 +7,7 @@ namespace Sentinel.Core.Factories
 {
     public class EnvironmentSetupFactory
     {
-        private IServiceProvider serviceProvider;
+        private readonly IServiceProvider serviceProvider;
 
         public EnvironmentSetupFactory(IServiceProvider serviceProvider)
         {
@@ -18,8 +18,16 @@ namespace Sentinel.Core.Factories
         {
             switch (commandMode)
             {
+                case CommandMode.Shell:
+                    return (IEnvironmentSetup) serviceProvider.GetService(typeof(ShellEnvironment));
+                case CommandMode.Configuration:
+                    return (IEnvironmentSetup) serviceProvider.GetService(typeof(ConfigurationEnvironment));
                 case CommandMode.Interface:
                     return (IEnvironmentSetup) serviceProvider.GetService(typeof(InterfaceEnvironment));
+                case CommandMode.FirewallTable:
+                    return (IEnvironmentSetup) serviceProvider.GetService(typeof(FirewallTableEnvironment));
+                case CommandMode.FirewallRule:
+                    return (IEnvironmentSetup) serviceProvider.GetService(typeof(FirewallRuleEnvironment));
             }
 
             throw new NotImplementedException();

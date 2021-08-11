@@ -30,9 +30,11 @@ namespace Sentinel.Core
             services.AddTransient<EnvironmentSetupFactory>();
             services.AddTransient(typeof(SubCommandInterpreter<>));
 
-            services.AddScoped<InterfaceEnvironment>()
-                .AddScoped<IEnvironmentSetup, InterfaceEnvironment>();
-
+            services.AddScoped<ShellEnvironment>();
+            services.AddScoped<ConfigurationEnvironment>();
+            services.AddScoped<InterfaceEnvironment>();
+            services.AddScoped<FirewallTableEnvironment>();
+            
 
             return services;
         }

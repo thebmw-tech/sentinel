@@ -30,6 +30,14 @@ namespace Sentinel.Core.Environments
             shell.SYS_SetCommandMode(CommandMode.Configuration);
         }
 
+        public string GetPrompt(IShell shell, string hostname)
+        {
+            var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
+            var i = shell.GetEnvironment<string>("CONFIG_INTERFACE_NAME");
+
+            return $"{hostname}(config{{{revision:X}}}-int{{{i}}})#";
+        }
+
         public string[] Setup(IShell shell, string[] args)
         {
             if (args.Length < 2)
