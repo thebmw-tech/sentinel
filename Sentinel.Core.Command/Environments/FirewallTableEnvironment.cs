@@ -3,6 +3,7 @@ using System.Linq;
 using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Entities;
+using Sentinel.Core.Enums;
 using Sentinel.Core.Repository.Interfaces;
 
 namespace Sentinel.Core.Environments
@@ -42,26 +43,31 @@ namespace Sentinel.Core.Environments
                 throw new Exception("Missing firewall table name");
             }
 
+            var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
+
             var tableName = args[0];
 
-            var table = firewallTableRepository.Find(t => t.Name == tableName);
+            var table = firewallTableRepository.Find(t => t.Name == tableName && t.RevisionId == revisionId);
 
             if (table == null)
             {
-                var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
+                
 
                 table = new FirewallTable()
                 {
+                    Id = Guid.NewGuid(),
                     RevisionId = revisionId,
-                    Name = tableName
+                    Name = tableName,
+                    DefaultAction = FirewallAction.Block,
+                    DefaultLog = false
                 };
 
                 firewallTableRepository.Create(table);
                 firewallTableRepository.SaveChanges();
             }
 
-            shell.Environment["CONFIG_FWTABLE_ID"] = table.Id;
-            shell.Environment["CONFIG_FWTABLE_NAME"] = tableName;
+            shell.Environment["CONFIG_FIREWALL_TABLE_ID"] = table.Id;
+            shell.Environment["CONFIG_FIREWALL_TABLE_NAME"] = tableName;
 
             shell.SYS_SetCommandMode(CommandMode.FirewallTable);
 

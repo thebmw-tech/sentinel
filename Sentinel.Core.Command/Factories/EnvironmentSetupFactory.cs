@@ -19,13 +19,13 @@ namespace Sentinel.Core.Factories
         public IEnvironmentSetup Build(CommandMode commandMode)
         {
             var typeName = $"{commandMode}Environment";
-            var envType = Assembly.GetCallingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+            var envType = Assembly.GetAssembly(GetType())?.GetTypes().FirstOrDefault(t => t.Name == typeName);
             if (envType != null)
             {
                 return (IEnvironmentSetup)serviceProvider.GetService(envType);
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException($"{typeName} is not implemented.");
         }
     }
 }
