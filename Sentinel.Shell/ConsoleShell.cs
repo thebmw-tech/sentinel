@@ -78,21 +78,6 @@ namespace Sentinel.Shell
             var prompt = environmentSetupFactory.Build(mode).GetPrompt(this, hostname);
 
             return $"{prompt} ";
-
-            int? revision = Environment.ContainsKey("CONFIG_REVISION_ID") ? (int)Environment["CONFIG_REVISION_ID"] : null;
-
-            switch (mode)
-            {
-                case CommandMode.Shell:
-                    return $"{hostname}> ";
-                case CommandMode.Configuration:
-                    return $"{hostname}(config{{{revision:X}}})# ";
-                case CommandMode.Interface:
-                    var i = (string) Environment["CONFIG_INTERFACE_NAME"];
-                    return $"{hostname}(config{{{revision:X}}}-int{{{i}}})# ";
-                default:
-                    return "";
-            }
         }
 
         private void ShellBackgroundTask()
