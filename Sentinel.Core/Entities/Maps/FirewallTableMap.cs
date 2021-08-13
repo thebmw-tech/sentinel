@@ -29,6 +29,10 @@ namespace Sentinel.Core.Entities.Maps
             builder.Property(t => t.DefaultLog)
                 .HasDefaultValue(false)
                 .IsRequired();
+
+
+            builder.HasIndex(t => t.Name)
+                .IsUnique();
         }
     }
 }

@@ -14,12 +14,12 @@ namespace Sentinel.Core.Command.Commands.Firewall.Table
 {
     public partial class SetCommand
     {
-        [SubCommand("default-action", "Sets the default action")]
-        public class SetDefaultAction : BaseCommand
+        [SubCommand("default-log", "Sets the default log")]
+        public class SetDefaultLog : BaseCommand
         {
             private readonly IFirewallTableRepository firewallTableRepository;
 
-            public SetDefaultAction(IShell shell, IFirewallTableRepository firewallTableRepository) : base(shell)
+            public SetDefaultLog(IShell shell, IFirewallTableRepository firewallTableRepository) : base(shell)
             {
                 this.firewallTableRepository = firewallTableRepository;
             }
@@ -34,11 +34,16 @@ namespace Sentinel.Core.Command.Commands.Firewall.Table
 
                 var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
                 var tableId = shell.GetEnvironment<Guid>("CONFIG_FIREWALL_TABLE_ID");
-                
+
+                if (!bool.TryParse(args[0], out var log))
+                {
+                    error.WriteLine("invalid boolean value");
+                    return 2;
+                }
+
                 firewallTableRepository.Modify(t => t.Id == tableId && t.RevisionId == revisionId, firewallTable =>
                 {
-                    var newDefaultAction = Enum.Parse<FirewallAction>(CultureInfo.CurrentCulture.TextInfo.ToTitleCase(args[0]));
-                    firewallTable.DefaultAction = newDefaultAction;
+                    firewallTable.DefaultLog = log;
                 });
                 
 
