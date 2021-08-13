@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
+using Sentinel.Core.Enums;
 using static Sentinel.Core.SentinelConstants;
 
 namespace Sentinel.Core.Entities.Maps
@@ -16,6 +16,7 @@ namespace Sentinel.Core.Entities.Maps
             builder.HasKey(t => new { t.RevisionId, t.Id });
 
             builder.Property(t => t.DefaultAction)
+                .HasDefaultValue(FirewallAction.Block)
                 .IsRequired();
 
             builder.Property(t => t.Name)
@@ -26,7 +27,12 @@ namespace Sentinel.Core.Entities.Maps
                 .HasMaxLength(DESCRIPTION_LENGTH);
 
             builder.Property(t => t.DefaultLog)
+                .HasDefaultValue(false)
                 .IsRequired();
+
+
+            builder.HasIndex(t => t.Name)
+                .IsUnique();
         }
     }
 }

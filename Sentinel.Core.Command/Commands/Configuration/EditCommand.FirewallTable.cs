@@ -15,21 +15,21 @@ namespace Sentinel.Core.Command.Commands.Configuration
 {
     public partial class EditCommand : ParentCommand<EditCommand>
     {
-        [SubCommand("interface", "Enter interface config mode")]
-        public class EditInterfaceCommand : BaseCommand
+        [SubCommand("firewall", "Enter firewall config mode")]
+        public class EditFirewallTableCommand : BaseCommand
         {
             private readonly IInterfaceRepository interfaceRepository;
-            private readonly InterfaceEnvironment interfaceEnvironment;
+            private readonly FirewallTableEnvironment firewallTableEnvironment;
 
-            public EditInterfaceCommand(IShell shell, IInterfaceRepository interfaceRepository, InterfaceEnvironment interfaceEnvironment) : base(shell)
+            public EditFirewallTableCommand(IShell shell, IInterfaceRepository interfaceRepository, FirewallTableEnvironment firewallTableEnvironment) : base(shell)
             {
                 this.interfaceRepository = interfaceRepository;
-                this.interfaceEnvironment = interfaceEnvironment;
+                this.firewallTableEnvironment = firewallTableEnvironment;
             }
 
             public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
             {
-                interfaceEnvironment.Setup(shell, args);
+                firewallTableEnvironment.Setup(shell, args);
                 return 0;
             }
 
@@ -46,7 +46,7 @@ namespace Sentinel.Core.Command.Commands.Configuration
                     return HelperFunctions.LCDString(interfaceTypes);
                 }
 
-                var revisionId = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
+                var revisionId = shell.GetEnvironment<int>("CONFIG_REVISION_ID");
 
                 var interfaceNames = interfaceRepository.GetForRevision(revisionId)
                     .Where(i => i.Name.StartsWith(args[0])).Select(i => i.Name).ToList();

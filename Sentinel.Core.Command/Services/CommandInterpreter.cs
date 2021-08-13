@@ -146,10 +146,19 @@ namespace Sentinel.Core.Command.Services
             var commands = GetCommands(mode, commandWithArgs.Item1);
             switch (commands.Count)
             {
-                case > 1:
-                    var commandInstance = GetCommandInstance(commands.First(), shell);
-                    return $"{commandWithArgs.Item1} {commandInstance.Suggest(commandWithArgs.Item2)}";
                 case 1:
+                    var commandType = commands.First();
+                    var fullCommandString = commandType.GetCustomAttribute<CommandAttribute>()?.BaseCommand;
+
+                    if (commandWithArgs.Item1 != fullCommandString && commandWithArgs.Item2.Length == 0)
+                    {
+                        return fullCommandString;
+                    }
+
+                    var commandInstance = GetCommandInstance(commandType, shell);
+
+                    return $"{commandWithArgs.Item1} {commandInstance.Suggest(commandWithArgs.Item2)}";
+                case > 1:
                     var commandStrings = commands.Select(c => c.GetCustomAttribute<CommandAttribute>())
                         .Where(s => s != null).Select(s => s.BaseCommand).ToList();
                     
@@ -174,6 +183,26 @@ namespace Sentinel.Core.Command.Services
             var commands = commandCache.Where(kv => kv.Key == mode || kv.Key == CommandMode.Any)
                 .Select(kv => kv.Value).SelectMany(s => s).Where(kv => kv.Key.StartsWith(command))
                 .Select(kv => kv.Value).ToList();
+
+            // I don't like this but it allows for generic commands that can be overridden for a specific mode if needed.
+            if (commands.Count == 2)
+            {
+                var cmd1 = commands[0];
+                var cmd2 = commands[1];
+
+                var attribute1 = cmd1.GetCustomAttribute<CommandAttribute>();
+                var attribute2 = cmd2.GetCustomAttribute<CommandAttribute>();
+
+                if (attribute1.BaseCommand == attribute2.BaseCommand)
+                {
+                    if (attribute1.Mode == CommandMode.Any)
+                    {
+                        return new List<Type>() { cmd2 };
+                    }
+
+                    return new List<Type>() { cmd1 };
+                }
+            }
 
             return commands;
         }

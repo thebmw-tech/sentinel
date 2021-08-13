@@ -9,6 +9,7 @@ using Sentinel.Core.Command.Enums;
 using Sentinel.Core.Command.Interfaces;
 using Sentinel.Core.Command.Models;
 using Sentinel.Core.Command.Services;
+using Sentinel.Core.Factories;
 using Sentinel.Core.Repository;
 using Sentinel.Core.Repository.Interfaces;
 using Sentinel.Core.Services.Interfaces;
@@ -21,14 +22,16 @@ namespace Sentinel.Shell
         private readonly CommandInterpreter interpreter;
         private readonly ISystemConfigurationRepository systemConfigurationRepository;
         private readonly IRevisionService revisionService;
+        private readonly EnvironmentSetupFactory environmentSetupFactory;
 
         private bool inLoop = true;
 
-        public ConsoleShell(CommandInterpreter interpreter, ISystemConfigurationRepository systemConfigurationRepository, IRevisionService revisionService)
+        public ConsoleShell(CommandInterpreter interpreter, ISystemConfigurationRepository systemConfigurationRepository, IRevisionService revisionService, EnvironmentSetupFactory environmentSetupFactory)
         {
             this.interpreter = interpreter;
             this.systemConfigurationRepository = systemConfigurationRepository;
             this.revisionService = revisionService;
+            this.environmentSetupFactory = environmentSetupFactory;
 
             Environment = new ConcurrentDictionary<string, object>();
         }
@@ -53,6 +56,7 @@ namespace Sentinel.Shell
 
         public T GetEnvironment<T>(string key)
         {
+            if (!Environment.ContainsKey(key)) return default;
             return (T) Environment[key];
         }
 
@@ -71,20 +75,9 @@ namespace Sentinel.Shell
                 hostname = System.Environment.MachineName;
             }
 
-            int? revision = Environment.ContainsKey("CONFIG_REVISION_ID") ? (int)Environment["CONFIG_REVISION_ID"] : null;
+            var prompt = environmentSetupFactory.Build(mode).GetPrompt(this, hostname);
 
-            switch (mode)
-            {
-                case CommandMode.Shell:
-                    return $"{hostname}> ";
-                case CommandMode.Configuration:
-                    return $"{hostname}(config{{{revision:X}}})# ";
-                case CommandMode.Interface:
-                    var i = (string) Environment["CONFIG_INTERFACE_NAME"];
-                    return $"{hostname}(config{{{revision:X}}}-int{{{i}}})# ";
-                default:
-                    return "";
-            }
+            return $"{prompt} ";
         }
 
         private void ShellBackgroundTask()
@@ -97,6 +90,7 @@ namespace Sentinel.Shell
                     System.Diagnostics.Debug.WriteLine($"Updating revision {revisionId} lock.");
                     revisionService.UpdateRevisionLock(revisionId);
                 }
+                
                 Thread.Sleep(30000);
             }
         }
@@ -179,7 +173,7 @@ namespace Sentinel.Shell
                         if (command.Count > 0 && commandPos < command.Count)
                         {
                             command.RemoveAt(commandPos);
-                            System.Diagnostics.Debug.WriteLine(commandAsString());
+                            System.Diagnostics.Debug.WriteLine(commandAsString()); 
                             Console.SetCursorPosition(prompt.Length, pos.Top);
                             Console.Write(commandAsString());
                             Console.Write(' ');
@@ -205,7 +199,7 @@ namespace Sentinel.Shell
                         interpreter.Help(this, CommandMode, commandAsString());
                         Console.Write($"{prompt}{commandAsString()}");
                         break;
-                    case ConsoleKeyInfo k when k.KeyChar != 0 && (k.Modifiers == 0 || k.Modifiers == ConsoleModifiers.Shift):
+                    case ConsoleKeyInfo k when k.KeyChar != 0 && (k.Modifiers is 0 or ConsoleModifiers.Shift):
                         command.Insert(commandPos, k.KeyChar);
                         if (command.Count == commandPos)
                         {
