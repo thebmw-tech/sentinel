@@ -36,7 +36,7 @@ namespace Sentinel.Core
             // Setup Logging
             services.AddLogging(loggingBuilder =>
             {
-                loggingBuilder.ClearProviders();
+                //loggingBuilder.ClearProviders();
                 loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                 loggingBuilder.AddNLog();
             });
@@ -59,6 +59,7 @@ namespace Sentinel.Core
             services.AddTransient<IRouteRepository, RouteRepository>();
             services.AddTransient<ISourceNatRuleRepository, SourceNatRuleRepository>();
             services.AddTransient<ISystemConfigurationRepository, SystemConfigurationRepository>();
+            services.AddTransient<IUserKeyRepository, UserKeyRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IVlanInterfaceRepository, VlanInterfaceRepository>();
 

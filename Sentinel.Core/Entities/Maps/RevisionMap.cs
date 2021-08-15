@@ -8,8 +8,6 @@ namespace Sentinel.Core.Entities.Maps
     {
         public override void Configure(EntityTypeBuilder<Revision> builder)
         {
-            base.Configure(builder);
-
             builder.ToTable("Revisions");
 
             builder.HasKey(r => r.Id);

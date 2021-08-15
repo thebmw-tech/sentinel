@@ -10,10 +10,7 @@ namespace Sentinel.Core.Entities.Maps
 {
     public abstract class BaseEntityMap<T> : IEntityTypeConfiguration<T> where T : BaseEntity<T>
     {
-        public virtual void Configure(EntityTypeBuilder<T> builder)
-        {
-            
-        }
+        public abstract void Configure(EntityTypeBuilder<T> builder);
 
         public static Type GetEntityType()
         {

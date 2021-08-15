@@ -7,8 +7,6 @@ namespace Sentinel.Core.Entities.Maps
     {
         public override void Configure(EntityTypeBuilder<T> builder)
         {
-            base.Configure(builder);
-
             builder.Property(t => t.RevisionId)
                 .IsRequired()
                 .ValueGeneratedNever();
