@@ -10,8 +10,6 @@ namespace Sentinel.Core.Entities.Maps
     {
         public override void Configure(EntityTypeBuilder<User> builder)
         {
-            base.Configure(builder);
-
             builder.ToTable("Users");
 
             builder.HasKey(u => u.Id);
@@ -27,6 +25,9 @@ namespace Sentinel.Core.Entities.Maps
 
             builder.HasIndex(u => u.Username)
                 .IsUnique();
+
+            builder.HasMany(u => u.Keys)
+                .WithOne(uk => uk.User);
         }
     }
 }

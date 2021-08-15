@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sentinel.Core.Validation
 {
     public class Validator
     {
-        public readonly ServiceProvider services;
+        public readonly IServiceProvider services;
 
-        public Validator(ServiceProvider services)
+        public Validator(IServiceProvider services)
         {
             this.services = services;
         }
