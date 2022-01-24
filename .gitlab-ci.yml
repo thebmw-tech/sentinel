@@ -7,7 +7,7 @@ stages:
 
 unit-tests:
   stage: test
-  image: registry.corp.soullessgingers.net/dotnet-sdk:5.0-buster-slim
+  image: registry.corp.soullessgingers.net/dotnet-sdk:6.0-bullseye-slim
   only:
     - branches
   before_script:
@@ -33,7 +33,7 @@ unit-tests:
 
 build-release:
   stage: build
-  image: registry.corp.soullessgingers.net/dotnet-sdk:5.0-buster-slim
+  image: registry.corp.soullessgingers.net/dotnet-sdk:6.0-bullseye-slim
   tags:
     - linux
     - docker
