@@ -120,14 +120,14 @@ namespace Sentinel.Core.Command.Services
                         commandInstance.Help(commandWithArgs.Item2, output);
                         break;
                     case > 1:
-                        Console.WriteLine();
+                        shell.Output.WriteLine();
 
                         var commandStrings = commands.Select(c => c.GetCustomAttribute<CommandAttribute>())
                             .Where(s => s != null).Select(s => s.BaseCommand).ToList();
 
                         break;
                     case 0:
-                        Console.Write('\a');
+                        shell.Output.Write('\a');
                         break;
                 }
             }

@@ -127,7 +127,7 @@ namespace Sentinel.Shell
                 switch (key)
                 {
                     // Handle Direction Keys
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.LeftArrow:
+                    case {Key: ConsoleKey.LeftArrow}:
                         if (commandPos > 0)
                         {
                             Console.SetCursorPosition(pos.Left - 1, pos.Top);
@@ -137,7 +137,7 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.RightArrow:
+                    case {Key: ConsoleKey.RightArrow}:
                         if (commandPos < command.Count)
                         {
                             Console.SetCursorPosition(pos.Left + 1, pos.Top);
@@ -147,13 +147,13 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Home:
+                    case {Key: ConsoleKey.Home}:
                         Console.SetCursorPosition(prompt.Length, pos.Top);
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.End:
+                    case {Key: ConsoleKey.End}:
                         Console.SetCursorPosition(prompt.Length + command.Count, pos.Top);
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Backspace:
+                    case {Key: ConsoleKey.Backspace}:
                         if (command.Count > 0)
                         {
                             command.RemoveAt(commandPos - 1);
@@ -169,7 +169,7 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Delete:
+                    case {Key: ConsoleKey.Delete}:
                         if (command.Count > 0 && commandPos < command.Count)
                         {
                             command.RemoveAt(commandPos);
@@ -185,21 +185,21 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Enter:
+                    case {Key: ConsoleKey.Enter}:
                         Console.WriteLine();
                         return commandAsString();
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Tab:
+                    case {Key: ConsoleKey.Tab}:
                         var tabSuggestion = interpreter.Suggest(this, CommandMode, commandAsString());
                         command = new List<char>(tabSuggestion.ToCharArray());
                         Console.SetCursorPosition(prompt.Length, pos.Top);
                         Console.Write($"{commandAsString()}");
                         break;
-                    case ConsoleKeyInfo k when k.KeyChar == '?':
+                    case {KeyChar: '?'}:
                         Console.WriteLine();
                         interpreter.Help(this, CommandMode, commandAsString());
                         Console.Write($"{prompt}{commandAsString()}");
                         break;
-                    case ConsoleKeyInfo k when k.KeyChar != 0 && (k.Modifiers is 0 or ConsoleModifiers.Shift):
+                    case { } k when k.KeyChar != 0 && (k.Modifiers is 0 or ConsoleModifiers.Shift):
                         command.Insert(commandPos, k.KeyChar);
                         if (command.Count == commandPos)
                         {

@@ -4,7 +4,7 @@ namespace Sentinel.Core.Environments
 {
     public class ConfigurationEnvironment : IEnvironmentSetup
     {
-        public void Cleanup(IShell shell)
+        public void Cleanup(IShell shell, string[] args)
         {
             throw new System.NotImplementedException();
         }

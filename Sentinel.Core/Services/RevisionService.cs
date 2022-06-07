@@ -50,7 +50,7 @@ namespace Sentinel.Core.Services
             this.sourceNatRuleRepository = sourceNatRuleRepository;
             this.systemConfigurationRepository = systemConfigurationRepository;
             this.vlanInterfaceRepository = vlanInterfaceRepository;
-
+            
             this.configurationGeneratorService = configurationGeneratorService;
 
             this.mapper = mapper;

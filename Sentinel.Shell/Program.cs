@@ -38,10 +38,12 @@ namespace Sentinel.Shell
                 .BuildServiceProvider();
             Console.WriteLine(" Done!");
 
+            
             Console.Write("Setup...");
+            HelperFunctions.VerifyFirstRun(services);
 
-            var revisionServce = services.GetService<IRevisionService>();
-            revisionServce.CleanupOldLocks();
+            var reviceService = services.GetService<IRevisionService>();
+            reviceService.CleanupOldLocks();
 
             var shell = services.GetService<ConsoleShell>();
 

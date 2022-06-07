@@ -48,7 +48,8 @@ namespace Sentinel.Core.Services
         public InterfaceDTO GetInterfaceWithName(int revisionId, string name)
         {
             var @interface = interfaceRepository.Find(i => i.Name == name && i.RevisionId == revisionId);
-            return mapper.Map<InterfaceDTO>(@interface);
+
+            return @interface == null ? null : mapper.Map<InterfaceDTO>(@interface);
         }
 
         public bool InterfaceHasVlan(int revisionId, string interfaceName, ushort vlanId)
@@ -59,6 +60,12 @@ namespace Sentinel.Core.Services
 
         public void PrintInterfaceToTextWriter(int revisionId, InterfaceDTO @interface, TextWriter writer)
         {
+            if (@interface == null)
+            {
+                writer.WriteLine("Interface Not Configured");
+                return;
+            }
+
             var interfaceType = Enum.Parse<InterfaceType>(@interface.InterfaceType);
             writer.WriteLine($"{@interface.Name}: ({@interface.InterfaceType})");
             writer.WriteLine($"  Enabled: {@interface.Enabled}");

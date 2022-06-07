@@ -17,7 +17,7 @@ namespace Sentinel.Core.Environments
             this.firewallTableRepository = firewallTableRepository;
         }
 
-        public void Cleanup(IShell shell)
+        public void Cleanup(IShell shell, string[] args)
         {
             var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG_FIREWALL_TABLE"));
             foreach (var key in keysToDelete)

@@ -5,7 +5,7 @@ namespace Sentinel.Core.Environments
 {
     public class FirewallRuleEnvironment : IEnvironmentSetup
     {
-        public void Cleanup(IShell shell)
+        public void Cleanup(IShell shell, string[] args)
         {
             shell.SYS_SetCommandMode(CommandMode.FirewallTable);
         }

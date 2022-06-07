@@ -19,7 +19,7 @@ namespace Sentinel.Core.Environments
             this.vlanInterfaceRepository = vlanInterfaceRepository;
         }
 
-        public void Cleanup(IShell shell)
+        public void Cleanup(IShell shell, string[] args)
         {
             var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG_INTERFACE"));
             foreach (var key in keysToDelete)
