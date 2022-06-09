@@ -42,14 +42,14 @@ namespace Sentinel.Core.Environments
         {
             if (args.Length < 2)
             {
-                throw new Exception("Missing Interface Name");
+                return Array.Empty<string>();
             }
 
             var interfaceTypes = Enum.GetNames<InterfaceType>().Where(t => t.ToLower().StartsWith(args[0].ToLower())).ToList();
 
             if (interfaceTypes.Count != 1)
             {
-                throw new Exception("Invalid interface type");
+                return Array.Empty<string>();
             }
 
             var interfaceType = Enum.Parse<InterfaceType>(interfaceTypes.First());
