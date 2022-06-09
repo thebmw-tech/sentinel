@@ -154,12 +154,10 @@ namespace Sentinel.Shell
                         Console.SetCursorPosition(prompt.Length + command.Count, pos.Top);
                         break;
                     case {Key: ConsoleKey.Backspace}:
-                        if (command.Count > 0)
+                        if (commandPos > 0)
                         {
                             command.RemoveAt(commandPos - 1);
-                            System.Diagnostics.Debug.WriteLine(commandAsString());
-                            Console.SetCursorPosition(prompt.Length, pos.Top);
-                            Console.Write(commandAsString());
+                            OptimizedReplace(prompt.Length, commandPos - 1, commandAsString());
                             Console.Write(' ');
                             Console.SetCursorPosition(pos.Left - 1, pos.Top);
                         }
@@ -173,9 +171,7 @@ namespace Sentinel.Shell
                         if (command.Count > 0 && commandPos < command.Count)
                         {
                             command.RemoveAt(commandPos);
-                            System.Diagnostics.Debug.WriteLine(commandAsString()); 
-                            Console.SetCursorPosition(prompt.Length, pos.Top);
-                            Console.Write(commandAsString());
+                            OptimizedReplace(prompt.Length, commandPos, commandAsString());
                             Console.Write(' ');
                             Console.SetCursorPosition(pos.Left, pos.Top);
                         }
@@ -189,10 +185,11 @@ namespace Sentinel.Shell
                         Console.WriteLine();
                         return commandAsString();
                     case {Key: ConsoleKey.Tab}:
+                        //FIXME optimize this
                         var tabSuggestion = interpreter.Suggest(this, CommandMode, commandAsString());
                         command = new List<char>(tabSuggestion.ToCharArray());
                         Console.SetCursorPosition(prompt.Length, pos.Top);
-                        Console.Write($"{commandAsString()}");
+                        Console.Write(commandAsString());
                         break;
                     case {KeyChar: '?'}:
                         Console.WriteLine();
@@ -207,8 +204,7 @@ namespace Sentinel.Shell
                         }
                         else
                         {
-                            Console.SetCursorPosition(prompt.Length, pos.Top);
-                            Console.Write(commandAsString());
+                            OptimizedReplace(prompt.Length, commandPos, commandAsString());
                             Console.SetCursorPosition(pos.Left + 1, pos.Top);
                         }
 
@@ -216,6 +212,16 @@ namespace Sentinel.Shell
                     default:
                         break;
                 }
+            }
+        }
+
+        private static void OptimizedReplace(int promptLength, int commandPos, string commandString)
+        {
+            var (_, top) = Console.GetCursorPosition();
+            Console.SetCursorPosition(promptLength + commandPos, top);
+            if (commandString.Length > 0)
+            {
+                Console.Write(commandString[commandPos..]);
             }
         }
 
