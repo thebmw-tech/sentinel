@@ -35,7 +35,7 @@ namespace Sentinel.Core.Environments
             var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
             var i = shell.GetEnvironment<string>("CONFIG_INTERFACE_NAME");
 
-            return $"{hostname}(config{{{revision:X}}}-int{{{i}}})#";
+            return $"{hostname}(config[r{revision:X}]-int[{i}])#";
         }
 
         public string[] Setup(IShell shell, string[] args)

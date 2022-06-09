@@ -12,7 +12,7 @@ namespace Sentinel.Core.Environments
         public string GetPrompt(IShell shell, string hostname)
         {
             var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
-            return $"{hostname}(config{{{revision:X}}})#";
+            return $"{hostname}(config[r{revision:X}])#";
         }
 
         public string[] Setup(IShell shell, string[] args)

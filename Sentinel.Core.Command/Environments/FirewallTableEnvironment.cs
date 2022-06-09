@@ -33,7 +33,7 @@ namespace Sentinel.Core.Environments
             var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
             var table = shell.GetEnvironment<string>("CONFIG_FIREWALL_TABLE_NAME");
 
-            return $"{hostname}(config{{{revision:X}}}-firewall{{{table}}})#";
+            return $"{hostname}(config[r{revision:X}]-firewall[{table}])#";
         }
 
         public string[] Setup(IShell shell, string[] args)

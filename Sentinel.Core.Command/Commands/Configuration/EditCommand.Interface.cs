@@ -56,7 +56,48 @@ namespace Sentinel.Core.Command.Commands.Configuration
 
             public override void Help(string[] args, TextWriter output)
             {
+                if (args.Length == 0)
+                {
+                    foreach (var interfaceTypeName in Enum.GetNames<InterfaceType>())
+                    {
+                        output.WriteLine(interfaceTypeName);
+                    }
 
+                    return;
+                }
+
+                var revisionId = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
+
+                if (args.Length == 1)
+                {
+                    var interfaceTypes = Enum.GetNames<InterfaceType>().Select(t => t.ToLower()).Where(t => t.StartsWith(args[0].ToLower())).ToList();
+                    switch (interfaceTypes.Count)
+                    {
+                        case > 1:
+                            foreach (var interfaceTypeName in interfaceTypes)
+                            {
+                                output.WriteLine(interfaceTypeName);
+                            }
+                            break;
+                        case 0:
+                            output.WriteLine("\a");
+                            break;
+                        case 1:
+                            var interfaceType = Enum
+                                .GetValues<InterfaceType>().First(i => i.ToString().ToLower() == interfaceTypes.First());
+                            var interfaceNames = interfaceRepository.GetForRevision(revisionId).Where(i => i.InterfaceType == interfaceType).Select(i => i.Name).ToList();
+
+                            foreach (var interfaceName in interfaceNames)
+                            {
+                                output.WriteLine(interfaceName);
+                            }
+                            break;
+                    }
+
+                    return;
+                }
+
+                
             }
         }
     }
