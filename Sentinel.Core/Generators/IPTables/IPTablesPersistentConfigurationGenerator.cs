@@ -198,7 +198,15 @@ namespace Sentinel.Core.Generators.IPTables
             AppendState(builder, rule);
 
             // TODO handle logging
-            builder.Append($"-j {FirewallActionToIptables(rule.Action)}\n");
+            if (rule.Log)
+            {
+
+            }
+            else
+            {
+                builder.Append($"-j {FirewallActionToIptables(rule.Action)}\n");
+            }
+            
         }
 
         private void GenerateFirewallTableDefaultRule(StringBuilder builder, FirewallTable table)

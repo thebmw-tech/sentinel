@@ -23,8 +23,8 @@ namespace Sentinel.Core.Command.Commands.Any
             var cmdArgs = string.Join(' ', args.Skip(1));
             var process = commandExecutionHelper.BuildProcess(cmd, cmdArgs, true, true);
 
-            process.ErrorDataReceived += (sender, eventArgs) => error.Write(eventArgs.Data);
-            process.OutputDataReceived += (sender, eventArgs) => output.Write(eventArgs.Data);
+            process.ErrorDataReceived += (sender, eventArgs) => error.WriteLine(eventArgs.Data);
+            process.OutputDataReceived += (sender, eventArgs) => output.WriteLine(eventArgs.Data);
 
             process.Start();
             process.BeginErrorReadLine();

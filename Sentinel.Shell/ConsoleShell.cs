@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -185,11 +186,11 @@ namespace Sentinel.Shell
                         Console.WriteLine();
                         return commandAsString();
                     case {Key: ConsoleKey.Tab}:
-                        //FIXME optimize this
-                        var tabSuggestion = interpreter.Suggest(this, CommandMode, commandAsString());
+                        var currentCommandString = commandAsString();
+                        var tabSuggestion = interpreter.Suggest(this, CommandMode, currentCommandString);
                         command = new List<char>(tabSuggestion.ToCharArray());
-                        Console.SetCursorPosition(prompt.Length, pos.Top);
-                        Console.Write(commandAsString());
+                        commandPos = currentCommandString.Zip(tabSuggestion, (c1, c2) => c1 == c2).TakeWhile(b => b).Count();
+                        OptimizedReplace(prompt.Length, commandPos, tabSuggestion);
                         break;
                     case {KeyChar: '?'}:
                         Console.WriteLine();
