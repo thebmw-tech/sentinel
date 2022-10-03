@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31025.194
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32916.344
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Core", "Sentinel.Core\Sentinel.Core.csproj", "{45FF1508-8961-41F9-9BC7-BE42C3112047}"
 EndProject
@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Test", "Sentinel.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Core.Command", "Sentinel.Core.Command\Sentinel.Core.Command.csproj", "{0C93D479-DED9-4ED6-A46E-B34060203DAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Web", "Sentinel.Web\Sentinel.Web.csproj", "{6E33BCF1-6C38-4FA0-B898-6A2D78749265}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sentinel.Models", "Sentinel.Models\Sentinel.Models.csproj", "{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sentinel.API", "Sentinel.API\Sentinel.API.csproj", "{836BC60B-CA67-46C1-8472-20E16BAEA216}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,14 +42,14 @@ Global
 		{0C93D479-DED9-4ED6-A46E-B34060203DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C93D479-DED9-4ED6-A46E-B34060203DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C93D479-DED9-4ED6-A46E-B34060203DAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E33BCF1-6C38-4FA0-B898-6A2D78749265}.Release|Any CPU.Build.0 = Release|Any CPU
 		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{006DBF77-45DE-46AA-B1E7-AB907DB8ADF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{836BC60B-CA67-46C1-8472-20E16BAEA216}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{836BC60B-CA67-46C1-8472-20E16BAEA216}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{836BC60B-CA67-46C1-8472-20E16BAEA216}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{836BC60B-CA67-46C1-8472-20E16BAEA216}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
