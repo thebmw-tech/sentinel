@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -127,7 +128,7 @@ namespace Sentinel.Shell
                 switch (key)
                 {
                     // Handle Direction Keys
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.LeftArrow:
+                    case {Key: ConsoleKey.LeftArrow}:
                         if (commandPos > 0)
                         {
                             Console.SetCursorPosition(pos.Left - 1, pos.Top);
@@ -137,7 +138,7 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.RightArrow:
+                    case {Key: ConsoleKey.RightArrow}:
                         if (commandPos < command.Count)
                         {
                             Console.SetCursorPosition(pos.Left + 1, pos.Top);
@@ -147,19 +148,17 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Home:
+                    case {Key: ConsoleKey.Home}:
                         Console.SetCursorPosition(prompt.Length, pos.Top);
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.End:
+                    case {Key: ConsoleKey.End}:
                         Console.SetCursorPosition(prompt.Length + command.Count, pos.Top);
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Backspace:
-                        if (command.Count > 0)
+                    case {Key: ConsoleKey.Backspace}:
+                        if (commandPos > 0)
                         {
                             command.RemoveAt(commandPos - 1);
-                            System.Diagnostics.Debug.WriteLine(commandAsString());
-                            Console.SetCursorPosition(prompt.Length, pos.Top);
-                            Console.Write(commandAsString());
+                            OptimizedReplace(prompt.Length, commandPos - 1, commandAsString());
                             Console.Write(' ');
                             Console.SetCursorPosition(pos.Left - 1, pos.Top);
                         }
@@ -169,13 +168,11 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Delete:
+                    case {Key: ConsoleKey.Delete}:
                         if (command.Count > 0 && commandPos < command.Count)
                         {
                             command.RemoveAt(commandPos);
-                            System.Diagnostics.Debug.WriteLine(commandAsString()); 
-                            Console.SetCursorPosition(prompt.Length, pos.Top);
-                            Console.Write(commandAsString());
+                            OptimizedReplace(prompt.Length, commandPos, commandAsString());
                             Console.Write(' ');
                             Console.SetCursorPosition(pos.Left, pos.Top);
                         }
@@ -185,21 +182,22 @@ namespace Sentinel.Shell
                             Bell();
                         }
                         break;
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Enter:
+                    case {Key: ConsoleKey.Enter}:
                         Console.WriteLine();
                         return commandAsString();
-                    case ConsoleKeyInfo k when k.Key == ConsoleKey.Tab:
-                        var tabSuggestion = interpreter.Suggest(this, CommandMode, commandAsString());
+                    case {Key: ConsoleKey.Tab}:
+                        var currentCommandString = commandAsString();
+                        var tabSuggestion = interpreter.Suggest(this, CommandMode, currentCommandString);
                         command = new List<char>(tabSuggestion.ToCharArray());
-                        Console.SetCursorPosition(prompt.Length, pos.Top);
-                        Console.Write($"{commandAsString()}");
+                        commandPos = currentCommandString.Zip(tabSuggestion, (c1, c2) => c1 == c2).TakeWhile(b => b).Count();
+                        OptimizedReplace(prompt.Length, commandPos, tabSuggestion);
                         break;
-                    case ConsoleKeyInfo k when k.KeyChar == '?':
+                    case {KeyChar: '?'}:
                         Console.WriteLine();
                         interpreter.Help(this, CommandMode, commandAsString());
                         Console.Write($"{prompt}{commandAsString()}");
                         break;
-                    case ConsoleKeyInfo k when k.KeyChar != 0 && (k.Modifiers is 0 or ConsoleModifiers.Shift):
+                    case { } k when k.KeyChar != 0 && (k.Modifiers is 0 or ConsoleModifiers.Shift):
                         command.Insert(commandPos, k.KeyChar);
                         if (command.Count == commandPos)
                         {
@@ -207,8 +205,7 @@ namespace Sentinel.Shell
                         }
                         else
                         {
-                            Console.SetCursorPosition(prompt.Length, pos.Top);
-                            Console.Write(commandAsString());
+                            OptimizedReplace(prompt.Length, commandPos, commandAsString());
                             Console.SetCursorPosition(pos.Left + 1, pos.Top);
                         }
 
@@ -216,6 +213,16 @@ namespace Sentinel.Shell
                     default:
                         break;
                 }
+            }
+        }
+
+        private static void OptimizedReplace(int promptLength, int commandPos, string commandString)
+        {
+            var (_, top) = Console.GetCursorPosition();
+            Console.SetCursorPosition(promptLength + commandPos, top);
+            if (commandString.Length > 0)
+            {
+                Console.Write(commandString[commandPos..]);
             }
         }
 

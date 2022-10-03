@@ -72,7 +72,7 @@ build-debian-package:
 
 deploy-debian-package:
   stage: deploy
-  image: debian:buster
+  image: debian:bullseye
   only:
     - master
     - develop

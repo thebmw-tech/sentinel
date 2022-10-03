@@ -63,10 +63,35 @@ namespace Sentinel.Core.Command.Services
 
         public void Help(IShell shell, string[] args)
         {
-            var commands = commandCache.Values.Where(t => CheckFilter(t, shell)).Select(m => m.GetCustomAttribute<SubCommandAttribute>())
-                .Where(a => a != null).Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText)).ToList();
+            if (args.Length == 0)
+            {
+                var possibleCommands = commandCache.Values.Where(t => CheckFilter(t, shell))
+                    .Select(m => m.GetCustomAttribute<SubCommandAttribute>())
+                    .Where(a => a != null).Select(a => new Tuple<string, string>(a.BaseCommand, a.HelpText)).ToList();
 
-            ConsoleFormatHelper.WriteSpacedTuples(commands, shell.Output);
+                ConsoleFormatHelper.WriteSpacedTuples(possibleCommands, shell.Output);
+
+                return;
+            }
+
+            var command = args[0];
+            var subArgs = args.Skip(1).ToArray();
+
+            var commands = GetCommands(command, shell);
+
+            switch (commands.Count)
+            {
+                case 0:
+                    //TODO not found
+                    break;
+                case 1:
+                    var instance = GetCommandInstance(commands.First(), shell);
+                    instance.Help(subArgs, shell.Output);
+                    break;
+                default:
+                    break;
+
+            }
         }
 
         public string Suggest(IShell shell, string[] commandLine)

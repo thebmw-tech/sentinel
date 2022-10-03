@@ -17,7 +17,7 @@ namespace Sentinel.Core.Environments
             this.firewallTableRepository = firewallTableRepository;
         }
 
-        public void Cleanup(IShell shell)
+        public void Cleanup(IShell shell, string[] args)
         {
             var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG_FIREWALL_TABLE"));
             foreach (var key in keysToDelete)
@@ -33,7 +33,7 @@ namespace Sentinel.Core.Environments
             var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
             var table = shell.GetEnvironment<string>("CONFIG_FIREWALL_TABLE_NAME");
 
-            return $"{hostname}(config{{{revision:X}}}-firewall{{{table}}})#";
+            return $"{hostname}(config[r{revision:X}]-firewall[{table}])#";
         }
 
         public string[] Setup(IShell shell, string[] args)

@@ -27,7 +27,7 @@ namespace Sentinel.Core.Command.Commands
             }
             finally
             {
-                environmentSetup.Cleanup(shell);
+                environmentSetup.Cleanup(shell, Array.Empty<string>());
             }
         }
 
@@ -40,7 +40,7 @@ namespace Sentinel.Core.Command.Commands
             }
             finally
             {
-                environmentSetup.Cleanup(shell);
+                environmentSetup.Cleanup(shell, Array.Empty<string>());
             }
         }
 
@@ -53,7 +53,7 @@ namespace Sentinel.Core.Command.Commands
             }
             finally
             {
-                environmentSetup.Cleanup(shell);
+                environmentSetup.Cleanup(shell, Array.Empty<string>());
             }
         }
     }

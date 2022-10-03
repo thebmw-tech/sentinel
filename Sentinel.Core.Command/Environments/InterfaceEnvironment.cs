@@ -19,7 +19,7 @@ namespace Sentinel.Core.Environments
             this.vlanInterfaceRepository = vlanInterfaceRepository;
         }
 
-        public void Cleanup(IShell shell)
+        public void Cleanup(IShell shell, string[] args)
         {
             var keysToDelete = shell.Environment.Keys.Where(s => s.StartsWith("CONFIG_INTERFACE"));
             foreach (var key in keysToDelete)
@@ -35,21 +35,21 @@ namespace Sentinel.Core.Environments
             var revision = shell.GetEnvironment<int>(SentinelCommandEnvironment.REVISON_ID);
             var i = shell.GetEnvironment<string>("CONFIG_INTERFACE_NAME");
 
-            return $"{hostname}(config{{{revision:X}}}-int{{{i}}})#";
+            return $"{hostname}(config[r{revision:X}]-int[{i}])#";
         }
 
         public string[] Setup(IShell shell, string[] args)
         {
             if (args.Length < 2)
             {
-                throw new Exception("Missing Interface Name");
+                return Array.Empty<string>();
             }
 
             var interfaceTypes = Enum.GetNames<InterfaceType>().Where(t => t.ToLower().StartsWith(args[0].ToLower())).ToList();
 
             if (interfaceTypes.Count != 1)
             {
-                throw new Exception("Invalid interface type");
+                return Array.Empty<string>();
             }
 
             var interfaceType = Enum.Parse<InterfaceType>(interfaceTypes.First());

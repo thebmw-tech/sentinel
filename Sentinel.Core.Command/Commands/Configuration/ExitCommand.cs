@@ -30,7 +30,7 @@ namespace Sentinel.Core.Command.Commands.Configuration
 
                 if (revision.HasChanges && !revision.ConfirmDate.HasValue)
                 {
-                    error.WriteLine("You have not confirmed configuraiton. Please \"confirm\" or \"rollback\" before exiting.");
+                    error.WriteLine("You have not confirmed configuration. Please \"confirm\" or \"rollback\" before exiting.");
                     return 1;
                 }
 

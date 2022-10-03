@@ -4,7 +4,7 @@ namespace Sentinel.Core.Environments
 {
     public class ShellEnvironment : IEnvironmentSetup
     {
-        public void Cleanup(IShell shell)
+        public void Cleanup(IShell shell, string[] args)
         {
             shell.SYS_ExitShell();
         }

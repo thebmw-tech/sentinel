@@ -18,7 +18,7 @@ namespace Sentinel.Core.Command.Commands.Any
 
         public override int Main(string[] args, TextReader input, TextWriter output, TextWriter error)
         {
-            currentEnvironmentSetup.Cleanup(shell);
+            currentEnvironmentSetup.Cleanup(shell, args);
 
             return 0;
         }

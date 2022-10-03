@@ -6,6 +6,6 @@ Architecture: all
 Essential: no
 Installed-Size: __PRODUCT_SIZE__
 Maintainer: Brandon Warner <thebmw@thebmw.tech>
-Depends: netplan.io, iptables, vlan, bridge-utils, aspnetcore-runtime-5.0
+Depends: netplan.io, iptables, vlan, bridge-utils, aspnetcore-runtime-6.0, nginx
 Suggests: dnsmasq, frr, openvpn, wireguard
 Description: Sentinel Firewall Admin Tools
